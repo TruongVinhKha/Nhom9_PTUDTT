@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "462857112524",
+    "project_id": "edutrack-5da5c",
+    "storage_bucket": "edutrack-5da5c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:462857112524:android:4a79c15183472cef5bab69",
+        "android_client_info": {
+          "package_name": "com.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "462857112524-4qtmvmgqv6hiin0jfai058t5espop86e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.demo",
+            "certificate_hash": "ca974527123236a4e150b2986d3a67a337132272"
+          }
+        },
+        {
+          "client_id": "462857112524-5gnmnia40qtsu58lpscsvrf2l8cfeq1k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.demo",
+            "certificate_hash": "4e87700d3904a9455d685bebeff51c6cd3a809a7"
+          }
+        },
+        {
+          "client_id": "462857112524-679ffbaqr6c0fgas80kh35ut5nmdlbr7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.demo",
+            "certificate_hash": "e0e9952b8c81ee22429f0df967db5c721dc25e75"
+          }
+        },
+        {
+          "client_id": "462857112524-lsvdlucn1s213ui6a5tmjn1gfqp7d211.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.demo",
+            "certificate_hash": "b11e0ceea76213d839abcb562e82020911263524"
+          }
+        },
+        {
+          "client_id": "462857112524-diaumjhsupjftohan52nhjfhcq9it4jr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP9qwTWP-zsZF3HxjhglHWuDj6I1hPGuM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "462857112524-diaumjhsupjftohan52nhjfhcq9it4jr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
