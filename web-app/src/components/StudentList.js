@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebaseConfig';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 
 export default function StudentList({ classId, onSelectStudent, onBack }) {
   const [students, setStudents] = useState([]);
@@ -12,52 +12,19 @@ export default function StudentList({ classId, onSelectStudent, onBack }) {
       try {
         console.log('Bắt đầu lấy dữ liệu học sinh với classId:', classId);
         setError(null);
-        
         if (!classId) {
-          console.log('Không có classId, trả về mảng rỗng');
           setStudents([]);
           setLoading(false);
           return;
         }
-
-        // Lấy tất cả học sinh nếu classId là 'all', ngược lại lọc theo classId
-        let q;
-        if (classId === 'all') {
-          q = query(collection(db, 'students'));
-          console.log('Lấy tất cả học sinh');
-        } else {
-          q = query(collection(db, 'students'), where('data.classId', '==', classId));
-          console.log('Lọc học sinh theo classId:', classId);
-        }
-
-        // Thêm log để debug query
-        console.log('Query:', q);
-
-        const querySnapshot = await getDocs(q);
-        console.log('Số học sinh lấy được:', querySnapshot.docs.length);
-        
-        if (querySnapshot.docs.length === 0) {
-          console.log('Không tìm thấy học sinh nào');
-          // Thử lấy tất cả học sinh để kiểm tra
-          const allStudentsQuery = query(collection(db, 'students'));
-          const allStudentsSnapshot = await getDocs(allStudentsQuery);
-          console.log('Tổng số học sinh trong database:', allStudentsSnapshot.docs.length);
-          console.log('Mẫu dữ liệu học sinh:', allStudentsSnapshot.docs.slice(0, 3).map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          })));
-        } else {
-          console.log('Danh sách học sinh:', querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          })));
-        }
-
-        const studentList = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data().data // Lấy data từ trường data
-        }));
-        
+        // Lấy tất cả học sinh rồi filter ở phía client
+        const allStudentsQuery = query(collection(db, 'students'));
+        const allStudentsSnapshot = await getDocs(allStudentsQuery);
+        const allStudents = allStudentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Lọc theo classId
+        const studentList = classId === 'all'
+          ? allStudents
+          : allStudents.filter(stu => stu.classId === classId);
         setStudents(studentList);
       } catch (error) {
         console.error('Lỗi khi lấy dữ liệu học sinh:', error);
@@ -69,27 +36,170 @@ export default function StudentList({ classId, onSelectStudent, onBack }) {
     fetchStudents();
   }, [classId]);
 
-  if (loading) return <div style={{textAlign:'center',marginTop:40,color:'#2d6cdf'}}>Đang tải danh sách học sinh...</div>;
+  if (loading) {
+    return (
+      <div className="fade-in" style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '60vh',
+        flexDirection: 'column',
+        gap: 20
+      }}>
+        <div style={{
+          width: 50,
+          height: 50,
+          border: '4px solid rgba(102, 126, 234, 0.2)',
+          borderTop: '4px solid #667eea',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <div style={{ color: '#667eea', fontSize: 18, fontWeight: 600 }}>Đang tải danh sách học sinh...</div>
+      </div>
+    );
+  }
 
-  if (error) return (
-    <div style={{textAlign:'center',marginTop:40,color:'#dc3545'}}>
-      Lỗi: {error}
-    </div>
-  );
+  if (error) {
+    return (
+      <div className="fade-in" style={{
+        maxWidth: 600,
+        margin: '40px auto',
+        padding: '40px 30px',
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: 24,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          width: 70,
+          height: 70,
+          background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 16px',
+          boxShadow: '0 8px 25px rgba(229, 62, 62, 0.3)'
+        }}>
+          <span style={{ fontSize: 28, color: 'white' }}>⚠️</span>
+        </div>
+        <h3 style={{ color: '#e53e3e', marginBottom: 16 }}>Có lỗi xảy ra</h3>
+        <div style={{ color: '#718096' }}>{error}</div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{maxWidth:600,margin:'40px auto',background:'#fff',borderRadius:16,boxShadow:'0 4px 24px rgba(0,0,0,0.08)',padding:32,position:'relative'}}>
+    <div className="fade-in" style={{
+      maxWidth: 800,
+      margin: '40px auto',
+      padding: '40px 30px',
+      background: 'rgba(255,255,255,0.95)',
+      backdropFilter: 'blur(10px)',
+      borderRadius: 24,
+      boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
+      border: '1px solid rgba(255,255,255,0.2)',
+      position: 'relative'
+    }}>
       {onBack && (
-        <button onClick={onBack} style={{position:'absolute',left:16,top:16,background:'#eaf2fb',border:'none',borderRadius:8,padding:'6px 14px',color:'#2d6cdf',fontWeight:600,cursor:'pointer',boxShadow:'0 1px 4px #e3eefd'}}>← Quay lại</button>
+        <button 
+          onClick={onBack} 
+          className="btn btn-back"
+          style={{
+            position: 'absolute',
+            left: 24,
+            top: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          ← Quay lại
+        </button>
       )}
-      <h3 style={{color:'#2d6cdf',textAlign:'center',marginBottom:24}}>Danh sách học sinh lớp {classId}</h3>
-      <div style={{display:'flex',flexWrap:'wrap',gap:16,justifyContent:'center'}}>
+      
+      <div style={{ textAlign: 'center', marginBottom: 40, paddingTop: onBack ? '60px' : 0 }}>
+        <div style={{
+          width: 70,
+          height: 70,
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 16px',
+          boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
+        }}>
+          <span style={{ fontSize: 28, color: 'white' }}>👨‍🎓</span>
+        </div>
+        <h3 style={{
+          color: '#2d3748',
+          margin: '0 0 8px 0',
+          fontSize: 24,
+          fontWeight: 700
+        }}>Danh sách học sinh</h3>
+        <div style={{
+          color: '#718096',
+          fontSize: 16
+        }}>Lớp {classId} - Chọn học sinh để xem nhận xét</div>
+      </div>
+
+      <div className="grid grid-3" style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: 16
+      }}>
         {students.length === 0 ? (
-          <div style={{color:'#888',fontSize:16}}>Không có học sinh nào trong lớp này.</div>
+          <div style={{
+            gridColumn: '1 / -1',
+            textAlign: 'center',
+            padding: '40px',
+            color: '#718096',
+            fontSize: 16,
+            background: 'rgba(255,255,255,0.5)',
+            borderRadius: 16,
+            border: '2px dashed #e2e8f0'
+          }}>
+            Không có học sinh nào trong lớp này.
+          </div>
         ) : students.map(stu => (
-          <button key={stu.id} onClick={() => onSelectStudent(stu)}
-            style={{minWidth:160,padding:'16px 0',background:'#f7fafd',border:'1px solid #bcd0ee',borderRadius:12,fontSize:17,fontWeight:500,color:'#2d6cdf',cursor:'pointer',boxShadow:'0 2px 8px #e3eefd'}}>
-            {stu.name || stu.id}
+          <button 
+            key={stu.id} 
+            onClick={() => onSelectStudent(stu)}
+            className="card"
+            style={{
+              minHeight: 100,
+              padding: '20px',
+              background: 'rgba(255,255,255,0.9)',
+              border: '2px solid #e2e8f0',
+              borderRadius: 16,
+              fontSize: 16,
+              fontWeight: 600,
+              color: '#2d3748',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 12
+            }}
+          >
+            <div style={{
+              width: 45,
+              height: 45,
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)'
+            }}>
+              <span style={{ fontSize: 18, color: 'white' }}>👤</span>
+            </div>
+            <span>{stu.fullName || stu.name || stu.id}</span>
           </button>
         ))}
       </div>

@@ -75,14 +75,16 @@ function App() {
         <StudentList classId={selectedClass.id} onSelectStudent={setSelectedStudent} onBack={() => setSelectedClass(null)} />
       ) : (
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <AddComment 
-            student={selectedStudent} 
-            onCommentAdded={() => {}} 
-            onBack={() => setSelectedStudent(null)} 
-          />
           <CommentHistory 
             studentId={selectedStudent.id} 
-            onBack={() => setSelectedStudent(null)} 
+            onBack={() => setSelectedStudent(null)}
+            renderAddComment={(addNewComment) => (
+              <AddComment 
+                student={selectedStudent} 
+                onCommentAdded={addNewComment} 
+                onBack={() => setSelectedStudent(null)} 
+              />
+            )}
           />
         </div>
       )}
