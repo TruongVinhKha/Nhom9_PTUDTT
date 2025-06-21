@@ -6,19 +6,39 @@ import ClassList from './components/ClassList';
 import StudentList from './components/StudentList';
 import AddComment from './components/AddComment';
 import CommentHistory from './components/CommentHistory';
-import { auth } from './firebaseConfig';
+import { auth, db } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import AdminDashboard from './components/AdminDashboard';
+import TeacherDashboard from './components/TeacherDashboard';
 
 function App() {
   const [showRegister, setShowRegister] = useState(false);
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null); // Thông tin user Firestore
   const [loading, setLoading] = useState(true);
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      setLoading(true);
+      if (user) {
+        // Lấy thông tin user từ Firestore
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
+          } else {
+            setUserData(null);
+          }
+        } catch (err) {
+          setUserData(null);
+        }
+      } else {
+        setUserData(null);
+      }
       setLoading(false);
     });
     return () => unsubscribe();
@@ -67,6 +87,17 @@ function App() {
     );
   }
 
+  // Nếu là admin thì vào luôn dashboard admin
+  if (userData && userData.role === 'admin') {
+    return <AdminDashboard onBack={() => auth.signOut()} currentUser={user} />;
+  }
+
+  // Nếu là teacher thì vào TeacherDashboard
+  if (userData && userData.role === 'teacher') {
+    return <TeacherDashboard onBack={() => auth.signOut()} currentUser={user} />;
+  }
+
+  // Nếu là parent thì vào giao diện cũ
   return (
     <div className="App" style={{ minHeight: '100vh', background: '#f7fafd', padding: '20px' }}>
       {!selectedClass ? (

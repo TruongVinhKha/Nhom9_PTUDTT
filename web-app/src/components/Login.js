@@ -19,9 +19,9 @@ export default function Login({ onSwitchToRegister }) {
       const user = userCredential.user;
       // Lấy thông tin user từ Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (!userDoc.exists() || userDoc.data().role !== "teacher") {
+      if (!userDoc.exists() || (userDoc.data().role !== "teacher" && userDoc.data().role !== "admin")) {
         await auth.signOut();
-        setError("Chỉ giáo viên mới được phép đăng nhập.");
+        setError("Chỉ giáo viên hoặc admin mới được phép đăng nhập.");
         setLoading(false);
         return;
       }

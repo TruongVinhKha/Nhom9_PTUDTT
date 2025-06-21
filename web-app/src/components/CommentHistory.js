@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebaseConfig';
-import { collection, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, deleteDoc, updateDoc, query, where, orderBy } from 'firebase/firestore';
 
 export default function CommentHistory({ studentId, onBack, renderAddComment }) {
   const [comments, setComments] = useState([]);
@@ -15,13 +15,22 @@ export default function CommentHistory({ studentId, onBack, renderAddComment }) 
     const fetchComments = async () => {
       try {
         console.log('Fetching comments for student:', studentId);
-        const studentRef = doc(db, 'students', studentId);
-        const commentsRef = collection(studentRef, 'comments');
-        const querySnapshot = await getDocs(commentsRef);
+        
+        // Sử dụng collection comments với query
+        // Lưu ý: Cần tạo composite index cho studentId + timestamp trong Firebase Console
+        const commentsRef = collection(db, 'comments');
+        const q = query(
+          commentsRef,
+          where('studentId', '==', studentId),
+          orderBy('timestamp', 'desc')
+        );
+        
+        const querySnapshot = await getDocs(q);
         const commentsList = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
+        
         console.log('Found comments:', commentsList.length);
         setComments(commentsList);
       } catch (err) {
@@ -41,8 +50,8 @@ export default function CommentHistory({ studentId, onBack, renderAddComment }) 
 
     setDeletingCommentId(commentId);
     try {
-      const studentRef = doc(db, 'students', studentId);
-      const commentRef = doc(studentRef, 'comments', commentId);
+      // Xóa từ collection comments
+      const commentRef = doc(db, 'comments', commentId);
       await deleteDoc(commentRef);
       
       // Cập nhật state local
@@ -69,8 +78,8 @@ export default function CommentHistory({ studentId, onBack, renderAddComment }) 
 
     setUpdatingCommentId(editingComment.id);
     try {
-      const studentRef = doc(db, 'students', studentId);
-      const commentRef = doc(studentRef, 'comments', editingComment.id);
+      // Cập nhật trong collection comments
+      const commentRef = doc(db, 'comments', editingComment.id);
       await updateDoc(commentRef, {
         content: editText.trim(),
         updatedAt: new Date()

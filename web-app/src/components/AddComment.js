@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { db } from '../firebaseConfig';
-import { collection, addDoc, Timestamp, doc } from 'firebase/firestore';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
 
 export default function AddComment({ student, onCommentAdded, onBack }) {
   const [text, setText] = useState('');
@@ -16,15 +16,20 @@ export default function AddComment({ student, onCommentAdded, onBack }) {
     try {
       console.log('Thêm nhận xét cho học sinh:', student.id);
       
-      // Tạo comment trong subcollection của student
+      // Tạo comment với cấu trúc mới
       const commentData = {
         content: text,
+        studentId: student.id,
+        studentName: student.fullName || student.name,
         teacherId: "teacher1", // TODO: Lấy từ user đang đăng nhập
+        teacherName: "Giáo viên 1", // TODO: Lấy từ user đang đăng nhập
+        classId: student.classId || null,
+        className: student.className || null,
         timestamp: Timestamp.now()
       };
 
-      const studentRef = doc(db, 'students', student.id);
-      const docRef = await addDoc(collection(studentRef, 'comments'), commentData);
+      // Thêm vào collection comments
+      const docRef = await addDoc(collection(db, 'comments'), commentData);
       console.log('Thêm nhận xét thành công');
       
       // Hiển thị thông báo thành công
