@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { auth } from '../firebaseConfig';
+import { auth } from '../../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc } from "firebase/firestore";
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 
 export default function Login({ onSwitchToRegister }) {
   const [email, setEmail] = useState('');

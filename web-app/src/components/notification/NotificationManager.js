@@ -7,7 +7,7 @@ import {
   orderBy,
   serverTimestamp 
 } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 
 export default function NotificationManager({ currentUser, onNotificationCreated }) {
   const [classes, setClasses] = useState([]);
@@ -99,7 +99,6 @@ export default function NotificationManager({ currentUser, onNotificationCreated
           className: classes.find(c => c.id === classId)?.name || classId,
           createdAt: serverTimestamp(),
           updatedAt: null,
-          isRead: false,
           isDeleted: false,
           deletedAt: null,
           viewCount: 0,
@@ -128,7 +127,6 @@ export default function NotificationManager({ currentUser, onNotificationCreated
           ),
           createdAt: serverTimestamp(),
           updatedAt: null,
-          isRead: false,
           isDeleted: false,
           deletedAt: null,
           viewCount: 0,

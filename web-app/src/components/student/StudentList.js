@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { collection, getDocs, query } from 'firebase/firestore';
 
 export default function StudentList({ classId, onSelectStudent, onBack }) {

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import UserManager from './UserManager';
-import ClassManager from './ClassManager';
-import StudentManager from './StudentManager';
-import CommentManager from './CommentManager';
-import NotificationManager from './NotificationManager';
-import NotificationList from './NotificationList';
+import UserManager from '../user/UserManager';
+import ClassManager from '../class/ClassManager';
+import StudentManager from '../student/StudentManager';
+import CommentManager from '../comment/CommentManager';
+import NotificationManager from '../notification/NotificationManager';
+import NotificationList from '../notification/NotificationList';
+import ChangePassword from '../auth/ChangePassword';
+import Modal from '../common/Modal';
 
 const TABS = [
   { key: 'students', label: 'Quản lý học sinh' },
@@ -17,6 +19,7 @@ const TABS = [
 export default function AdminDashboard({ onBack, currentUser }) {
   const [tab, setTab] = useState('students');
   const [notificationView, setNotificationView] = useState('list'); // 'list' or 'create'
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const handleNotificationCreated = (notifications) => {
     // Switch back to list view after creating notification
@@ -67,8 +70,16 @@ export default function AdminDashboard({ onBack, currentUser }) {
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 16px 0 16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <h2 style={{ color: '#667eea', fontWeight: 800, fontSize: 28, margin: 0 }}>Bảng điều khiển Quản trị</h2>
-          <button onClick={onBack} style={{ background: '#e53e3e', color: 'white', border: 'none', borderRadius: 8, padding: '10px 18px', fontWeight: 700, cursor: 'pointer' }}>Thoát</button>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button onClick={() => setShowChangePassword(true)} style={{ background: '#2d6cdf', color: 'white', border: 'none', borderRadius: 8, padding: '10px 18px', fontWeight: 700, cursor: 'pointer' }}>Đổi mật khẩu</button>
+            <button onClick={onBack} style={{ background: '#e53e3e', color: 'white', border: 'none', borderRadius: 8, padding: '10px 18px', fontWeight: 700, cursor: 'pointer' }}>Đăng xuất</button>
+          </div>
         </div>
+        {showChangePassword && (
+          <Modal open={showChangePassword} onClose={() => setShowChangePassword(false)}>
+            <ChangePassword onClose={() => setShowChangePassword(false)} />
+          </Modal>
+        )}
         <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
           {TABS.map(t => (
             <button

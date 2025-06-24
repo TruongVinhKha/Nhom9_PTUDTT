@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import UpdateForm from '../common/UpdateForm';
+import Modal from '../common/Modal';
 
 export default function ClassManager() {
   const [classes, setClasses] = useState([]);
@@ -8,7 +10,6 @@ export default function ClassManager() {
   const [error, setError] = useState('');
   const [newClassName, setNewClassName] = useState('');
   const [editingClass, setEditingClass] = useState(null);
-  const [editClassName, setEditClassName] = useState('');
   const [processingId, setProcessingId] = useState(null);
 
   useEffect(() => {
@@ -43,16 +44,15 @@ export default function ClassManager() {
 
   const handleEdit = (cls) => {
     setEditingClass(cls);
-    setEditClassName(cls.name);
   };
 
   const handleUpdate = async () => {
-    if (!editClassName.trim()) return;
+    if (!editingClass) return;
+    const { id, ...dataToUpdate } = editingClass;
     setProcessingId(editingClass.id);
     try {
-      await updateDoc(doc(db, 'classes', editingClass.id), { name: editClassName.trim() });
+      await updateDoc(doc(db, 'classes', editingClass.id), dataToUpdate);
       setEditingClass(null);
-      setEditClassName('');
       fetchClasses();
     } catch (err) {
       setError('Lỗi khi cập nhật lớp: ' + err.message);
@@ -98,16 +98,6 @@ export default function ClassManager() {
           <div key={cls.id} className="card" style={{ padding: 20, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
             {editingClass && editingClass.id === cls.id ? (
               <>
-                <input
-                  type="text"
-                  value={editClassName}
-                  onChange={e => setEditClassName(e.target.value)}
-                  className="input-field"
-                  style={{ flex: 1, minWidth: 0 }}
-                />
-                <button onClick={handleUpdate} disabled={processingId === cls.id} className="btn btn-primary">
-                  {processingId === cls.id ? 'Đang lưu...' : 'Lưu'}
-                </button>
                 <button onClick={() => setEditingClass(null)} className="btn btn-secondary">Hủy</button>
               </>
             ) : (
@@ -124,6 +114,17 @@ export default function ClassManager() {
           </div>
         ))}
       </div>
+      {editingClass && (
+        <Modal open={!!editingClass} onClose={() => setEditingClass(null)}>
+          <UpdateForm
+            data={editingClass}
+            onChange={setEditingClass}
+            onSubmit={handleUpdate}
+            onCancel={() => setEditingClass(null)}
+            loading={processingId === editingClass.id}
+          />
+        </Modal>
+      )}
     </div>
   );
 } 

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import UpdateForm from '../common/UpdateForm';
+import Modal from '../common/Modal';
 
 export default function StudentManager() {
   const [students, setStudents] = useState([]);
@@ -8,7 +10,6 @@ export default function StudentManager() {
   const [error, setError] = useState('');
   const [newStudent, setNewStudent] = useState({ name: '', classId: '' });
   const [editingStudent, setEditingStudent] = useState(null);
-  const [editStudent, setEditStudent] = useState({ name: '', classId: '' });
   const [processingId, setProcessingId] = useState(null);
 
   useEffect(() => {
@@ -43,16 +44,15 @@ export default function StudentManager() {
 
   const handleEdit = (stu) => {
     setEditingStudent(stu);
-    setEditStudent({ name: stu.name, classId: stu.classId });
   };
 
   const handleUpdate = async () => {
-    if (!editStudent.name.trim() || !editStudent.classId.trim()) return;
+    if (!editingStudent) return;
+    const { id, ...dataToUpdate } = editingStudent;
     setProcessingId(editingStudent.id);
     try {
-      await updateDoc(doc(db, 'students', editingStudent.id), { name: editStudent.name.trim(), classId: editStudent.classId.trim() });
+      await updateDoc(doc(db, 'students', editingStudent.id), dataToUpdate);
       setEditingStudent(null);
-      setEditStudent({ name: '', classId: '' });
       fetchStudents();
     } catch (err) {
       setError('Lỗi khi cập nhật học sinh: ' + err.message);
@@ -104,42 +104,28 @@ export default function StudentManager() {
           <div>Chưa có học sinh nào.</div>
         ) : students.map(stu => (
           <div key={stu.id} className="card" style={{ padding: 20, marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-            {editingStudent && editingStudent.id === stu.id ? (
-              <>
-                <input
-                  type="text"
-                  value={editStudent.name}
-                  onChange={e => setEditStudent(s => ({ ...s, name: e.target.value }))}
-                  className="input-field"
-                  style={{ flex: 2, minWidth: 0 }}
-                />
-                <input
-                  type="text"
-                  value={editStudent.classId}
-                  onChange={e => setEditStudent(s => ({ ...s, classId: e.target.value }))}
-                  className="input-field"
-                  style={{ flex: 1, minWidth: 0 }}
-                />
-                <button onClick={handleUpdate} disabled={processingId === stu.id} className="btn btn-primary">
-                  {processingId === stu.id ? 'Đang lưu...' : 'Lưu'}
-                </button>
-                <button onClick={() => setEditingStudent(null)} className="btn btn-secondary">Hủy</button>
-              </>
-            ) : (
-              <>
-                <div style={{ fontWeight: 600, color: '#667eea', fontSize: 16 }}>{stu.fullName || stu.name || stu.id}</div>
-                <div style={{ color: '#718096', fontSize: 14 }}>Mã lớp: {stu.classId}</div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => handleEdit(stu)} className="btn btn-secondary">Sửa</button>
-                  <button onClick={() => handleDelete(stu.id)} disabled={processingId === stu.id} className="btn btn-danger">
-                    {processingId === stu.id ? 'Đang xóa...' : 'Xóa'}
-                  </button>
-                </div>
-              </>
-            )}
+            <div style={{ fontWeight: 600, color: '#667eea', fontSize: 16 }}>{stu.fullName || stu.name || stu.id}</div>
+            <div style={{ color: '#718096', fontSize: 14 }}>Mã lớp: {stu.classId}</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => handleEdit(stu)} className="btn btn-secondary">Sửa</button>
+              <button onClick={() => handleDelete(stu.id)} disabled={processingId === stu.id} className="btn btn-danger">
+                {processingId === stu.id ? 'Đang xóa...' : 'Xóa'}
+              </button>
+            </div>
           </div>
         ))}
       </div>
+      {editingStudent && (
+        <Modal open={!!editingStudent} onClose={() => setEditingStudent(null)}>
+          <UpdateForm
+            data={editingStudent}
+            onChange={setEditingStudent}
+            onSubmit={handleUpdate}
+            onCancel={() => setEditingStudent(null)}
+            loading={processingId === editingStudent.id}
+          />
+        </Modal>
+      )}
     </div>
   );
 } 

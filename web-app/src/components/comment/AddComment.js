@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 
 export default function AddComment({ student, onCommentAdded, onBack }) {

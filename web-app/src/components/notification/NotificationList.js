@@ -9,7 +9,7 @@ import {
   doc,
   getDoc
 } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 
 export default function NotificationList({ currentUser, onBack }) {
   const [notifications, setNotifications] = useState([]);
@@ -65,6 +65,21 @@ export default function NotificationList({ currentUser, onBack }) {
           isAdmin: isAdmin
         });
 
+        // Tìm teacherId dựa trên email
+        let teacherId = null;
+        if (!isAdmin && currentUser.email) {
+          // Map email sang teacherId
+          const emailToTeacherId = {
+            'teacher1@example.com': 'teacher1',
+            'teacher2@example.com': 'teacher2', 
+            'teacher3@example.com': 'teacher3',
+            'teacher4@example.com': 'teacher4',
+            'teacher5@example.com': 'teacher5'
+          };
+          teacherId = emailToTeacherId[currentUser.email];
+          console.log('🔍 Mapped teacherId:', teacherId);
+        }
+
         // Fetch single class notifications
         const notificationsRef = collection(db, 'notifications');
         let notificationsQuery;
@@ -77,11 +92,19 @@ export default function NotificationList({ currentUser, onBack }) {
           );
         } else {
           // Teacher: Chỉ lấy thông báo của mình
-          notificationsQuery = query(
-            notificationsRef,
-            where('teacherId', '==', currentUser.uid),
-            orderBy('createdAt', 'desc')
-          );
+          if (teacherId) {
+            notificationsQuery = query(
+              notificationsRef,
+              where('teacherId', '==', teacherId),
+              orderBy('createdAt', 'desc')
+            );
+          } else {
+            // Fallback: lấy tất cả nếu không tìm thấy teacherId
+            notificationsQuery = query(
+              notificationsRef,
+              orderBy('createdAt', 'desc')
+            );
+          }
         }
         
         const notificationsSnapshot = await getDocs(notificationsQuery);
@@ -105,11 +128,19 @@ export default function NotificationList({ currentUser, onBack }) {
           );
         } else {
           // Teacher: Chỉ lấy thông báo nhiều lớp của mình
-          multiNotificationsQuery = query(
-            multiNotificationsRef,
-            where('teacherId', '==', currentUser.uid),
-            orderBy('createdAt', 'desc')
-          );
+          if (teacherId) {
+            multiNotificationsQuery = query(
+              multiNotificationsRef,
+              where('teacherId', '==', teacherId),
+              orderBy('createdAt', 'desc')
+            );
+          } else {
+            // Fallback: lấy tất cả nếu không tìm thấy teacherId
+            multiNotificationsQuery = query(
+              multiNotificationsRef,
+              orderBy('createdAt', 'desc')
+            );
+          }
         }
         
         const multiNotificationsSnapshot = await getDocs(multiNotificationsQuery);
@@ -133,7 +164,7 @@ export default function NotificationList({ currentUser, onBack }) {
     };
 
     fetchNotifications();
-  }, [currentUser.uid, userRole]); // Thêm dependency cho userRole
+  }, [currentUser.uid, currentUser.email, userRole]); // Thêm dependency cho email
 
   // Handle delete notification
   const handleDelete = async (notificationId, type) => {
@@ -152,8 +183,21 @@ export default function NotificationList({ currentUser, onBack }) {
       if (notificationDoc.exists()) {
         const notificationData = notificationDoc.data();
         
+        // Tìm teacherId dựa trên email
+        let teacherId = null;
+        if (currentUser.email) {
+          const emailToTeacherId = {
+            'teacher1@example.com': 'teacher1',
+            'teacher2@example.com': 'teacher2', 
+            'teacher3@example.com': 'teacher3',
+            'teacher4@example.com': 'teacher4',
+            'teacher5@example.com': 'teacher5'
+          };
+          teacherId = emailToTeacherId[currentUser.email];
+        }
+        
         // Admin có thể xóa tất cả, Teacher chỉ xóa thông báo của mình
-        if (userRole !== 'admin' && notificationData.teacherId !== currentUser.uid) {
+        if (userRole !== 'admin' && notificationData.teacherId !== teacherId) {
           alert('Bạn không có quyền xóa thông báo này!');
           setDeletingId(null);
           return;

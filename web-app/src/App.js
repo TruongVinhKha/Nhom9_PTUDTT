@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import Login from './components/Login';
-import Register from './components/Register';
-import ClassList from './components/ClassList';
-import StudentList from './components/StudentList';
-import AddComment from './components/AddComment';
-import CommentHistory from './components/CommentHistory';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import ClassList from './components/class/ClassList';
+import StudentList from './components/student/StudentList';
+import AddComment from './components/comment/AddComment';
+import CommentHistory from './components/comment/CommentHistory';
 import { auth, db } from './firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import AdminDashboard from './components/AdminDashboard';
-import TeacherDashboard from './components/TeacherDashboard';
+import AdminDashboard from './components/dashboard/AdminDashboard';
+import TeacherDashboard from './components/dashboard/TeacherDashboard';
 
-function App() {
+function AppContent() {
   const [showRegister, setShowRegister] = useState(false);
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null); // Thông tin user Firestore
@@ -120,6 +120,12 @@ function App() {
         </div>
       )}
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AppContent />
   );
 }
 

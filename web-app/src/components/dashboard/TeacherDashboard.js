@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import NotificationManager from './NotificationManager';
-import NotificationList from './NotificationList';
-import ClassList from './ClassList';
-import StudentList from './StudentList';
-import AddComment from './AddComment';
-import CommentHistory from './CommentHistory';
+import NotificationManager from '../notification/NotificationManager';
+import NotificationList from '../notification/NotificationList';
+import ClassList from '../class/ClassList';
+import StudentList from '../student/StudentList';
+import AddComment from '../comment/AddComment';
+import CommentHistory from '../comment/CommentHistory';
+import ChangePassword from '../auth/ChangePassword';
+import Modal from '../common/Modal';
 
 export default function TeacherDashboard({ currentUser, onBack }) {
   const [view, setView] = useState('main'); // main, notifications, notificationList, classList, studentList, commentHistory
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   const handleNotificationCreated = (notifications) => {
     // Switch back to notification list after creating notification
@@ -124,7 +127,24 @@ export default function TeacherDashboard({ currentUser, onBack }) {
       </div>
 
       {/* Logout Button */}
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center', display: 'flex', justifyContent: 'center', gap: 16 }}>
+        <button
+          onClick={() => setShowChangePassword(true)}
+          style={{
+            padding: '12px 32px',
+            background: 'linear-gradient(135deg, #2d6cdf 0%, #1a5bbf 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: 12,
+            fontSize: 16,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 15px rgba(45, 108, 223, 0.2)'
+          }}
+        >
+          Đổi mật khẩu
+        </button>
         <button
           onClick={onBack}
           style={{
@@ -140,7 +160,7 @@ export default function TeacherDashboard({ currentUser, onBack }) {
             boxShadow: '0 4px 15px rgba(229, 62, 62, 0.3)'
           }}
         >
-          🚪 Đăng xuất
+         Đăng xuất
         </button>
       </div>
     </div>
@@ -261,6 +281,11 @@ export default function TeacherDashboard({ currentUser, onBack }) {
       )}
       
       {renderContent()}
+      {showChangePassword && (
+        <Modal open={showChangePassword} onClose={() => setShowChangePassword(false)}>
+          <ChangePassword onClose={() => setShowChangePassword(false)} />
+        </Modal>
+      )}
     </div>
   );
 } 

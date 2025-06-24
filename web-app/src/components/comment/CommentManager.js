@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebaseConfig';
-import { collection, getDocs, doc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+import { collection, getDocs, doc, deleteDoc, query, where } from 'firebase/firestore';
 
 export default function CommentManager() {
   const [comments, setComments] = useState([]);
@@ -10,29 +10,32 @@ export default function CommentManager() {
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
-    fetchAllComments();
-  }, []);
+    const fetchComments = async () => {
+      try {
+        setLoading(true);
+        const commentsRef = collection(db, "comments");
+        const q = query(commentsRef, where("isDeleted", "==", false));
+        const querySnapshot = await getDocs(q);
+        
+        const commentsData = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data
+          };
+        });
+        
+        setComments(commentsData);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+        setError("Không thể tải danh sách bình luận");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Lấy tất cả nhận xét từ collection comments
-  const fetchAllComments = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const commentsRef = collection(db, 'comments');
-      const q = query(commentsRef, orderBy('timestamp', 'desc'));
-      
-      const querySnapshot = await getDocs(q);
-      const commentsList = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      setComments(commentsList);
-    } catch (err) {
-      setError('Lỗi khi tải nhận xét: ' + err.message);
-    }
-    setLoading(false);
-  };
+    fetchComments();
+  }, []);
 
   const handleDelete = async (commentId) => {
     if (!window.confirm('Bạn có chắc chắn muốn xóa nhận xét này?')) return;
@@ -51,6 +54,50 @@ export default function CommentManager() {
     c.studentName?.toLowerCase().includes(search.toLowerCase()) ||
     c.teacherName?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) {
+      return 'Vừa xong';
+    }
+    
+    try {
+      let date;
+      
+      // Kiểm tra nếu là Firestore Timestamp (Firebase v9)
+      if (timestamp && typeof timestamp === 'object' && timestamp._seconds !== undefined) {
+        date = new Date(timestamp._seconds * 1000);
+      }
+      // Kiểm tra nếu là Firestore Timestamp (Firebase v8)
+      else if (timestamp && typeof timestamp === 'object' && timestamp.toDate) {
+        date = timestamp.toDate();
+      }
+      // Kiểm tra nếu là string timestamp
+      else if (typeof timestamp === 'string') {
+        date = new Date(timestamp);
+      }
+      // Kiểm tra nếu là Date object
+      else if (timestamp instanceof Date) {
+        date = timestamp;
+      }
+      // Kiểm tra nếu là number (milliseconds)
+      else if (typeof timestamp === 'number') {
+        date = new Date(timestamp);
+      }
+      else {
+        return 'Vừa xong';
+      }
+      
+      // Kiểm tra nếu date hợp lệ
+      if (isNaN(date.getTime())) {
+        return 'Vừa xong';
+      }
+      
+      return date.toLocaleString('vi-VN');
+    } catch (error) {
+      console.error('Error formatting timestamp:', error);
+      return 'Vừa xong';
+    }
+  };
 
   if (loading) return <div>Đang tải nhận xét...</div>;
   if (error) return <div style={{ color: 'red' }}>{error}</div>;
@@ -74,7 +121,7 @@ export default function CommentManager() {
             <div style={{ fontWeight: 600, color: '#667eea', fontSize: 16 }}>{c.studentName}</div>
             <div style={{ color: '#2d3748', fontSize: 15, margin: '8px 0' }}>{c.content}</div>
             <div style={{ color: '#718096', fontSize: 13 }}>
-              Giáo viên: <b>{c.teacherName || c.teacherId}</b> | {c.timestamp?._seconds ? new Date(c.timestamp._seconds * 1000).toLocaleString('vi-VN') : 'Vừa xong'}
+              Giáo viên: <b>{c.teacherName || c.teacherId}</b> | {formatTimestamp(c.timestamp)}
             </div>
             <button
               onClick={() => handleDelete(c.id)}

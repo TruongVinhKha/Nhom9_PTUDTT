@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebaseConfig';
+import { db } from '../../firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
+import ChangePassword from '../auth/ChangePassword';
+import Modal from '../common/Modal';
 
 export default function ClassList({ onSelectClass, onBack }) {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
     async function fetchClasses() {
@@ -51,20 +54,42 @@ export default function ClassList({ onSelectClass, onBack }) {
       position: 'relative'
     }}>
       {onBack && (
-        <button 
-          onClick={onBack} 
-          className="btn btn-back"
-          style={{
-            position: 'absolute',
-            left: 24,
-            top: 24,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
-        >
-          ← Đăng xuất
-        </button>
+        <div style={{ position: 'absolute', left: 24, top: 24, display: 'flex', gap: 12 }}>
+          <button 
+            onClick={onBack} 
+            className="btn btn-back"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            ← Đăng xuất
+          </button>
+          <button
+            onClick={() => setShowChangePassword(true)}
+            className="btn btn-back"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#2d6cdf',
+              color: 'white',
+              border: 'none',
+              borderRadius: 8,
+              padding: '10px 18px',
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
+          >
+            Đổi mật khẩu
+          </button>
+        </div>
+      )}
+      {showChangePassword && (
+        <Modal open={showChangePassword} onClose={() => setShowChangePassword(false)}>
+          <ChangePassword onClose={() => setShowChangePassword(false)} />
+        </Modal>
       )}
       
       <div style={{ textAlign: 'center', marginBottom: 40, paddingTop: onBack ? '60px' : 0 }}>
