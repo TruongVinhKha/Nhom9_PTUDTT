@@ -1,0 +1,201 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- HELPER FUNCTIONS ---
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isTeacher() {
+      return isAuthenticated() && getUserData().role == "teacher";
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && getUserData().role == "admin";
+    }
+
+    function isParent() {
+      return isAuthenticated() && getUserData().role == "parent";
+    }
+
+    function isTeacherOrAdmin() {
+      return isTeacher() || isAdmin();
+    }
+
+    function isParentOfStudent(studentId) {
+      return isParent() && studentId in getUserData().linkedStudentIds;
+    }
+
+    // Helper: Phụ huynh có con thuộc classId này không? (không giới hạn số lượng con)
+    function parentHasStudentInClass(classId) {
+      return isParent() && (
+        getUserData().linkedStudentIds.size() > 0 &&
+        (
+          // Lặp qua từng studentId, chỉ cần 1 studentId có classId trùng là true
+          getUserData().linkedStudentIds.hasAny([]) ||
+          (
+            // Dùng vòng lặp thủ công
+            exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[0])) && get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[0])).data.classId == classId
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 1 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[1])) && get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[1])).data.classId == classId
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 2 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[2])) && get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[2])).data.classId == classId
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 3 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[3])) && get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[3])).data.classId == classId
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 4 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[4])) && get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[4])).data.classId == classId
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 5 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[5])) && get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[5])).data.classId == classId
+          )
+          // Nếu cần, thêm tiếp các dòng này cho nhiều con hơn
+        )
+      );
+    }
+
+    // Helper: Phụ huynh có con thuộc bất kỳ classId nào trong mảng classIds không? (không giới hạn số lượng con)
+    function parentHasStudentInAnyClass(classIds) {
+      return isParent() && (
+        getUserData().linkedStudentIds.size() > 0 && (
+          (
+            exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[0])) && classIds.hasAny([get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[0])).data.classId])
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 1 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[1])) && classIds.hasAny([get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[1])).data.classId])
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 2 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[2])) && classIds.hasAny([get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[2])).data.classId])
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 3 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[3])) && classIds.hasAny([get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[3])).data.classId])
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 4 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[4])) && classIds.hasAny([get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[4])).data.classId])
+          ) ||
+          (
+            getUserData().linkedStudentIds.size() > 5 && exists(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[5])) && classIds.hasAny([get(/databases/$(database)/documents/students/$(getUserData().linkedStudentIds[5])).data.classId])
+          )
+          // Nếu cần, thêm tiếp các dòng này cho nhiều con hơn
+        )
+      );
+    }
+
+    // --- DATA VALIDATION FUNCTIONS ---
+    function isValidUser(data) {
+      return data.keys().hasAll(['fullName', 'role', 'email']) &&
+             data.fullName is string && data.fullName.size() > 0 &&
+             data.role in ['admin', 'teacher', 'parent', 'student'] &&
+             data.email is string && data.email.matches('^[^@]+@[^@]+\\.[^@]+$');
+    }
+
+    function isValidComment(data) {
+      return data.keys().hasAll(['content', 'studentId', 'teacherId', 'subject']) &&
+             data.content is string && data.content.size() > 0 &&
+             data.studentId is string && data.teacherId is string &&
+             data.subject is string;
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['title', 'content', 'teacherId']) &&
+             data.title is string && data.title.size() > 0 &&
+             data.content is string && data.content.size() > 0 &&
+             data.teacherId is string;
+    }
+
+    // --- COLLECTION RULES ---
+
+    // USERS: Only the user themselves or an admin can access a user document.
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId || isAdmin();
+      allow create: if isAdmin() && isValidUser(resource.data);
+      allow update: if (request.auth.uid == userId || isAdmin()) && isValidUser(resource.data);
+    }
+
+    // TEACHERS: Allow any authenticated user to read teacher profiles.
+    // Teachers and admins can write teacher data.
+    match /teachers/{teacherId} {
+      allow read: if isAuthenticated();
+      allow write: if isTeacherOrAdmin();
+      allow create: if isTeacherOrAdmin();
+      allow update: if isTeacherOrAdmin();
+    }
+
+    // STUDENTS: Improved security with single get() call
+    match /students/{studentId} {
+      allow read: if isTeacherOrAdmin() || isParentOfStudent(studentId);
+      allow write: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+    }
+    
+    // CLASSES: Parents can read class info for their children's classes
+    match /classes/{classId} {
+      allow read: if isTeacherOrAdmin() || isParent();
+      allow write: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+    }
+
+    // COMMENTS: Phụ huynh chỉ xem nhận xét của con mình
+    match /comments/{commentId} {
+      allow read: if isTeacherOrAdmin() || (isParent() && resource.data.studentId in getUserData().linkedStudentIds);
+      allow create: if isTeacherOrAdmin() && isValidComment(resource.data);
+      allow update: if isTeacherOrAdmin() && isValidComment(resource.data);
+      allow delete: if isTeacherOrAdmin();
+
+      // Subcollection for tracking read status
+      match /isRead/{parentId} {
+        allow read, write: if request.auth.uid == parentId;
+      }
+    }
+
+    // NOTIFICATIONS: Phụ huynh chỉ xem thông báo lớp con mình
+    match /notifications/{notificationId} {
+      allow read: if isTeacherOrAdmin() || parentHasStudentInClass(resource.data.classId);
+      allow create: if isTeacherOrAdmin() && isValidNotification(resource.data);
+      allow update: if isTeacherOrAdmin() && isValidNotification(resource.data);
+      allow delete: if isTeacherOrAdmin();
+      
+      match /isRead/{parentId} {
+        allow read, write: if request.auth.uid == parentId;
+      }
+    }
+
+    // NOTIFICATIONS FOR CLASS: Phụ huynh chỉ xem thông báo chung nếu có lớp con mình
+    match /notificationsForClass/{notificationId} {
+      allow read: if isTeacherOrAdmin() || parentHasStudentInAnyClass(resource.data.classIds);
+      allow create: if isTeacherOrAdmin() && isValidNotification(resource.data);
+      allow update: if isTeacherOrAdmin() && isValidNotification(resource.data);
+      allow delete: if isTeacherOrAdmin();
+      
+      match /isRead/{parentId} {
+        allow read, write: if request.auth.uid == parentId;
+      }
+    }
+
+    // GUESTS: Only the guest themselves can access their data
+    match /guests/{guestId} {
+      allow read, write: if request.auth.uid == guestId;
+      allow create: if request.auth.uid == guestId;
+      allow update: if request.auth.uid == guestId;
+      allow delete: if request.auth.uid == guestId;
+    }
+
+    // --- ADDITIONAL SECURITY RULES ---
+    
+    // Prevent access to any other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+} 

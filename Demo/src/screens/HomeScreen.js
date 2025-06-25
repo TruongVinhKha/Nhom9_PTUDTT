@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
-import { Text, Button, Card, Avatar, IconButton, Divider } from 'react-native-paper';
+import { Text, Button, Card, Avatar, Divider } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import firestore from '@react-native-firebase/firestore';
 import LoadingScreen from './LoadingSceen';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 export default function HomeScreen() {
   const { user, signOut, initialized, loginInProgress } = useAuth();
@@ -114,7 +117,7 @@ export default function HomeScreen() {
           firestore()
             .collection('comments')
             .doc(commentId)
-            .collection('readBy')
+            .collection('isRead')
             .doc(user.uid)
             .get()
         );
@@ -122,7 +125,8 @@ export default function HomeScreen() {
         const readStatusResults = await Promise.all(readStatusPromises);
         const readStatusMap = {};
         commentIds.forEach((commentId, index) => {
-          readStatusMap[commentId] = readStatusResults[index].exists;
+          const doc = readStatusResults[index];
+          readStatusMap[commentId] = doc.exists && doc.data()?.isRead === true;
         });
         
         commentsSnap.docs.forEach(doc => {
@@ -157,7 +161,7 @@ export default function HomeScreen() {
             firestore()
               .collection('notifications')
               .doc(notificationId)
-              .collection('readBy')
+              .collection('isRead')
               .doc(user.uid)
               .get()
           );
@@ -165,7 +169,8 @@ export default function HomeScreen() {
           const notiReadStatusResults = await Promise.all(notiReadStatusPromises);
           const notiReadStatusMap = {};
           notificationIds.forEach((notificationId, index) => {
-            notiReadStatusMap[notificationId] = notiReadStatusResults[index].exists;
+            const doc = notiReadStatusResults[index];
+            notiReadStatusMap[notificationId] = doc.exists && doc.data()?.isRead === true;
           });
           
           notiSnap.docs.forEach(doc => {
@@ -194,7 +199,7 @@ export default function HomeScreen() {
             firestore()
               .collection('notificationsForClass')
               .doc(notificationId)
-              .collection('readBy')
+              .collection('isRead')
               .doc(user.uid)
               .get()
           );
@@ -202,7 +207,8 @@ export default function HomeScreen() {
           const notiForClassReadStatusResults = await Promise.all(notiForClassReadStatusPromises);
           const notiForClassReadStatusMap = {};
           notiForClassIds.forEach((notificationId, index) => {
-            notiForClassReadStatusMap[notificationId] = notiForClassReadStatusResults[index].exists;
+            const doc = notiForClassReadStatusResults[index];
+            notiForClassReadStatusMap[notificationId] = doc.exists && doc.data()?.isRead === true;
           });
           
           notiForClassSnap.docs.forEach(doc => {
@@ -264,22 +270,6 @@ export default function HomeScreen() {
                 <Text style={styles.subGreeting}>Hôm nay là {formatDate(new Date().toISOString())}</Text>
               </View>
             </View>
-            <View style={styles.headerActions}>
-              <IconButton 
-                icon="school-outline" 
-                size={28} 
-                onPress={() => {}}
-                style={styles.notificationButton}
-                iconColor="#FFFFFF"
-              />
-              <IconButton 
-                icon="bell-outline" 
-                size={26} 
-                onPress={() => {}}
-                style={styles.notificationButton}
-                iconColor="#FFFFFF"
-              />
-            </View>
           </View>
         </View>
 
@@ -288,34 +278,16 @@ export default function HomeScreen() {
         {/* Quick Summary Stats */}
         <View style={styles.summaryContainer}>
           <View style={styles.summaryCard}>
-            <IconButton 
-              icon="account-group" 
-              size={24} 
-              iconColor="#006A5C"
-              style={styles.summaryIcon}
-            />
             <Text style={styles.summaryNumber}>{students.length}</Text>
             <Text style={styles.summaryLabel}>Con em</Text>
           </View>
           <View style={styles.summaryCard}>
-            <IconButton 
-              icon="clipboard-text" 
-              size={24} 
-              iconColor="#006A5C"
-              style={styles.summaryIcon}
-            />
             <Text style={styles.summaryNumber}>
               {Object.values(comments).reduce((total, studentComments) => total + studentComments.length, 0)}
             </Text>
             <Text style={styles.summaryLabel}>Nhận xét</Text>
           </View>
           <View style={styles.summaryCard}>
-            <IconButton 
-              icon="bullhorn" 
-              size={24} 
-              iconColor="#006A5C"
-              style={styles.summaryIcon}
-            />
             <Text style={styles.summaryNumber}>
               {Object.values(notifications).reduce((total, classNotis) => total + classNotis.length, 0) + 
                Object.values(notificationsForClass).reduce((total, classNotis) => total + classNotis.length, 0)}
@@ -328,22 +300,10 @@ export default function HomeScreen() {
           {/* Danh sách các con */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <IconButton 
-                icon="account-child" 
-                size={24} 
-                iconColor="#17375F"
-                style={styles.sectionIcon}
-              />
-              <Text style={styles.sectionTitle}>Con của bạn</Text>
+              <Text style={{fontWeight: 'bold', color: '#17375F', fontSize: 20}}>Con của bạn</Text>
             </View>
             {students.length === 0 ? (
               <View style={styles.emptyState}>
-                <IconButton 
-                  icon="account-search" 
-                  size={48} 
-                  iconColor="#D32F2F"
-                  style={styles.emptyIcon}
-                />
                 <Text style={styles.emptyText}>Không có dữ liệu học sinh liên kết.</Text>
                 <Text style={styles.emptySubText}>Vui lòng liên hệ nhà trường để được hỗ trợ</Text>
               </View>
@@ -359,12 +319,6 @@ export default function HomeScreen() {
                     <View style={styles.studentInfo}>
                       <Text style={styles.studentName}>{student.fullName}</Text>
                       <View style={styles.classTag}>
-                        <IconButton 
-                          icon="school" 
-                          size={16} 
-                          iconColor="#FFFFFF"
-                          style={styles.classIcon}
-                        />
                         <Text style={styles.classTagText}>Lớp {student.classId}</Text>
                       </View>
                     </View>
@@ -374,65 +328,62 @@ export default function HomeScreen() {
                     {/* Nhận xét giáo viên */}
                     <View style={styles.subSection}>
                       <View style={styles.subSectionHeader}>
-                        <IconButton 
-                          icon="clipboard-text-outline" 
-                          size={20} 
-                          iconColor="#17375F"
-                          style={styles.subSectionIcon}
-                        />
-                        <Text style={styles.subSectionTitle}>Nhận xét giáo viên</Text>
+                        <Text style={{fontWeight: 'bold', color: '#17375F', fontSize: 16}}>Nhận xét giáo viên</Text>
                       </View>
                       {comments[student.id]?.length ? (
                         comments[student.id].map(comment => (
                           <TouchableOpacity
                             key={comment.commentId}
                             onPress={async () => {
-                              console.log('Bấm vào comment:', comment.commentId, comment.isReadByCurrentUser);
                               if (!comment.isReadByCurrentUser) {
-                                await firestore()
-                                  .collection('comments').doc(comment.commentId)
-                                  .collection('readBy')
-                                  .doc(user.uid)
-                                  .set({});
-                                console.log('Đã update isReadByCurrentUser true cho', comment.commentId);
-                                fetchData();
+                                try {
+                                  await firestore()
+                                    .collection('comments')
+                                    .doc(comment.commentId)
+                                    .collection('isRead')
+                                    .doc(user.uid)
+                                    .set({
+                                      isRead: true,
+                                      readAt: firestore.FieldValue.serverTimestamp(),
+                                      parentName: user.fullName || user.email || '',
+                                    }, { merge: true });
+                                  // Cập nhật UI ngay
+                                  setComments(prev => {
+                                    const updated = { ...prev };
+                                    updated[comment.studentId] = updated[comment.studentId].map(c =>
+                                      c.commentId === comment.commentId ? { ...c, isReadByCurrentUser: true } : c
+                                    );
+                                    return updated;
+                                  });
+                                } catch (error) {
+                                  console.error('Lỗi khi cập nhật trạng thái đã xem cho comment:', error);
+                                }
                               }
                             }}
                             activeOpacity={0.7}
                           >
                             <View style={[
                               styles.commentItem,
-                              !comment.isReadByCurrentUser && styles.unreadItem
+                              !comment.isReadByCurrentUser ? styles.unreadItem : styles.readItem
                             ]}>
                               <View style={styles.row}>
-                                {!comment.isReadByCurrentUser && (
-                                  <IconButton 
-                                    icon="circle" 
-                                    size={12} 
-                                    iconColor="#FFB300"
-                                    style={styles.unreadIcon}
-                                  />
+                                {!comment.isReadByCurrentUser ? (
+                                  <Text style={styles.commentContent}>{comment.content}</Text>
+                                ) : (
+                                  <Text style={styles.commentContent}>{comment.content}</Text>
                                 )}
-                                <Text style={[styles.commentContent, !comment.isReadByCurrentUser && styles.unreadText]}>{comment.content}</Text>
+                                <Text style={
+                                  !comment.isReadByCurrentUser ? styles.unreadStatusText : styles.readStatusText
+                                }>
+                                  {comment.isReadByCurrentUser ? 'Đã xem' : 'Chưa xem'}
+                                </Text>
                               </View>
                               <View style={styles.commentMeta}>
                                 <View style={styles.commentInfo}>
                                   <View style={styles.commentDetail}>
-                                    <IconButton 
-                                      icon="book-open-outline" 
-                                      size={16} 
-                                      iconColor="#006A5C"
-                                      style={styles.commentDetailIcon}
-                                    />
                                     <Text style={styles.commentSubject}>{comment.subject}</Text>
                                   </View>
                                   <View style={styles.commentDetail}>
-                                    <IconButton 
-                                      icon="account-tie" 
-                                      size={16} 
-                                      iconColor="#666"
-                                      style={styles.commentDetailIcon}
-                                    />
                                     <Text style={styles.commentTeacher}>{comment.teacherName}</Text>
                                   </View>
                                 </View>
@@ -446,12 +397,6 @@ export default function HomeScreen() {
                                 </View>
                               </View>
                               <View style={styles.commentFooter}>
-                                <IconButton 
-                                  icon="calendar" 
-                                  size={14} 
-                                  iconColor="#666"
-                                  style={styles.dateIcon}
-                                />
                                 <Text style={styles.commentDate}>{formatDate(comment.createdAt)}</Text>
                               </View>
                             </View>
@@ -459,49 +404,15 @@ export default function HomeScreen() {
                         ))
                       ) : (
                         <View style={styles.placeholderContainer}>
-                          <IconButton 
-                            icon="clipboard-remove-outline" 
-                            size={32} 
-                            iconColor="#A0AEC0"
-                            style={styles.placeholderIcon}
-                          />
                           <Text style={styles.placeholder}>Chưa có nhận xét từ giáo viên</Text>
                         </View>
                       )}
                     </View>
 
-                    {/* Lịch thi */}
-                    <View style={styles.subSection}>
-                      <View style={styles.subSectionHeader}>
-                        <IconButton 
-                          icon="calendar-clock" 
-                          size={20} 
-                          iconColor="#17375F"
-                          style={styles.subSectionIcon}
-                        />
-                        <Text style={styles.subSectionTitle}>Lịch thi sắp tới</Text>
-                      </View>
-                      <View style={styles.placeholderContainer}>
-                        <IconButton 
-                          icon="calendar-remove" 
-                          size={32} 
-                          iconColor="#A0AEC0"
-                          style={styles.placeholderIcon}
-                        />
-                        <Text style={styles.placeholder}>Chưa có lịch thi nào được thông báo</Text>
-                      </View>
-                    </View>
-
                     {/* Thông báo cho lớp */}
                     <View style={styles.subSection}>
                       <View style={styles.subSectionHeader}>
-                        <IconButton 
-                          icon="home-group" 
-                          size={20} 
-                          iconColor="#17375F"
-                          style={styles.subSectionIcon}
-                        />
-                        <Text style={styles.subSectionTitle}>Thông báo lớp học</Text>
+                        <Text style={{fontWeight: 'bold', color: '#17375F', fontSize: 16}}>Thông báo lớp học</Text>
                       </View>
                       {notifications[student.classId]?.length ? (
                         notifications[student.classId].map(n => (
@@ -509,8 +420,28 @@ export default function HomeScreen() {
                             key={n.id}
                             onPress={async () => {
                               if (!n.isReadByCurrentUser) {
-                                await firestore().collection('notifications').doc(n.id).collection('readBy').doc(user.uid).set({});
-                                fetchData();
+                                try {
+                                  await firestore()
+                                    .collection('notifications')
+                                    .doc(n.id)
+                                    .collection('isRead')
+                                    .doc(user.uid)
+                                    .set({
+                                      isRead: true,
+                                      readAt: firestore.FieldValue.serverTimestamp(),
+                                      parentName: user.fullName || user.email || '',
+                                    }, { merge: true });
+                                  // Cập nhật UI ngay
+                                  setNotifications(prev => {
+                                    const updated = { ...prev };
+                                    updated[n.classId] = updated[n.classId].map(item =>
+                                      item.id === n.id ? { ...item, isReadByCurrentUser: true } : item
+                                    );
+                                    return updated;
+                                  });
+                                } catch (error) {
+                                  console.error('Lỗi khi cập nhật trạng thái đã xem cho notification:', error);
+                                }
                               }
                             }}
                             activeOpacity={0.7}
@@ -520,33 +451,17 @@ export default function HomeScreen() {
                               n.isReadByCurrentUser ? styles.notificationClassRead : styles.unreadItem
                             ]}>
                               <View style={styles.notificationHeader}>
-                                {!n.isReadByCurrentUser && (
-                                  <IconButton 
-                                    icon="circle" 
-                                    size={12} 
-                                    iconColor="#FFB300"
-                                    style={styles.unreadIcon}
-                                  />
+                                {!n.isReadByCurrentUser ? (
+                                  <Text style={styles.notificationTitle}>{n.title}</Text>
+                                ) : (
+                                  <Text style={styles.notificationTitle}>{n.title}</Text>
                                 )}
-                                <Text style={[styles.notificationTitle, !n.isReadByCurrentUser && styles.unreadText]}>{n.title}</Text>
                                 <View style={[styles.tagBase, styles.classTagColor]}>
-                                  <IconButton 
-                                    icon="home" 
-                                    size={12} 
-                                    iconColor="#FFFFFF"
-                                    style={styles.tagIcon}
-                                  />
                                   <Text style={styles.tagText}>Riêng lớp</Text>
                                 </View>
                               </View>
                               <Text style={styles.notificationContent}>{n.content}</Text>
                               <View style={styles.notificationFooter}>
-                                <IconButton 
-                                  icon="calendar" 
-                                  size={14} 
-                                  iconColor="#666"
-                                  style={styles.dateIcon}
-                                />
                                 <Text style={styles.notificationDate}>{formatDate(n.createdAt)}</Text>
                               </View>
                             </View>
@@ -554,12 +469,6 @@ export default function HomeScreen() {
                         ))
                       ) : (
                         <View style={styles.placeholderContainer}>
-                          <IconButton 
-                            icon="bullhorn-outline" 
-                            size={32} 
-                            iconColor="#A0AEC0"
-                            style={styles.placeholderIcon}
-                          />
                           <Text style={styles.placeholder}>Không có thông báo riêng cho lớp</Text>
                         </View>
                       )}
@@ -568,13 +477,7 @@ export default function HomeScreen() {
                     {/* Thông báo chung nhiều lớp */}
                     <View style={styles.subSection}>
                       <View style={styles.subSectionHeader}>
-                        <IconButton 
-                          icon="bullhorn" 
-                          size={20} 
-                          iconColor="#17375F"
-                          style={styles.subSectionIcon}
-                        />
-                        <Text style={styles.subSectionTitle}>Thông báo chung</Text>
+                        <Text style={{fontWeight: 'bold', color: '#FFB300', fontSize: 16}}>Thông báo chung</Text>
                       </View>
                       {notificationsForClass[student.classId]?.length ? (
                         notificationsForClass[student.classId].map(n => (
@@ -582,8 +485,32 @@ export default function HomeScreen() {
                             key={n.id}
                             onPress={async () => {
                               if (!n.isReadByCurrentUser) {
-                                await firestore().collection('notificationsForClass').doc(n.id).collection('readBy').doc(user.uid).set({});
-                                fetchData();
+                                try {
+                                  await firestore()
+                                    .collection('notificationsForClass')
+                                    .doc(n.id)
+                                    .collection('isRead')
+                                    .doc(user.uid)
+                                    .set({
+                                      isRead: true,
+                                      readAt: firestore.FieldValue.serverTimestamp(),
+                                      parentName: user.fullName || user.email || '',
+                                    }, { merge: true });
+                                  // Cập nhật UI ngay
+                                  setNotificationsForClass(prev => {
+                                    const updated = { ...prev };
+                                    (n.classIds || []).forEach(cid => {
+                                      if (updated[cid]) {
+                                        updated[cid] = updated[cid].map(item =>
+                                          item.id === n.id ? { ...item, isReadByCurrentUser: true } : item
+                                        );
+                                      }
+                                    });
+                                    return updated;
+                                  });
+                                } catch (error) {
+                                  console.error('Lỗi khi cập nhật trạng thái đã xem cho notificationForClass:', error);
+                                }
                               }
                             }}
                             activeOpacity={0.7}
@@ -593,33 +520,17 @@ export default function HomeScreen() {
                               n.isReadByCurrentUser ? styles.notificationGeneralRead : styles.unreadItem
                             ]}>
                               <View style={styles.notificationHeader}>
-                                {!n.isReadByCurrentUser && (
-                                  <IconButton 
-                                    icon="circle" 
-                                    size={12} 
-                                    iconColor="#FFB300"
-                                    style={styles.unreadIcon}
-                                  />
+                                {!n.isReadByCurrentUser ? (
+                                  <Text style={styles.notificationTitle}>{n.title}</Text>
+                                ) : (
+                                  <Text style={styles.notificationTitle}>{n.title}</Text>
                                 )}
-                                <Text style={[styles.notificationTitle, !n.isReadByCurrentUser && styles.unreadText]}>{n.title}</Text>
                                 <View style={[styles.tagBase, styles.generalTagColor]}>
-                                  <IconButton 
-                                    icon="earth" 
-                                    size={12} 
-                                    iconColor="#FFFFFF"
-                                    style={styles.tagIcon}
-                                  />
                                   <Text style={styles.tagText}>Chung</Text>
                                 </View>
                               </View>
                               <Text style={styles.notificationContent}>{n.content}</Text>
                               <View style={styles.notificationFooter}>
-                                <IconButton 
-                                  icon="calendar" 
-                                  size={14} 
-                                  iconColor="#666"
-                                  style={styles.dateIcon}
-                                />
                                 <Text style={styles.notificationDate}>{formatDate(n.createdAt)}</Text>
                               </View>
                             </View>
@@ -627,12 +538,6 @@ export default function HomeScreen() {
                         ))
                       ) : (
                         <View style={styles.placeholderContainer}>
-                          <IconButton 
-                            icon="bullhorn-outline" 
-                            size={32} 
-                            iconColor="#A0AEC0"
-                            style={styles.placeholderIcon}
-                          />
                           <Text style={styles.placeholder}>Không có thông báo chung</Text>
                         </View>
                       )}
@@ -649,7 +554,6 @@ export default function HomeScreen() {
           mode="outlined" 
           onPress={signOut} 
           style={styles.signOutButton}
-          icon="logout"
           textColor="#D32F2F"
           buttonColor="transparent"
         >
@@ -708,51 +612,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: 'rgba(255, 255, 255, 0.7)',
   },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  notificationButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    margin: 2,
-  },
   divider: {
     backgroundColor: 'transparent',
     height: 0,
-  },
-  summaryContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 16,
-    marginBottom: 24,
-  },
-  summaryCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    flex: 1,
-    marginHorizontal: 6,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  summaryIcon: {
-    margin: 0,
-    marginBottom: 4,
-  },
-  summaryNumber: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#006A5C',
-    marginBottom: 4,
-  },
-  summaryLabel: {
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'center',
   },
   section: {
     paddingHorizontal: 16,
@@ -888,7 +750,7 @@ const styles = StyleSheet.create({
     borderLeftColor: '#E0E0E0',
   },
   unreadItem: {
-    backgroundColor: '#FFF3E0',
+    backgroundColor: '#FFF3E0', // vàng nhạt
     borderLeftColor: '#FFB300',
     shadowColor: '#FFB300',
     shadowOffset: { width: 0, height: 1 },
@@ -1033,5 +895,47 @@ const styles = StyleSheet.create({
     marginTop: 16,
     borderColor: '#D32F2F',
     borderWidth: 1,
+  },
+  readItem: {
+    backgroundColor: '#E8F5E9', // xanh nhạt
+    borderLeftColor: '#4CAF50',
+  },
+  readText: {
+    color: '#4CAF50',
+    fontWeight: '600',
+  },
+  readStatusText: {
+    fontSize: 10,
+    color: '#4CAF50',
+    marginLeft: 8,
+    alignSelf: 'center',
+  },
+  unreadStatusText: {
+    fontSize: 10,
+    color: '#FFB300',
+    marginLeft: 8,
+    alignSelf: 'center',
+  },
+  summaryContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  summaryCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    elevation: 2,
+  },
+  summaryNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#17375F',
+    marginBottom: 8,
+  },
+  summaryLabel: {
+    fontSize: 14,
+    color: '#666',
   },
 });

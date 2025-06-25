@@ -1,0 +1,143 @@
+[
+  {
+    "id": "notificationMulti007",
+    "title": "Thông báo chung khối 6",
+    "content": "Nghỉ học ngày 30/06",
+    "teacherId": "teacher1",
+    "classIds": [
+      "6A1",
+      "6A2",
+      "6A3"
+    ],
+    "createdAt": "2025-06-18T11:00:00Z"
+  }, 
+  
+    {
+      "id": "notificationMulti001",
+      "title": "Thông báo nghỉ học toàn trường",
+      "content": "Tất cả các lớp sẽ nghỉ học ngày 04/07 do bảo trì trường.",
+      "teacherId": "teacher1",
+      "classIds": ["class01", "class02", "class03", "class04"],
+      "createdAt": "2025-06-25T12:00:00Z"
+    },
+    {
+      "id": "notificationMulti002",
+      "title": "Chương trình thiện nguyện",
+      "content": "Các lớp 6A1, 6A3 sẽ tham gia chương trình thiện nguyện vào ngày 08/07.",
+      "teacherId": "teacher3",
+      "classIds": ["class01", "class03"],
+      "createdAt": "2025-06-26T13:30:00Z"
+    },
+    {
+      "id": "notificationMulti003",
+      "title": "Hội thao học sinh",
+      "content": "Lớp 6A2 và 6A4 tham gia hội thao vào ngày 15/07.",
+      "teacherId": "teacher2",
+      "classIds": ["class02", "class04"],
+      "createdAt": "2025-06-27T14:45:00Z"
+    },
+    {
+      "id": "notificationMulti004",
+      "title": "Thông báo họp phụ huynh chung",
+      "content": "Tất cả các lớp sẽ họp phụ huynh vào ngày 20/07.",
+      "teacherId": "teacher1",
+      "classIds": ["class01", "class02", "class03", "class04"],
+      "createdAt": "2025-06-28T16:00:00Z"
+    },
+    {
+      "id": "notificationMulti005",
+      "title": "Chương trình ngoại khóa",
+      "content": "Các lớp 6A1, 6A2 sẽ tham gia ngoại khóa tại bảo tàng vào ngày 18/07.",
+      "teacherId": "teacher4",
+      "classIds": ["class01", "class02"],
+      "createdAt": "2025-06-29T17:30:00Z"
+    },
+    {
+      "id": "notificationMulti006",
+      "title": "Thông báo nhận quà trung thu",
+      "content": "Các lớp 6A3, 6A4 nhận quà trung thu vào ngày 25/07.",
+      "teacherId": "teacher3",
+      "classIds": ["class03", "class04"],
+      "createdAt": "2025-07-01T09:30:00Z"
+    },
+    {
+      "id": "notificationMulti008",
+      "title": "Thông báo kiểm tra định kỳ",
+      "content": "Các lớp 6A1, 6A2, 6A3 sẽ kiểm tra định kỳ môn Toán vào ngày 05/08.",
+      "teacherId": "teacher1",
+      "classIds": ["class01", "class02", "class03"],
+      "createdAt": "2025-07-13T08:00:00Z"
+    },
+    {
+      "id": "notificationMulti009",
+      "title": "Hoạt động văn hóa dân gian",
+      "content": "Lớp 6A1, 6A4 tham gia chương trình văn hóa dân gian vào ngày 08/08.",
+      "teacherId": "teacher2",
+      "classIds": ["class01", "class04"],
+      "createdAt": "2025-07-14T10:30:00Z"
+    },
+    {
+      "id": "notificationMulti010",
+      "title": "Thông báo nhận sách giáo khoa mới",
+      "content": "Tất cả các lớp nhận sách giáo khoa năm học mới vào ngày 10/08.",
+      "teacherId": "teacher1",
+      "classIds": ["class01", "class02", "class03", "class04"],
+      "createdAt": "2025-07-15T14:15:00Z"
+    },
+    {
+      "id": "notificationMulti011",
+      "title": "Chương trình STEM",
+      "content": "Lớp 6A2, 6A3 tham gia chương trình STEM vào ngày 12/08.",
+      "teacherId": "teacher3",
+      "classIds": ["class02", "class03"],
+      "createdAt": "2025-07-16T09:45:00Z"
+    },
+    {
+      "id": "notificationMulti012",
+      "title": "Thông báo dọn vệ sinh chung",
+      "content": "Các lớp 6A1, 6A2, 6A4 thực hiện dọn vệ sinh khuôn viên trường vào ngày 15/08.",
+      "teacherId": "teacher4",
+      "classIds": ["class01", "class02", "class04"],
+      "createdAt": "2025-07-17T16:20:00Z"
+    },
+    {
+      "id": "notificationMulti013",
+      "title": "Hoạt động thể thao liên lớp",
+      "content": "Lớp 6A1, 6A3, 6A4 tham gia giải bóng chuyền mini vào ngày 18/08.",
+      "teacherId": "teacher2",
+      "classIds": ["class01", "class03", "class04"],
+      "createdAt": "2025-07-18T11:00:00Z"
+    },
+    {
+      "id": "notificationMulti014",
+      "title": "Thông báo họp tổng kết học kỳ",
+      "content": "Tất cả các lớp họp tổng kết học kỳ 1 vào ngày 20/08.",
+      "teacherId": "teacher1",
+      "classIds": ["class01", "class02", "class03", "class04"],
+      "createdAt": "2025-07-19T13:30:00Z"
+    },
+    {
+      "id": "notificationMulti015",
+      "title": "Chương trình âm nhạc",
+      "content": "Lớp 6A2, 6A3, 6A4 tham gia chương trình âm nhạc dân tộc vào ngày 22/08.",
+      "teacherId": "teacher3",
+      "classIds": ["class02", "class03", "class04"],
+      "createdAt": "2025-07-20T15:45:00Z"
+    },
+    {
+      "id": "notificationMulti016",
+      "title": "Thông báo chuẩn bị lễ khai giảng",
+      "content": "Các lớp 6A1, 6A2 chuẩn bị cho lễ khai giảng năm học mới vào ngày 25/08.",
+      "teacherId": "teacher4",
+      "classIds": ["class01", "class02"],
+      "createdAt": "2025-07-21T08:15:00Z"
+    },
+    {
+      "id": "notificationMulti017",
+      "title": "Hoạt động môi trường",
+      "content": "Lớp 6A3, 6A4 tham gia chương trình bảo vệ môi trường vào ngày 28/08.",
+      "teacherId": "teacher1",
+      "classIds": ["class03", "class04"],
+      "createdAt": "2025-07-22T10:30:00Z"
+    }
+]

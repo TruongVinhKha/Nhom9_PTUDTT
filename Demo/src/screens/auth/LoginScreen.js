@@ -286,7 +286,6 @@ export default function LoginScreen({ navigation }) {
                       },
                     }}
                     error={error && !email.trim()}
-                    left={<TextInput.Icon icon="account-school-outline" iconColor="#006A5C" />}
                   />
                 </View>
 
@@ -303,15 +302,7 @@ export default function LoginScreen({ navigation }) {
                     }}
                     style={styles.input}
                     outlineStyle={styles.inputOutline}
-                    right={
-                      <TextInput.Icon
-                        icon={showPassword ? "eye-off-outline" : "eye-outline"}
-                        onPress={() => setShowPassword(!showPassword)}
-                        iconColor="#006A5C"
-                        forceTextInputFocus={false}
-                      />
-                    }
-                    left={<TextInput.Icon icon="shield-lock-outline" iconColor="#006A5C" />}
+                    right={<TextInput.Icon icon={showPassword ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowPassword(!showPassword)} iconColor="#006A5C" forceTextInputFocus={false} />}
                     theme={{
                       colors: {
                         primary: '#006A5C',
@@ -349,7 +340,9 @@ export default function LoginScreen({ navigation }) {
                 style={styles.forgotPasswordContainer}
                 disabled={googleLoading}
               >
-                <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
+                <Text style={styles.forgotPasswordText}>
+                  Quên mật khẩu?
+                </Text>
               </TouchableOpacity>
 
               <Button
@@ -361,7 +354,6 @@ export default function LoginScreen({ navigation }) {
                 labelStyle={styles.loginButtonLabel}
                 buttonColor={authLoading ? '#E5E7EB' : '#7AE582'}
                 textColor="#17375F"
-                icon="login"
               >
                 {authLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
               </Button>
@@ -386,7 +378,6 @@ export default function LoginScreen({ navigation }) {
               onPress={handleGoogleLogin}
               loading={googleLoading}
               disabled={authLoading || googleLoading}
-              icon="google"
               buttonColor={googleLoading ? '#006A5C' : '#FFFFFF'}
               textColor={googleLoading ? '#FFFFFF' : '#006A5C'}
             >

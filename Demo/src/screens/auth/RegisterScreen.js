@@ -190,7 +190,6 @@ export default function RegisterScreen({ navigation }) {
                       },
                     }}
                     error={error && !email.trim()}
-                    left={<TextInput.Icon icon="email-outline" iconColor="#006A5C" />}
                   />
                 </View>
                 {/* Phone Number Input */}
@@ -218,7 +217,6 @@ export default function RegisterScreen({ navigation }) {
                         error: '#EF4444',
                       },
                     }}
-                    left={<TextInput.Icon icon="phone-outline" iconColor="#006A5C" />}
                   />
                 </View>
                 {/* Full Name Input */}
@@ -242,7 +240,6 @@ export default function RegisterScreen({ navigation }) {
                         error: '#EF4444',
                       },
                     }}
-                    left={<TextInput.Icon icon="account-outline" iconColor="#006A5C" />}
                   />
                 </View>
                 {/* Password Input */}
@@ -267,7 +264,6 @@ export default function RegisterScreen({ navigation }) {
                         forceTextInputFocus={false}
                       />
                     }
-                    left={<TextInput.Icon icon="lock-outline" iconColor="#006A5C" />}
                     theme={{
                       colors: {
                         primary: '#006A5C',
@@ -304,7 +300,6 @@ export default function RegisterScreen({ navigation }) {
                         forceTextInputFocus={false}
                       />
                     }
-                    left={<TextInput.Icon icon="lock-check-outline" iconColor="#006A5C" />}
                     theme={{
                       colors: {
                         primary: '#006A5C',

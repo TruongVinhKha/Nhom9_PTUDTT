@@ -1,0 +1,52 @@
+[
+  {
+    "id": "class01",
+    "name": "Lớp 6A1",
+    "teacherId": "teacher1"
+  },
+  {
+    "id": "class02",
+    "name": "Lớp 6A2",
+    "teacherId": "teacher1"
+  },
+  {
+    "id": "class03",
+    "name": "Lớp 6A3",
+    "teacherId": "teacher2"
+  },
+  {
+    "id": "class04",
+    "name": "Lớp 6A4",
+    "teacherId": "teacher2"
+  },
+  {
+    "id": "class05",
+    "name": "Lớp 6A5",
+    "teacherId": "teacher3"
+  },
+  {
+    "id": "class06",
+    "name": "Lớp 6A6",
+    "teacherId": "teacher3"
+  },
+  {
+    "id": "class07",
+    "name": "Lớp 6A7",
+    "teacherId": "teacher4"
+  },
+  {
+    "id": "class08",
+    "name": "Lớp 6A8",
+    "teacherId": "teacher4"
+  },
+  {
+    "id": "class09",
+    "name": "Lớp 6A9",
+    "teacherId": "teacher5"
+  },
+  {
+    "id": "class10",
+    "name": "Lớp 6A10",
+    "teacherId": "teacher5"
+  }
+]
