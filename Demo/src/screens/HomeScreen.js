@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
-import { Text, Button, Card, Avatar, Divider } from 'react-native-paper';
+import { Text, Button, Card, Avatar, Divider, Modal, Portal, List } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/AuthContext';
 import firestore from '@react-native-firebase/firestore';
@@ -8,15 +8,94 @@ import LoadingScreen from './LoadingSceen';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+import { useStudent } from '../contexts/StudentContext';
+
+// Khu vực thông tin người dùng (UserInfo)
+function UserInfo({ user, selectedStudent }) {
+  return (
+    <View style={userInfoStyles.container}>
+      <MaterialIcons name="account-circle" size={48} color="#007AFF" style={{ marginRight: 12 }} />
+      <View>
+        <Text style={userInfoStyles.greeting}>Xin chào,</Text>
+        <Text style={userInfoStyles.name}>Phụ huynh em: {selectedStudent?.fullName || '...'}</Text>
+      </View>
+    </View>
+  );
+}
+const userInfoStyles = StyleSheet.create({
+  container: { flexDirection: 'row', alignItems: 'center', padding: 8, backgroundColor: '#FFFFFF', borderRadius: 12, margin: 8, elevation: 1 },
+  greeting: { fontSize: 16, color: '#17375F' },
+  name: { fontSize: 18, fontWeight: 'bold', color: '#006A5C' },
+});
+
+// Thông tin học sinh (StudentInfo)
+function StudentInfo({ students, onSelectStudent, selectedStudentIndex }) {
+  if (!students?.length) return null;
+  const student = students[selectedStudentIndex || 0];
+  return (
+    <View style={studentInfoStyles.container}>
+      <Text style={studentInfoStyles.name}>{student.fullName}</Text>
+      <Text style={studentInfoStyles.class}>
+        {student.className || student.classId}
+        {student.academicYear ? ` (${student.academicYear})` : ''}
+      </Text>
+      <Text style={studentInfoStyles.school}>{student.schoolName || ''}</Text>
+      {students.length > 1 && (
+        <TouchableOpacity style={studentInfoStyles.button} onPress={onSelectStudent}>
+          <Text style={studentInfoStyles.buttonText}>Chọn con</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+const studentInfoStyles = StyleSheet.create({
+  container: { backgroundColor: '#F8F9FA', borderRadius: 8, padding: 12, margin: 8, elevation: 1, borderWidth: 1, borderColor: '#7AE582' },
+  name: { fontWeight: 'bold', fontSize: 16, color: '#17375F' },
+  class: { color: '#006A5C' },
+  school: { color: '#888' },
+  button: { marginTop: 8, backgroundColor: '#7AE582', borderRadius: 6, padding: 6, alignSelf: 'flex-start' },
+  buttonText: { color: '#17375F', fontWeight: 'bold' },
+});
+
+// Tiện ích yêu thích (FavoriteUtilities)
+function FavoriteUtilities({ onSelect }) {
+  const favorites = [
+    { icon: 'comment', label: 'Xem nhận xét', key: 'comments' },
+    { icon: 'notifications', label: 'Thông báo lớp học', key: 'classNotifications' },
+    { icon: 'campaign', label: 'Thông báo chung', key: 'generalNotifications' },
+  ];
+  return (
+    <View>
+      <View style={favoriteStyles.header}>
+        <Text style={favoriteStyles.title}>Tiện ích yêu thích</Text>
+      </View>
+      <View style={favoriteStyles.container}>
+        {favorites.map((item, idx) => (
+          <TouchableOpacity key={idx} style={favoriteStyles.item} onPress={() => onSelect(item.key)}>
+            <MaterialIcons name={item.icon} size={28} color="#007AFF" />
+            <Text style={favoriteStyles.label}>{item.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+}
+const favoriteStyles = StyleSheet.create({
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 8 },
+  title: { fontWeight: 'bold', fontSize: 16, color: '#17375F' },
+  customize: { color: '#007AFF', fontSize: 14 },
+  container: { flexDirection: 'row', flexWrap: 'wrap', marginVertical: 8 },
+  item: { width: '33%', alignItems: 'center', marginVertical: 8 },
+  label: { marginTop: 4, fontSize: 13, color: '#006A5C' },
+});
 
 export default function HomeScreen() {
   const { user, signOut, initialized, loginInProgress } = useAuth();
-  const [students, setStudents] = useState([]);
-  const [comments, setComments] = useState({});
-  const [notifications, setNotifications] = useState({});
-  const [notificationsForClass, setNotificationsForClass] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const { students, selectedStudent, setSelectedStudent } = useStudent();
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
 
   // Helper lấy ngày đẹp
   const formatDate = (value) => {
@@ -79,14 +158,10 @@ export default function HomeScreen() {
   const fetchData = async () => {
     if (!user?.uid) return;
     
-    setLoading(true);
     try {
       // 1. Lấy user Firestore để lấy linkedStudentIds
       const userDoc = await firestore().collection('users').doc(user.uid).get();
       if (!userDoc.exists) {
-        setStudents([]);
-        setLoading(false);
-        setDataLoaded(true);
         return;
       }
       const userData = userDoc.data();
@@ -98,7 +173,6 @@ export default function HomeScreen() {
         linkedStudentIds.map(id => firestore().collection('students').doc(id).get())
       );
       const studentsArr = studentDocs.map(doc => doc.exists ? { ...doc.data(), id: doc.id } : null).filter(Boolean);
-      setStudents(studentsArr);
       console.log('studentsArr:', studentsArr);
       
       // 3. Lấy nhận xét cho từng học sinh từ collection comments riêng
@@ -143,7 +217,6 @@ export default function HomeScreen() {
           commentsObj[studentId].push(comment);
         });
       }
-      setComments(commentsObj);
       console.log('commentsObj:', commentsObj);
       
       // 4. Lấy thông báo cho từng lớp
@@ -185,7 +258,6 @@ export default function HomeScreen() {
           });
         }
       }
-      setNotifications(notiObj);
       console.log('notifications:', notiObj);
       
       // 4b. Thông báo nhiều lớp (notificationsForClass)
@@ -230,14 +302,31 @@ export default function HomeScreen() {
           });
         }
       }
-      setNotificationsForClass(notiForClassObj);
       console.log('notificationsForClass:', notiForClassObj);
     } catch (e) {
       console.error('Error fetching data:', e);
-      setStudents([]);
-    } finally {
-      setLoading(false);
-      setDataLoaded(true);
+    }
+  };
+
+  const handleSelectStudent = () => {
+    if (students.length > 1) {
+      setModalVisible(true);
+    }
+  };
+
+  const handleStudentPick = (student) => {
+    setSelectedStudent(student);
+    setModalVisible(false);
+  };
+
+  const handleFeatureSelect = (key) => {
+    if (!selectedStudent) return;
+    if (key === 'comments') {
+      navigation.navigate('CommentsScreen', { student: selectedStudent });
+    } else if (key === 'classNotifications') {
+      navigation.navigate('ClassNotificationsScreen', { student: selectedStudent });
+    } else if (key === 'generalNotifications') {
+      navigation.navigate('GeneralNotificationsScreen', { student: selectedStudent });
     }
   };
 
@@ -254,8 +343,22 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Portal>
+        <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={modalStyles.container}>
+          <Text style={modalStyles.title}>Chọn học sinh</Text>
+          {students.map((student) => (
+            <List.Item
+              key={student.id}
+              title={student.fullName}
+              description={student.className || student.classId}
+              onPress={() => handleStudentPick(student)}
+              left={props => <List.Icon {...props} icon="account-child" />}
+              style={modalStyles.item}
+            />
+          ))}
+        </Modal>
+      </Portal>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Enhanced Header Section */}
         <View style={styles.headerContainer}>
           <View style={styles.header}>
             <View style={styles.userInfo}>
@@ -272,284 +375,24 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
-
         <Divider style={styles.divider} />
-
-        {/* Quick Summary Stats */}
-        <View style={styles.summaryContainer}>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryNumber}>{students.length}</Text>
-            <Text style={styles.summaryLabel}>Con em</Text>
-          </View>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryNumber}>
-              {Object.values(comments).reduce((total, studentComments) => total + studentComments.length, 0)}
+        <UserInfo user={user} selectedStudent={selectedStudent} />
+        {selectedStudent && (
+          <View style={studentInfoStyles.container}>
+            <Text style={studentInfoStyles.name}>{selectedStudent.fullName}</Text>
+            <Text style={studentInfoStyles.class}>
+              {selectedStudent.className || selectedStudent.classId}
+              {selectedStudent.academicYear ? ` (${selectedStudent.academicYear})` : ''}
             </Text>
-            <Text style={styles.summaryLabel}>Nhận xét</Text>
-          </View>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryNumber}>
-              {Object.values(notifications).reduce((total, classNotis) => total + classNotis.length, 0) + 
-               Object.values(notificationsForClass).reduce((total, classNotis) => total + classNotis.length, 0)}
-            </Text>
-            <Text style={styles.summaryLabel}>Thông báo</Text>
-          </View>
-        </View>
-
-        <View>
-          {/* Danh sách các con */}
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Text style={{fontWeight: 'bold', color: '#17375F', fontSize: 20}}>Con của bạn</Text>
-            </View>
-            {students.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>Không có dữ liệu học sinh liên kết.</Text>
-                <Text style={styles.emptySubText}>Vui lòng liên hệ nhà trường để được hỗ trợ</Text>
-              </View>
-            ) : (
-              students.map(student => (
-                <Card key={student.id} style={styles.studentCard}>
-                  <View style={styles.studentHeader}>
-                    <Avatar.Text
-                      size={48}
-                      label={student.fullName ? student.fullName.charAt(0).toUpperCase() : 'S'}
-                      style={styles.studentAvatar}
-                    />
-                    <View style={styles.studentInfo}>
-                      <Text style={styles.studentName}>{student.fullName}</Text>
-                      <View style={styles.classTag}>
-                        <Text style={styles.classTagText}>Lớp {student.classId}</Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  <Card.Content style={styles.cardContent}>
-                    {/* Nhận xét giáo viên */}
-                    <View style={styles.subSection}>
-                      <View style={styles.subSectionHeader}>
-                        <Text style={{fontWeight: 'bold', color: '#17375F', fontSize: 16}}>Nhận xét giáo viên</Text>
-                      </View>
-                      {comments[student.id]?.length ? (
-                        comments[student.id].map(comment => (
-                          <TouchableOpacity
-                            key={comment.commentId}
-                            onPress={async () => {
-                              if (!comment.isReadByCurrentUser) {
-                                try {
-                                  await firestore()
-                                    .collection('comments')
-                                    .doc(comment.commentId)
-                                    .collection('isRead')
-                                    .doc(user.uid)
-                                    .set({
-                                      isRead: true,
-                                      readAt: firestore.FieldValue.serverTimestamp(),
-                                      parentName: user.fullName || user.email || '',
-                                    }, { merge: true });
-                                  // Cập nhật UI ngay
-                                  setComments(prev => {
-                                    const updated = { ...prev };
-                                    updated[comment.studentId] = updated[comment.studentId].map(c =>
-                                      c.commentId === comment.commentId ? { ...c, isReadByCurrentUser: true } : c
-                                    );
-                                    return updated;
-                                  });
-                                } catch (error) {
-                                  console.error('Lỗi khi cập nhật trạng thái đã xem cho comment:', error);
-                                }
-                              }
-                            }}
-                            activeOpacity={0.7}
-                          >
-                            <View style={[
-                              styles.commentItem,
-                              !comment.isReadByCurrentUser ? styles.unreadItem : styles.readItem
-                            ]}>
-                              <View style={styles.row}>
-                                {!comment.isReadByCurrentUser ? (
-                                  <Text style={styles.commentContent}>{comment.content}</Text>
-                                ) : (
-                                  <Text style={styles.commentContent}>{comment.content}</Text>
-                                )}
-                                <Text style={
-                                  !comment.isReadByCurrentUser ? styles.unreadStatusText : styles.readStatusText
-                                }>
-                                  {comment.isReadByCurrentUser ? 'Đã xem' : 'Chưa xem'}
-                                </Text>
-                              </View>
-                              <View style={styles.commentMeta}>
-                                <View style={styles.commentInfo}>
-                                  <View style={styles.commentDetail}>
-                                    <Text style={styles.commentSubject}>{comment.subject}</Text>
-                                  </View>
-                                  <View style={styles.commentDetail}>
-                                    <Text style={styles.commentTeacher}>{comment.teacherName}</Text>
-                                  </View>
-                                </View>
-                                <View style={styles.ratingContainer}>
-                                  <Text style={[styles.ratingStars, { color: getRatingColor(comment.rating) }]}>
-                                    {getRatingStars(comment.rating)}
-                                  </Text>
-                                  <Text style={[styles.ratingText, { color: getRatingColor(comment.rating) }]}>
-                                    {comment.rating}
-                                  </Text>
-                                </View>
-                              </View>
-                              <View style={styles.commentFooter}>
-                                <Text style={styles.commentDate}>{formatDate(comment.createdAt)}</Text>
-                              </View>
-                            </View>
-                          </TouchableOpacity>
-                        ))
-                      ) : (
-                        <View style={styles.placeholderContainer}>
-                          <Text style={styles.placeholder}>Chưa có nhận xét từ giáo viên</Text>
-                        </View>
-                      )}
-                    </View>
-
-                    {/* Thông báo cho lớp */}
-                    <View style={styles.subSection}>
-                      <View style={styles.subSectionHeader}>
-                        <Text style={{fontWeight: 'bold', color: '#17375F', fontSize: 16}}>Thông báo lớp học</Text>
-                      </View>
-                      {notifications[student.classId]?.length ? (
-                        notifications[student.classId].map(n => (
-                          <TouchableOpacity
-                            key={n.id}
-                            onPress={async () => {
-                              if (!n.isReadByCurrentUser) {
-                                try {
-                                  await firestore()
-                                    .collection('notifications')
-                                    .doc(n.id)
-                                    .collection('isRead')
-                                    .doc(user.uid)
-                                    .set({
-                                      isRead: true,
-                                      readAt: firestore.FieldValue.serverTimestamp(),
-                                      parentName: user.fullName || user.email || '',
-                                    }, { merge: true });
-                                  // Cập nhật UI ngay
-                                  setNotifications(prev => {
-                                    const updated = { ...prev };
-                                    updated[n.classId] = updated[n.classId].map(item =>
-                                      item.id === n.id ? { ...item, isReadByCurrentUser: true } : item
-                                    );
-                                    return updated;
-                                  });
-                                } catch (error) {
-                                  console.error('Lỗi khi cập nhật trạng thái đã xem cho notification:', error);
-                                }
-                              }
-                            }}
-                            activeOpacity={0.7}
-                          >
-                            <View style={[
-                              styles.notificationBase,
-                              n.isReadByCurrentUser ? styles.notificationClassRead : styles.unreadItem
-                            ]}>
-                              <View style={styles.notificationHeader}>
-                                {!n.isReadByCurrentUser ? (
-                                  <Text style={styles.notificationTitle}>{n.title}</Text>
-                                ) : (
-                                  <Text style={styles.notificationTitle}>{n.title}</Text>
-                                )}
-                                <View style={[styles.tagBase, styles.classTagColor]}>
-                                  <Text style={styles.tagText}>Riêng lớp</Text>
-                                </View>
-                              </View>
-                              <Text style={styles.notificationContent}>{n.content}</Text>
-                              <View style={styles.notificationFooter}>
-                                <Text style={styles.notificationDate}>{formatDate(n.createdAt)}</Text>
-                              </View>
-                            </View>
-                          </TouchableOpacity>
-                        ))
-                      ) : (
-                        <View style={styles.placeholderContainer}>
-                          <Text style={styles.placeholder}>Không có thông báo riêng cho lớp</Text>
-                        </View>
-                      )}
-                    </View>
-
-                    {/* Thông báo chung nhiều lớp */}
-                    <View style={styles.subSection}>
-                      <View style={styles.subSectionHeader}>
-                        <Text style={{fontWeight: 'bold', color: '#FFB300', fontSize: 16}}>Thông báo chung</Text>
-                      </View>
-                      {notificationsForClass[student.classId]?.length ? (
-                        notificationsForClass[student.classId].map(n => (
-                          <TouchableOpacity
-                            key={n.id}
-                            onPress={async () => {
-                              if (!n.isReadByCurrentUser) {
-                                try {
-                                  await firestore()
-                                    .collection('notificationsForClass')
-                                    .doc(n.id)
-                                    .collection('isRead')
-                                    .doc(user.uid)
-                                    .set({
-                                      isRead: true,
-                                      readAt: firestore.FieldValue.serverTimestamp(),
-                                      parentName: user.fullName || user.email || '',
-                                    }, { merge: true });
-                                  // Cập nhật UI ngay
-                                  setNotificationsForClass(prev => {
-                                    const updated = { ...prev };
-                                    (n.classIds || []).forEach(cid => {
-                                      if (updated[cid]) {
-                                        updated[cid] = updated[cid].map(item =>
-                                          item.id === n.id ? { ...item, isReadByCurrentUser: true } : item
-                                        );
-                                      }
-                                    });
-                                    return updated;
-                                  });
-                                } catch (error) {
-                                  console.error('Lỗi khi cập nhật trạng thái đã xem cho notificationForClass:', error);
-                                }
-                              }
-                            }}
-                            activeOpacity={0.7}
-                          >
-                            <View style={[
-                              styles.notificationBase,
-                              n.isReadByCurrentUser ? styles.notificationGeneralRead : styles.unreadItem
-                            ]}>
-                              <View style={styles.notificationHeader}>
-                                {!n.isReadByCurrentUser ? (
-                                  <Text style={styles.notificationTitle}>{n.title}</Text>
-                                ) : (
-                                  <Text style={styles.notificationTitle}>{n.title}</Text>
-                                )}
-                                <View style={[styles.tagBase, styles.generalTagColor]}>
-                                  <Text style={styles.tagText}>Chung</Text>
-                                </View>
-                              </View>
-                              <Text style={styles.notificationContent}>{n.content}</Text>
-                              <View style={styles.notificationFooter}>
-                                <Text style={styles.notificationDate}>{formatDate(n.createdAt)}</Text>
-                              </View>
-                            </View>
-                          </TouchableOpacity>
-                        ))
-                      ) : (
-                        <View style={styles.placeholderContainer}>
-                          <Text style={styles.placeholder}>Không có thông báo chung</Text>
-                        </View>
-                      )}
-                    </View>
-                  </Card.Content>
-                </Card>
-              ))
+            <Text style={studentInfoStyles.school}>{selectedStudent.schoolName || ''}</Text>
+            {students.length > 1 && (
+              <TouchableOpacity style={studentInfoStyles.button} onPress={handleSelectStudent}>
+                <Text style={studentInfoStyles.buttonText}>Chọn con</Text>
+              </TouchableOpacity>
             )}
           </View>
-        </View>
-
-        {/* Sign Out Button */}
+        )}
+        <FavoriteUtilities onSelect={handleFeatureSelect} />
         <Button 
           mode="outlined" 
           onPress={signOut} 
@@ -567,13 +410,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: '#FFFFFF',
   },
   scrollContent: {
     paddingBottom: 32,
   },
   headerContainer: {
-    backgroundColor: '#006A5C',
+    backgroundColor: '#17375F',
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     paddingHorizontal: 20,
@@ -591,7 +434,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: '#7AE582',
     marginRight: 16,
   },
   greetingContainer: {
@@ -599,296 +442,22 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: '#FFFFFF',
     marginBottom: 2,
   },
   userName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#7AE582',
     marginBottom: 2,
   },
   subGreeting: {
     fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#FFFFFF',
   },
   divider: {
     backgroundColor: 'transparent',
     height: 0,
-  },
-  section: {
-    paddingHorizontal: 16,
-    marginBottom: 24,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionIcon: {
-    margin: 0,
-    marginRight: 8,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#17375F',
-  },
-  emptyState: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 32,
-    alignItems: 'center',
-    elevation: 2,
-  },
-  emptyIcon: {
-    margin: 0,
-    marginBottom: 8,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#D32F2F',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  emptySubText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  studentCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginBottom: 16,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  studentHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E8E8E8',
-  },
-  studentAvatar: {
-    backgroundColor: '#E3F2FD',
-    marginRight: 12,
-  },
-  studentInfo: {
-    flex: 1,
-  },
-  studentName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#17375F',
-    marginBottom: 4,
-  },
-  classTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#006A5C',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
-  classIcon: {
-    margin: 0,
-    marginRight: 4,
-  },
-  classTagText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  cardContent: {
-    padding: 0,
-  },
-  subSection: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  subSectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  subSectionIcon: {
-    margin: 0,
-    marginRight: 8,
-  },
-  subSectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#17375F',
-  },
-  placeholderContainer: {
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  placeholderIcon: {
-    margin: 0,
-    marginBottom: 8,
-  },
-  placeholder: {
-    fontSize: 14,
-    color: '#A0AEC0',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  commentItem: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#E0E0E0',
-  },
-  unreadItem: {
-    backgroundColor: '#FFF3E0', // vàng nhạt
-    borderLeftColor: '#FFB300',
-    shadowColor: '#FFB300',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  unreadIcon: {
-    margin: 0,
-    marginRight: 8,
-    marginTop: 2,
-  },
-  commentContent: {
-    fontSize: 14,
-    color: '#333',
-    lineHeight: 20,
-    flex: 1,
-  },
-  unreadText: {
-    fontWeight: '600',
-    color: '#17375F',
-  },
-  commentMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    marginBottom: 8,
-  },
-  commentInfo: {
-    flex: 1,
-  },
-  commentDetail: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  commentDetailIcon: {
-    margin: 0,
-    marginRight: 4,
-  },
-  commentSubject: {
-    fontSize: 12,
-    color: '#006A5C',
-    fontWeight: '600',
-  },
-  commentTeacher: {
-    fontSize: 12,
-    color: '#666',
-  },
-  ratingContainer: {
-    alignItems: 'flex-end',
-  },
-  ratingStars: {
-    fontSize: 16,
-    marginBottom: 2,
-  },
-  ratingText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  commentFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  dateIcon: {
-    margin: 0,
-    marginRight: 4,
-  },
-  commentDate: {
-    fontSize: 12,
-    color: '#666',
-  },
-  notificationBase: {
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    borderLeftWidth: 4,
-  },
-  notificationClassRead: {
-    backgroundColor: '#F8F9FA',
-    borderLeftColor: '#E0E0E0',
-  },
-  notificationGeneralRead: {
-    backgroundColor: '#F8F9FA',
-    borderLeftColor: '#E0E0E0',
-  },
-  notificationHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  notificationTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#17375F',
-    flex: 1,
-    marginRight: 8,
-  },
-  tagBase: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  classTagColor: {
-    backgroundColor: '#4CAF50',
-  },
-  generalTagColor: {
-    backgroundColor: '#FF9800',
-  },
-  tagIcon: {
-    margin: 0,
-    marginRight: 2,
-  },
-  tagText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '600',
-  },
-  notificationContent: {
-    fontSize: 14,
-    color: '#333',
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  notificationFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  notificationDate: {
-    fontSize: 12,
-    color: '#666',
   },
   signOutButton: {
     marginHorizontal: 16,
@@ -896,46 +465,24 @@ const styles = StyleSheet.create({
     borderColor: '#D32F2F',
     borderWidth: 1,
   },
-  readItem: {
-    backgroundColor: '#E8F5E9', // xanh nhạt
-    borderLeftColor: '#4CAF50',
-  },
-  readText: {
-    color: '#4CAF50',
-    fontWeight: '600',
-  },
-  readStatusText: {
-    fontSize: 10,
-    color: '#4CAF50',
-    marginLeft: 8,
-    alignSelf: 'center',
-  },
-  unreadStatusText: {
-    fontSize: 10,
-    color: '#FFB300',
-    marginLeft: 8,
-    alignSelf: 'center',
-  },
-  summaryContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 16,
-  },
-  summaryCard: {
-    backgroundColor: '#FFFFFF',
+});
+
+const modalStyles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    padding: 20,
+    margin: 20,
     borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    elevation: 2,
+    elevation: 5,
   },
-  summaryNumber: {
-    fontSize: 24,
+  title: {
     fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 12,
     color: '#17375F',
-    marginBottom: 8,
   },
-  summaryLabel: {
-    fontSize: 14,
-    color: '#666',
+  item: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
 });

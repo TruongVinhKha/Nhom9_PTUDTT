@@ -9,6 +9,9 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Alert, Platform, View, Text, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
+import AppNavigator from './src/navigation/AppNavigator';
+import { StudentProvider } from './src/contexts/StudentContext';
+import { Provider as PaperProvider } from 'react-native-paper';
 
 // Cấu hình Google Sign-in - PHIÊN BẢN SỬA LỖI
 const configureGoogleSignIn = async () => {
@@ -46,87 +49,19 @@ const configureGoogleSignIn = async () => {
 
 // RootNavigator - Tối ưu hóa loading và navigation
 function RootNavigator() {
-  const { user, loading, registering, checkingPermission, initialized, loginInProgress, showLoading } = useAuth();
-  const [forceAuth, setForceAuth] = useState(false);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const { user, initialized, registering, showLoading, loginInProgress } = useAuth();
 
-  useEffect(() => {
-    const checkJustRegistered = async () => {
-      try {
-        const justRegistered = await AsyncStorage.getItem('justRegistered');
-        if (justRegistered === 'true') {
-          setForceAuth(true);
-          await AsyncStorage.removeItem('justRegistered');
-        } else {
-          setForceAuth(false);
-        }
-      } catch (error) {
-        setForceAuth(false);
-      }
-    };
-    checkJustRegistered();
-  }, [user]);
-
-  // Kiểm tra role của user khi user thay đổi
-  useEffect(() => {
-    const checkUserRole = async () => {
-      if (user?.uid) {
-        try {
-          const userDoc = await firestore().collection('users').doc(user.uid).get();
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            if (userData && typeof userData === 'object' && 'role' in userData && userData.role) {
-              setUserRole(userData.role);
-              console.log('🎯 User role detected:', userData.role);
-            } else {
-              setUserRole('guest');
-              console.log('🎯 User không có role, coi như guest');
-            }
-          } else {
-            // User không có trong collection users (có thể là guest)
-            setUserRole('guest');
-            console.log('🎯 User là guest');
-          }
-        } catch (error) {
-          console.log('⚠️ Không thể kiểm tra role:', error);
-          setUserRole('guest');
-        }
-      } else {
-        setUserRole(null);
-      }
-    };
-    
-    checkUserRole();
-  }, [user?.uid]);
-
-  // Chỉ hiển thị loading khi thực sự cần thiết
   if (!initialized || registering || (showLoading && !loginInProgress)) {
     return <LoadingScreen />;
   }
 
-  if (forceAuth) {
+  // Nếu chưa đăng nhập thì render AuthNavigator
+  if (!user) {
     return <AuthNavigator />;
   }
 
-  // Chuyển hướng dựa trên role
-  if (user && userRole) {
-    switch (userRole) {
-      case 'admin':
-        return <HomeScreen />; // Hoặc AdminScreen nếu có
-      case 'teacher':
-        return <HomeScreen />; // Hoặc TeacherScreen nếu có
-      case 'parent':
-        return <HomeScreen />;
-      case 'student':
-        return <HomeScreen />; // Hoặc StudentScreen nếu có
-      case 'guest':
-        return <AuthNavigator />; // Guest vẫn ở màn hình auth
-      default:
-        return <AuthNavigator />;
-    }
-  }
-  
-  return <AuthNavigator />;
+  // Nếu đã đăng nhập thì render AppNavigator
+  return <AppNavigator />;
 }
 
 export default function App() {
@@ -137,7 +72,6 @@ export default function App() {
       try {
         const success = await configureGoogleSignIn();
         setGoogleConfigured(success);
-        
         if (!success && __DEV__) {
           console.log('⚠️ Google Sign-In không được cấu hình, nhưng app vẫn hoạt động bình thường');
         }
@@ -146,15 +80,18 @@ export default function App() {
         setGoogleConfigured(false);
       }
     };
-
     initGoogleSignIn();
   }, []);
 
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
-    </AuthProvider>
+    <PaperProvider>
+      <AuthProvider>
+        <StudentProvider>
+          <NavigationContainer>
+            <RootNavigator />
+          </NavigationContainer>
+        </StudentProvider>
+      </AuthProvider>
+    </PaperProvider>
   );
 }

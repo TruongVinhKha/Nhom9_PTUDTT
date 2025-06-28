@@ -2,501 +2,801 @@
   {
     "id": "student001",
     "fullName": "Học sinh 1",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2009-08-23",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student002",
     "fullName": "Học sinh 2",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2009-05-02",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student003",
     "fullName": "Học sinh 3",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2011-05-04",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student004",
     "fullName": "Học sinh 4",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2010-10-16",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student005",
     "fullName": "Học sinh 5",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2011-12-26",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student006",
     "fullName": "Học sinh 6",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2011-11-13",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student007",
     "fullName": "Học sinh 7",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2010-01-11",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student008",
     "fullName": "Học sinh 8",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2009-10-31",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student009",
     "fullName": "Học sinh 9",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2011-05-14",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student010",
     "fullName": "Học sinh 10",
-    "classId": "class01"
+    "classId": "class01",
+    "dateOfBirth": "2011-06-13",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student011",
     "fullName": "Học sinh 11",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2011-09-08",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student012",
     "fullName": "Học sinh 12",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2009-04-17",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student013",
     "fullName": "Học sinh 13",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2011-02-15",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student014",
     "fullName": "Học sinh 14",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2010-04-28",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student015",
     "fullName": "Học sinh 15",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2009-01-30",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student016",
     "fullName": "Học sinh 16",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2011-07-13",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student017",
     "fullName": "Học sinh 17",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2009-04-14",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student018",
     "fullName": "Học sinh 18",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2009-04-30",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student019",
     "fullName": "Học sinh 19",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2009-07-11",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student020",
     "fullName": "Học sinh 20",
-    "classId": "class02"
+    "classId": "class02",
+    "dateOfBirth": "2011-01-31",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student021",
     "fullName": "Học sinh 21",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2010-09-01",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student022",
     "fullName": "Học sinh 22",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2009-12-05",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student023",
     "fullName": "Học sinh 23",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2009-06-05",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student024",
     "fullName": "Học sinh 24",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2009-11-03",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student025",
     "fullName": "Học sinh 25",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2011-05-27",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student026",
     "fullName": "Học sinh 26",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2011-12-12",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student027",
     "fullName": "Học sinh 27",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2010-11-16",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student028",
     "fullName": "Học sinh 28",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2010-01-15",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student029",
     "fullName": "Học sinh 29",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2010-05-05",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student030",
     "fullName": "Học sinh 30",
-    "classId": "class03"
+    "classId": "class03",
+    "dateOfBirth": "2010-10-03",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student031",
     "fullName": "Học sinh 31",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2011-06-21",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student032",
     "fullName": "Học sinh 32",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2009-10-08",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student033",
     "fullName": "Học sinh 33",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2011-02-28",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student034",
     "fullName": "Học sinh 34",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2011-09-13",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student035",
     "fullName": "Học sinh 35",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2011-12-24",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student036",
     "fullName": "Học sinh 36",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2009-08-19",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student037",
     "fullName": "Học sinh 37",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2009-11-27",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student038",
     "fullName": "Học sinh 38",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2009-04-22",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student039",
     "fullName": "Học sinh 39",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2010-01-07",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student040",
     "fullName": "Học sinh 40",
-    "classId": "class04"
+    "classId": "class04",
+    "dateOfBirth": "2009-06-06",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student041",
     "fullName": "Học sinh 41",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2010-04-06",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student042",
     "fullName": "Học sinh 42",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2009-12-17",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student043",
     "fullName": "Học sinh 43",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2010-06-16",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student044",
     "fullName": "Học sinh 44",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2009-07-05",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student045",
     "fullName": "Học sinh 45",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2011-08-02",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student046",
     "fullName": "Học sinh 46",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2010-02-05",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student047",
     "fullName": "Học sinh 47",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2011-04-24",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student048",
     "fullName": "Học sinh 48",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2009-08-02",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student049",
     "fullName": "Học sinh 49",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2011-04-20",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student050",
     "fullName": "Học sinh 50",
-    "classId": "class05"
+    "classId": "class05",
+    "dateOfBirth": "2009-09-14",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student051",
     "fullName": "Học sinh 51",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2010-07-29",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student052",
     "fullName": "Học sinh 52",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2010-01-16",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student053",
     "fullName": "Học sinh 53",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2011-07-06",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student054",
     "fullName": "Học sinh 54",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2009-07-21",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student055",
     "fullName": "Học sinh 55",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2011-09-13",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student056",
     "fullName": "Học sinh 56",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2009-04-14",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student057",
     "fullName": "Học sinh 57",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2010-02-03",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student058",
     "fullName": "Học sinh 58",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2010-04-02",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student059",
     "fullName": "Học sinh 59",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2011-02-19",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student060",
     "fullName": "Học sinh 60",
-    "classId": "class06"
+    "classId": "class06",
+    "dateOfBirth": "2009-11-07",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student061",
     "fullName": "Học sinh 61",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2011-08-03",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student062",
     "fullName": "Học sinh 62",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2010-11-24",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student063",
     "fullName": "Học sinh 63",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2010-03-16",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student064",
     "fullName": "Học sinh 64",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2011-08-16",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student065",
     "fullName": "Học sinh 65",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2011-04-30",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student066",
     "fullName": "Học sinh 66",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2009-11-29",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student067",
     "fullName": "Học sinh 67",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2010-06-11",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student068",
     "fullName": "Học sinh 68",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2011-04-11",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student069",
     "fullName": "Học sinh 69",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2011-11-23",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student070",
     "fullName": "Học sinh 70",
-    "classId": "class07"
+    "classId": "class07",
+    "dateOfBirth": "2010-01-12",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student071",
     "fullName": "Học sinh 71",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2009-06-02",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student072",
     "fullName": "Học sinh 72",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2011-03-18",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student073",
     "fullName": "Học sinh 73",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2010-08-12",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student074",
     "fullName": "Học sinh 74",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2009-11-02",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student075",
     "fullName": "Học sinh 75",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2009-01-30",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student076",
     "fullName": "Học sinh 76",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2010-12-17",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student077",
     "fullName": "Học sinh 77",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2010-04-26",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student078",
     "fullName": "Học sinh 78",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2009-04-23",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student079",
     "fullName": "Học sinh 79",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2011-01-03",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student080",
     "fullName": "Học sinh 80",
-    "classId": "class08"
+    "classId": "class08",
+    "dateOfBirth": "2009-06-29",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student081",
     "fullName": "Học sinh 81",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2011-09-28",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student082",
     "fullName": "Học sinh 82",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2011-03-30",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student083",
     "fullName": "Học sinh 83",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2010-02-24",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student084",
     "fullName": "Học sinh 84",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2010-07-13",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student085",
     "fullName": "Học sinh 85",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2009-11-04",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student086",
     "fullName": "Học sinh 86",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2009-07-24",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student087",
     "fullName": "Học sinh 87",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2009-10-26",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student088",
     "fullName": "Học sinh 88",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2010-02-16",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student089",
     "fullName": "Học sinh 89",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2009-03-11",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student090",
     "fullName": "Học sinh 90",
-    "classId": "class09"
+    "classId": "class09",
+    "dateOfBirth": "2009-01-23",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student091",
     "fullName": "Học sinh 91",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2011-05-07",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student092",
     "fullName": "Học sinh 92",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2011-02-19",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student093",
     "fullName": "Học sinh 93",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2009-04-05",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student094",
     "fullName": "Học sinh 94",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2010-04-30",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student095",
     "fullName": "Học sinh 95",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2010-09-17",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student096",
     "fullName": "Học sinh 96",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2011-02-28",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student097",
     "fullName": "Học sinh 97",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2010-02-11",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student098",
     "fullName": "Học sinh 98",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2009-09-22",
+    "gender": "Nữ",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student099",
     "fullName": "Học sinh 99",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2009-04-05",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   },
   {
     "id": "student100",
     "fullName": "Học sinh 100",
-    "classId": "class10"
+    "classId": "class10",
+    "dateOfBirth": "2009-03-28",
+    "gender": "Nam",
+    "academicYear": "2024-2025"
   }
 ]

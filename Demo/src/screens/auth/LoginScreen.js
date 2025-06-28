@@ -1,6 +1,6 @@
 // LoginScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Animated, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Animated, Alert, Image } from 'react-native';
 import { TextInput, Button, Text, HelperText, Card, Checkbox } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import LoadingScreen from '../LoadingSceen';
+import BrandingLogo from '../../assets/branding_guideline_sample_lt_rd_lg.svg';
 
 export default function LoginScreen({ navigation }) {
   const { signIn, signInWithGoogle, signOut, authError, loading: authLoading, initialized, loginInProgress, setLoading: setAuthLoading } = useAuth();
@@ -286,6 +287,7 @@ export default function LoginScreen({ navigation }) {
                       },
                     }}
                     error={error && !email.trim()}
+                    left={<TextInput.Icon icon="email-outline" />}
                   />
                 </View>
 
@@ -315,6 +317,7 @@ export default function LoginScreen({ navigation }) {
                       },
                     }}
                     error={error && !password}
+                    left={<TextInput.Icon icon="lock-outline" />}
                   />
                 </View>
 
@@ -323,6 +326,8 @@ export default function LoginScreen({ navigation }) {
                     status={rememberMe ? 'checked' : 'unchecked'}
                     onPress={() => setRememberMe(!rememberMe)}
                     color="#006A5C"
+                    uncheckedIcon="checkbox-blank-outline"
+                    checkedIcon="checkbox-marked"
                   />
                   <Text style={{ color: '#17375F', fontWeight: '500' }}>Nhớ tài khoản và mật khẩu</Text>
                 </View>
@@ -354,6 +359,7 @@ export default function LoginScreen({ navigation }) {
                 labelStyle={styles.loginButtonLabel}
                 buttonColor={authLoading ? '#E5E7EB' : '#7AE582'}
                 textColor="#17375F"
+                icon="login-variant"
               >
                 {authLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
               </Button>
@@ -371,18 +377,14 @@ export default function LoginScreen({ navigation }) {
 
           {/* Social Login */}
           <View style={styles.socialLoginContainer}>
-            <Button
-              mode="outlined"
-              style={styles.socialButton}
-              labelStyle={styles.socialButtonLabel}
+            <TouchableOpacity
               onPress={handleGoogleLogin}
-              loading={googleLoading}
               disabled={authLoading || googleLoading}
-              buttonColor={googleLoading ? '#006A5C' : '#FFFFFF'}
-              textColor={googleLoading ? '#FFFFFF' : '#006A5C'}
+              style={{ alignItems: 'center', opacity: (authLoading || googleLoading) ? 0.6 : 1 }}
+              activeOpacity={0.7}
             >
-              {googleLoading ? 'Đang đăng nhập...' : 'Google'}
-            </Button>
+              <BrandingLogo width={175} height={40} />
+            </TouchableOpacity>
           </View>
 
           {/* Footer */}

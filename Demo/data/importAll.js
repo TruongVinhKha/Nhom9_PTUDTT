@@ -215,9 +215,15 @@ async function importData() {
     for (const student of students) {
       try {
         await firestore.collection("students").doc(student.id).set({
-          ...student,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
+          fullName: student.fullName,
+          classId: student.classId,
+          dateOfBirth: student.dateOfBirth,
+          gender: student.gender,
+          academicYear: student.academicYear,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
+        console.log(`  ✅ Imported student: ${student.fullName}`);
       } catch (err) {
         console.error(`  ❌ Error importing student ${student.id}:`, err.message);
       }

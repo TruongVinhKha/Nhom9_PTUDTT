@@ -149,7 +149,7 @@ service cloud.firestore {
     // COMMENTS: Phụ huynh chỉ xem nhận xét của con mình
     match /comments/{commentId} {
       allow read: if isTeacherOrAdmin() || (isParent() && resource.data.studentId in getUserData().linkedStudentIds);
-      allow create: if isTeacherOrAdmin() && isValidComment(resource.data);
+      allow create: if isTeacherOrAdmin() && isValidComment(request.resource.data);
       allow update: if isTeacherOrAdmin() && isValidComment(resource.data);
       allow delete: if isTeacherOrAdmin();
 
