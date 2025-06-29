@@ -24,7 +24,7 @@ export default function CommentsScreen() {
         const snap = await firestore()
           .collection('comments')
           .where('studentId', '==', student.id)
-          .orderBy('timestamp', 'desc')
+          .orderBy('createdAt', 'desc')
           .get();
         const commentList = [];
         for (const doc of snap.docs) {
@@ -139,7 +139,7 @@ export default function CommentsScreen() {
               <Text style={styles.commentContent}>{comment.content}</Text>
               <View style={styles.commentFooter}>
                 <Icon name="schedule" size={16} color="#666" />
-                <Text style={styles.commentDate}>{formatDate(comment.timestamp)}</Text>
+                <Text style={styles.commentDate}>{formatDate(comment.createdAt)}</Text>
               </View>
             </TouchableOpacity>
           ))
@@ -217,14 +217,14 @@ const styles = StyleSheet.create({
   },
   unreadItem: { 
     borderLeftWidth: 6, 
-    borderLeftColor: '#006A5C', 
-    backgroundColor: '#FFFFFF',
+    borderLeftColor: '#FF6F00',
+    backgroundColor: '#FFE082',
     elevation: 3,
   },
   readItem: { 
     borderLeftWidth: 6, 
-    borderLeftColor: '#7AE582', 
-    backgroundColor: '#F8F9FA' 
+    borderLeftColor: '#4CAF50',
+    backgroundColor: '#F5F5F5'
   },
   commentHeader: {
     flexDirection: 'row',
@@ -252,10 +252,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   readBadge: {
-    backgroundColor: '#7AE582',
+    backgroundColor: '#4CAF50',
   },
   unreadBadge: {
-    backgroundColor: '#006A5C',
+    backgroundColor: '#FF6F00',
   },
   statusText: {
     fontSize: 10,

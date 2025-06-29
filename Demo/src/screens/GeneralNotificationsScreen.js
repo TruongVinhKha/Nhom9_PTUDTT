@@ -24,6 +24,7 @@ export default function GeneralNotificationsScreen() {
         const snap = await firestore()
           .collection('notificationsForClass')
           .where('classIds', 'array-contains', student.classId)
+          .orderBy('createdAt', 'desc')
           .get();
         const notiList = [];
         for (const doc of snap.docs) {
@@ -213,14 +214,14 @@ const styles = StyleSheet.create({
   },
   unreadItem: { 
     borderLeftWidth: 6, 
-    borderLeftColor: '#006A5C', 
-    backgroundColor: '#FFFFFF',
+    borderLeftColor: '#FF6F00',
+    backgroundColor: '#FFE082',
     elevation: 3,
   },
   readItem: { 
     borderLeftWidth: 6, 
-    borderLeftColor: '#7AE582', 
-    backgroundColor: '#F8F9FA' 
+    borderLeftColor: '#4CAF50',
+    backgroundColor: '#F5F5F5'
   },
   notiHeader: {
     flexDirection: 'row',
@@ -241,10 +242,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   readBadge: {
-    backgroundColor: '#7AE582',
+    backgroundColor: '#4CAF50',
   },
   unreadBadge: {
-    backgroundColor: '#006A5C',
+    backgroundColor: '#FF6F00',
   },
   statusText: {
     fontSize: 10,

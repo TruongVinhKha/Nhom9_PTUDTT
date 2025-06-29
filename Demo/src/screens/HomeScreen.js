@@ -16,7 +16,7 @@ import { useStudent } from '../contexts/StudentContext';
 function UserInfo({ user, selectedStudent }) {
   return (
     <View style={userInfoStyles.container}>
-      <MaterialIcons name="account-circle" size={48} color="#007AFF" style={{ marginRight: 12 }} />
+      <MaterialIcons name="account-circle" size={48} color="#00CAFF" style={{ marginRight: 12 }} />
       <View>
         <Text style={userInfoStyles.greeting}>Xin chào,</Text>
         <Text style={userInfoStyles.name}>Phụ huynh em: {selectedStudent?.fullName || '...'}</Text>
@@ -25,7 +25,16 @@ function UserInfo({ user, selectedStudent }) {
   );
 }
 const userInfoStyles = StyleSheet.create({
-  container: { flexDirection: 'row', alignItems: 'center', padding: 8, backgroundColor: '#FFFFFF', borderRadius: 12, margin: 8, elevation: 1 },
+  container: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 12, 
+    backgroundColor: '#F5ECD5', 
+    borderRadius: 12, 
+    marginHorizontal: 16, 
+    marginVertical: 8, 
+    elevation: 2 
+  },
   greeting: { fontSize: 16, color: '#17375F' },
   name: { fontSize: 18, fontWeight: 'bold', color: '#006A5C' },
 });
@@ -36,12 +45,14 @@ function StudentInfo({ students, onSelectStudent, selectedStudentIndex }) {
   const student = students[selectedStudentIndex || 0];
   return (
     <View style={studentInfoStyles.container}>
-      <Text style={studentInfoStyles.name}>{student.fullName}</Text>
-      <Text style={studentInfoStyles.class}>
-        {student.className || student.classId}
-        {student.academicYear ? ` (${student.academicYear})` : ''}
-      </Text>
-      <Text style={studentInfoStyles.school}>{student.schoolName || ''}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={studentInfoStyles.name}>{student.fullName}</Text>
+        <Text style={studentInfoStyles.class}>
+          {student.className || student.classId}
+          {student.academicYear ? ` (${student.academicYear})` : ''}
+        </Text>
+        <Text style={studentInfoStyles.school}>{student.schoolName || ''}</Text>
+      </View>
       {students.length > 1 && (
         <TouchableOpacity style={studentInfoStyles.button} onPress={onSelectStudent}>
           <Text style={studentInfoStyles.buttonText}>Chọn con</Text>
@@ -51,11 +62,29 @@ function StudentInfo({ students, onSelectStudent, selectedStudentIndex }) {
   );
 }
 const studentInfoStyles = StyleSheet.create({
-  container: { backgroundColor: '#F8F9FA', borderRadius: 8, padding: 12, margin: 8, elevation: 1, borderWidth: 1, borderColor: '#7AE582' },
-  name: { fontWeight: 'bold', fontSize: 16, color: '#17375F' },
-  class: { color: '#006A5C' },
-  school: { color: '#888' },
-  button: { marginTop: 8, backgroundColor: '#7AE582', borderRadius: 6, padding: 6, alignSelf: 'flex-start' },
+  container: { 
+    backgroundColor: '#578FCA', 
+    borderRadius: 12, 
+    padding: 12, 
+    marginHorizontal: 16, 
+    marginVertical: 8, 
+    elevation: 2, 
+    borderWidth: 1, 
+    borderColor: '#7AE582',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  name: { fontWeight: 'bold', fontSize: 16, color: '#FFFFFF' },
+  class: { color: '#F5ECD5' },
+  school: { color: '#F5ECD5' },
+  button: { 
+    backgroundColor: '#7AE582', 
+    borderRadius: 6, 
+    paddingVertical: 6, 
+    paddingHorizontal: 12, 
+    alignSelf: 'auto',
+  },
   buttonText: { color: '#17375F', fontWeight: 'bold' },
 });
 
@@ -74,7 +103,7 @@ function FavoriteUtilities({ onSelect }) {
       <View style={favoriteStyles.container}>
         {favorites.map((item, idx) => (
           <TouchableOpacity key={idx} style={favoriteStyles.item} onPress={() => onSelect(item.key)}>
-            <MaterialIcons name={item.icon} size={28} color="#007AFF" />
+            <MaterialIcons name={item.icon} size={28} color="#00FFDE" />
             <Text style={favoriteStyles.label}>{item.label}</Text>
           </TouchableOpacity>
         ))}
@@ -83,10 +112,19 @@ function FavoriteUtilities({ onSelect }) {
   );
 }
 const favoriteStyles = StyleSheet.create({
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 8 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 16 },
   title: { fontWeight: 'bold', fontSize: 16, color: '#17375F' },
-  customize: { color: '#007AFF', fontSize: 14 },
-  container: { flexDirection: 'row', flexWrap: 'wrap', marginVertical: 8 },
+  customize: { color: '#006A5C', fontSize: 14 },
+  container: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    marginHorizontal: 16, 
+    marginVertical: 8, 
+    backgroundColor: '#ECFAE5', 
+    borderRadius: 12, 
+    paddingVertical: 12, 
+    elevation: 2 
+  },
   item: { width: '33%', alignItems: 'center', marginVertical: 8 },
   label: { marginTop: 4, fontSize: 13, color: '#006A5C' },
 });
@@ -182,7 +220,7 @@ export default function HomeScreen() {
         const commentsSnap = await firestore()
           .collection('comments')
           .where('studentId', 'in', studentIds)
-          .orderBy('timestamp', 'desc')
+          .orderBy('createdAt', 'desc')
           .get();
         
         // Batch kiểm tra trạng thái đọc cho tất cả comments
@@ -343,66 +381,55 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Portal>
-        <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={modalStyles.container}>
-          <Text style={modalStyles.title}>Chọn học sinh</Text>
-          {students.map((student) => (
-            <List.Item
-              key={student.id}
-              title={student.fullName}
-              description={student.className || student.classId}
-              onPress={() => handleStudentPick(student)}
-              left={props => <List.Icon {...props} icon="account-child" />}
-              style={modalStyles.item}
-            />
-          ))}
-        </Modal>
-      </Portal>
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.headerContainer}>
-          <View style={styles.header}>
-            <View style={styles.userInfo}>
-              <Avatar.Text 
-                size={64} 
-                label={user?.email ? user.email.charAt(0).toUpperCase() : 'U'} 
-                style={styles.avatar}
-              />
-              <View style={styles.greetingContainer}>
-                <Text style={styles.greeting}>{getGreeting()},</Text>
-                <Text style={styles.userName}>{user?.fullName || user?.email?.split('@')[0] || 'Bạn'}!</Text>
-                <Text style={styles.subGreeting}>Hôm nay là {formatDate(new Date().toISOString())}</Text>
+      <View style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.headerContainer}>
+            <View style={styles.header}>
+              <View style={styles.userInfo}>
+                <Avatar.Text 
+                  size={64} 
+                  label={user?.email ? user.email.charAt(0).toUpperCase() : 'U'} 
+                  style={styles.avatar}
+                />
+                <View style={styles.greetingContainer}>
+                  <Text style={styles.greeting}>{getGreeting()},</Text>
+                  <Text style={styles.userName}>{user?.fullName || user?.email?.split('@')[0] || 'Bạn'}!</Text>
+                  <Text style={styles.subGreeting}>Hôm nay là {formatDate(new Date().toISOString())}</Text>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-        <Divider style={styles.divider} />
-        <UserInfo user={user} selectedStudent={selectedStudent} />
-        {selectedStudent && (
-          <View style={studentInfoStyles.container}>
-            <Text style={studentInfoStyles.name}>{selectedStudent.fullName}</Text>
-            <Text style={studentInfoStyles.class}>
-              {selectedStudent.className || selectedStudent.classId}
-              {selectedStudent.academicYear ? ` (${selectedStudent.academicYear})` : ''}
-            </Text>
-            <Text style={studentInfoStyles.school}>{selectedStudent.schoolName || ''}</Text>
-            {students.length > 1 && (
-              <TouchableOpacity style={studentInfoStyles.button} onPress={handleSelectStudent}>
-                <Text style={studentInfoStyles.buttonText}>Chọn con</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-        <FavoriteUtilities onSelect={handleFeatureSelect} />
+          <Divider style={styles.divider} />
+          <UserInfo user={user} selectedStudent={selectedStudent} />
+          {selectedStudent && (
+            <View style={studentInfoStyles.container}>
+              <View style={{ flex: 1 }}>
+                <Text style={studentInfoStyles.name}>{selectedStudent.fullName}</Text>
+                <Text style={studentInfoStyles.class}>
+                  {selectedStudent.className || selectedStudent.classId}
+                  {selectedStudent.academicYear ? ` (${selectedStudent.academicYear})` : ''}
+                </Text>
+                <Text style={studentInfoStyles.school}>{selectedStudent.schoolName || ''}</Text>
+              </View>
+              {students.length > 1 && (
+                <TouchableOpacity style={studentInfoStyles.button} onPress={handleSelectStudent}>
+                  <Text style={studentInfoStyles.buttonText}>Chọn con</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+          <FavoriteUtilities onSelect={handleFeatureSelect} />
+        </ScrollView>
         <Button 
           mode="outlined" 
           onPress={signOut} 
           style={styles.signOutButton}
-          textColor="#D32F2F"
+          textColor="#006A5C"
           buttonColor="transparent"
         >
           Đăng xuất
         </Button>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -413,7 +440,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   scrollContent: {
-    paddingBottom: 32,
+    paddingBottom: 80,
   },
   headerContainer: {
     backgroundColor: '#17375F',
@@ -461,15 +488,15 @@ const styles = StyleSheet.create({
   },
   signOutButton: {
     marginHorizontal: 16,
-    marginTop: 16,
-    borderColor: '#D32F2F',
+    marginBottom: 16,
+    borderColor: '#006A5C',
     borderWidth: 1,
   },
 });
 
 const modalStyles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 20,
     margin: 20,
     borderRadius: 12,
@@ -483,6 +510,6 @@ const modalStyles = StyleSheet.create({
   },
   item: {
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#7AE582',
   },
 });

@@ -152,19 +152,22 @@ export default function LoginScreen({ navigation }) {
       
     } catch (e) {
       console.log('❌ Lỗi đăng nhập:', e);
-      
       if (e.code === 'firestore/permission-denied' || (e.message && e.message.includes('permission-denied'))) {
         setError('Bạn không có quyền truy cập hệ thống. Vui lòng liên hệ nhà trường để được hỗ trợ.');
       } else if (e.code === 'auth/user-not-found') {
         setError('Tài khoản không tồn tại. Vui lòng kiểm tra lại email.');
-      } else if (e.code === 'auth/wrong-password') {
+      } else if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
         setError('Mật khẩu không đúng. Vui lòng thử lại.');
       } else if (e.code === 'auth/invalid-email') {
         setError('Email không hợp lệ. Vui lòng kiểm tra lại.');
       } else if (e.code === 'auth/too-many-requests') {
-        setError('Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau.');
+        setError('Bạn đã nhập sai quá nhiều lần. Tài khoản tạm thời bị khóa, vui lòng thử lại sau hoặc sử dụng chức năng quên mật khẩu.');
+      } else if (e.code === 'auth/network-request-failed') {
+        setError('Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại.');
+      } else if (e.code === 'auth/user-disabled') {
+        setError('Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ nhà trường để được hỗ trợ.');
       } else {
-        setError(e.message || 'Lỗi đăng nhập. Vui lòng thử lại.');
+        setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin hoặc thử lại sau.');
       }
     } finally {
       setAuthLoading(false);

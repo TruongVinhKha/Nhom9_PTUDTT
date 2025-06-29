@@ -53,6 +53,16 @@ export default function ProfileScreen() {
     }
   };
 
+  function formatDateVN(dateString) {
+    if (!dateString) return '---';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ paddingBottom: 32 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#17375F', borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>
@@ -72,7 +82,7 @@ export default function ProfileScreen() {
         <Text style={styles.value}>{user?.email || '---'}</Text>
         <Text style={styles.label}>Số điện thoại:</Text>
         <Text style={styles.value}>{user?.phone || '---'}</Text>
-        <Button mode="outlined" style={styles.changePassBtn} onPress={() => setModalVisible(true)}>
+        <Button mode="outlined" style={styles.changePassBtn} onPress={() => setModalVisible(true)} textColor="#FE7743">
           Đổi mật khẩu
         </Button>
       </View>
@@ -85,13 +95,13 @@ export default function ProfileScreen() {
             <Text style={styles.childInfo}>Mã học sinh: {student.id || '---'}</Text>
             <Text style={styles.childInfo}>Lớp: {student.className || student.classId || '---'}</Text>
             <Text style={styles.childInfo}>Năm học: {student.academicYear || '---'}</Text>
-            <Text style={styles.childInfo}>Ngày sinh: {student.dateOfBirth || '---'}</Text>
+            <Text style={styles.childInfo}>Ngày sinh: {formatDateVN(student.dateOfBirth)}</Text>
             <Text style={styles.childInfo}>Giới tính: {student.gender || '---'}</Text>
             {teacherMap[student.classId] && (
               <View style={styles.teacherBox}>
                 <Text style={styles.teacherTitle}>Giáo viên chủ nhiệm:</Text>
                 <View style={styles.teacherRow}>
-                  <Avatar.Image size={40} source={{ uri: teacherMap[student.classId].avatar }} />
+                  <Avatar.Icon size={40} icon="account" style={{ backgroundColor: '#5F8B4C' }} color="#fff" />
                   <View style={{ marginLeft: 10 }}>
                     <Text style={styles.teacherName}>{teacherMap[student.classId].fullName}</Text>
                     <Text style={styles.teacherInfo}>Email: {teacherMap[student.classId].email}</Text>
@@ -124,22 +134,22 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#F8F9FA' },
+  screen: { flex: 1, backgroundColor: '#FFFFFF' },
   header: { backgroundColor: '#17375F', padding: 24, borderBottomLeftRadius: 18, borderBottomRightRadius: 18, alignItems: 'center' },
   headerTitle: { color: '#FFFFFF', fontSize: 22, fontWeight: 'bold', marginTop: 8 },
-  section: { backgroundColor: '#fff', borderRadius: 12, margin: 16, padding: 16, elevation: 2 },
+  section: { backgroundColor: '#ECFAE5', borderRadius: 12, margin: 16, padding: 16, elevation: 2 },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#006A5C', marginBottom: 8 },
   label: { fontSize: 14, color: '#17375F', fontWeight: 'bold', marginTop: 8 },
-  value: { fontSize: 15, color: '#000', marginBottom: 4 },
+  value: { fontSize: 15, color: '#17375F', marginBottom: 4 },
   changePassBtn: { marginTop: 16, borderColor: '#006A5C' },
-  childCard: { backgroundColor: '#E8F5E9', borderRadius: 10, padding: 12, marginBottom: 12 },
+  childCard: { backgroundColor: '#DDF6D2', borderRadius: 12, padding: 12, marginBottom: 12 },
   childName: { fontWeight: 'bold', fontSize: 16, color: '#17375F' },
   childInfo: { color: '#006A5C', fontSize: 13, marginBottom: 2 },
-  teacherBox: { backgroundColor: '#fff', borderRadius: 8, padding: 8, marginTop: 8, borderWidth: 1, borderColor: '#7AE582' },
+  teacherBox: { backgroundColor: '#CAE8BD', borderRadius: 12, padding: 8, marginTop: 8, borderWidth: 1, borderColor: '#B0DB9C' },
   teacherTitle: { fontWeight: 'bold', color: '#17375F', marginBottom: 4 },
   teacherRow: { flexDirection: 'row', alignItems: 'center' },
   teacherName: { fontWeight: 'bold', color: '#006A5C' },
   teacherInfo: { color: '#17375F', fontSize: 13 },
-  modalContainer: { backgroundColor: '#fff', padding: 24, margin: 24, borderRadius: 12 },
+  modalContainer: { backgroundColor: '#FFFFFF', padding: 24, margin: 24, borderRadius: 12 },
   modalTitle: { fontWeight: 'bold', fontSize: 18, color: '#17375F', marginBottom: 16, textAlign: 'center' },
 }); 
