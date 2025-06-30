@@ -89,23 +89,28 @@ function getRatingScore(rating) {
 }
 
 // Hàm tạo comment với cấu trúc tối ưu
-function createOptimizedComment(commentData) {
+function createOptimizedComment(commentData, studentsMap, teachersMap, classesMap) {
+  // Lấy thông tin từ các map
+  const student = studentsMap[commentData.studentId];
+  const teacher = teachersMap[commentData.teacherId];
+  const classInfo = classesMap[commentData.classId];
+  
   return {
     // Core data
     content: commentData.content,
     studentId: commentData.studentId,
-    studentName: commentData.studentName,
+    studentName: student ? student.fullName : null,
     teacherId: commentData.teacherId,
-    teacherName: commentData.teacherName,
+    teacherName: teacher ? teacher.fullName : null,
     classId: commentData.classId,
-    className: commentData.className,
-    parentId: commentData.parentId,
-    parentName: commentData.parentName,
+    className: classInfo ? classInfo.name : null,
+    parentId: null, // Sẽ được set sau khi có thông tin parent
+    parentName: null, // Sẽ được set sau khi có thông tin parent
     subject: commentData.subject,
     
     // Metadata
-    timestamp: commentData.timestamp ? new Date(commentData.timestamp) : admin.firestore.FieldValue.serverTimestamp(),
-    createdAt: commentData.createdAt || commentData.timestamp || new Date().toISOString(),
+    timestamp: commentData.createdAt ? new Date(commentData.createdAt) : admin.firestore.FieldValue.serverTimestamp(),
+    createdAt: commentData.createdAt || new Date().toISOString(),
     updatedAt: null,
     
     // Status & Rating
@@ -117,8 +122,8 @@ function createOptimizedComment(commentData) {
     tags: generateTags(commentData.content, commentData.subject),
     
     // Analytics
-    viewCount: commentData.viewCount || 0,
-    replyCount: commentData.replyCount || 0,
+    viewCount: 0,
+    replyCount: 0,
     
     // Soft delete
     isDeleted: false,
@@ -215,9 +220,15 @@ async function importData() {
     for (const student of students) {
       try {
         await firestore.collection("students").doc(student.id).set({
-          ...student,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
+          fullName: student.fullName,
+          classId: student.classId,
+          dateOfBirth: student.dateOfBirth,
+          gender: student.gender,
+          academicYear: student.academicYear,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
         });
+        console.log(`  ✅ Imported student: ${student.fullName}`);
       } catch (err) {
         console.error(`  ❌ Error importing student ${student.id}:`, err.message);
       }
@@ -240,13 +251,42 @@ async function importData() {
 
     // 5. Import Comments với cấu trúc tối ưu
     console.log('\n💬 Importing Comments...');
+    
+    // Tạo map để truy cập nhanh thông tin
+    const studentsMap = {};
+    students.forEach(student => {
+      studentsMap[student.id] = student;
+    });
+    
+    const teachersMap = {};
+    teachers.forEach(teacher => {
+      teachersMap[teacher.id] = teacher;
+      // Map thêm teacher001 -> teacher1 để tương thích với comments
+      if (teacher.id === 'teacher1') {
+        teachersMap['teacher001'] = teacher;
+      }
+    });
+    
+    const classesMap = {};
+    classes.forEach(classData => {
+      classesMap[classData.id] = classData;
+    });
+    
     // Lấy danh sách tất cả parentId
     const allParentIds = users.filter(u => u.role === 'parent').map(u => u.email.split('@')[0].replace('example.com', '').replace(/[^a-zA-Z0-9]/g, ''));
+    
     for (const commentData of comments) {
       try {
-        const optimizedComment = createOptimizedComment(commentData);
+        const optimizedComment = createOptimizedComment(commentData, studentsMap, teachersMap, classesMap);
         const commentId = commentData.id || `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        await firestore.collection("comments").doc(commentId).set(optimizedComment);
+        
+        // Loại bỏ các trường undefined trước khi lưu
+        const cleanComment = Object.fromEntries(
+          Object.entries(optimizedComment).filter(([_, value]) => value !== undefined)
+        );
+        
+        await firestore.collection("comments").doc(commentId).set(cleanComment);
+        
         // Tạo subcollection isRead cho tất cả parent
         for (const parentId of allParentIds) {
           await firestore.collection("comments").doc(commentId).collection("isRead").doc(parentId).set({
@@ -254,6 +294,8 @@ async function importData() {
             readAt: null
           });
         }
+        
+        console.log(`  ✅ Imported comment: ${commentId}`);
       } catch (err) {
         console.error(`  ❌ Error importing comment ${commentData.id}:`, err.message);
       }
