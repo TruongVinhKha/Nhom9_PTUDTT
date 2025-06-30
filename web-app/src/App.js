@@ -89,7 +89,7 @@ function AppContent() {
 
   // Nếu là admin thì vào luôn dashboard admin
   if (userData && userData.role === 'admin') {
-    return <AdminDashboard onBack={() => auth.signOut()} currentUser={user} />;
+    return <AdminDashboard onBack={() => auth.signOut()} currentUser={user} userData={userData} />;
   }
 
   // Nếu là teacher thì vào TeacherDashboard
@@ -101,9 +101,9 @@ function AppContent() {
   return (
     <div className="App" style={{ minHeight: '100vh', background: '#f7fafd', padding: '20px' }}>
       {!selectedClass ? (
-        <ClassList onSelectClass={setSelectedClass} onBack={() => auth.signOut()} />
+        <ClassList onSelectClass={setSelectedClass} userData={userData} />
       ) : !selectedStudent ? (
-        <StudentList classId={selectedClass.id} onSelectStudent={setSelectedStudent} onBack={() => setSelectedClass(null)} />
+        <StudentList classId={selectedClass.id} onSelectStudent={setSelectedStudent} />
       ) : (
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <CommentHistory 
@@ -113,7 +113,9 @@ function AppContent() {
               <AddComment 
                 student={selectedStudent} 
                 onCommentAdded={addNewComment} 
-                onBack={() => setSelectedStudent(null)} 
+                onBack={() => setSelectedStudent(null)}
+                currentUser={user}
+                userData={userData}
               />
             )}
           />

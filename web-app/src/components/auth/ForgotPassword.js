@@ -1,55 +1,35 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { auth } from '../../firebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, getDoc } from "firebase/firestore";
-import { db } from '../../firebaseConfig';
-import ForgotPassword from './ForgotPassword';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
-export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) {
+export default function ForgotPassword({ onSwitchToLogin }) {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      // Lấy thông tin user từ Firestore
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (!userDoc.exists() || (userDoc.data().role !== "teacher" && userDoc.data().role !== "admin")) {
-        await auth.signOut();
-        setError("Chỉ giáo viên hoặc admin mới được phép đăng nhập.");
-        setLoading(false);
-        return;
-      }
-      
-      // Nếu là admin, lưu password để sử dụng sau này
-      if (userDoc.data().role === "admin") {
-        localStorage.setItem('adminPassword', password);
-      }
-      
-      // Nếu là teacher thì cho đăng nhập bình thường
+      await sendPasswordResetEmail(auth, email);
+      setSuccess('Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư của bạn.');
     } catch (error) {
-      console.error('Lỗi đăng nhập:', error);
-      setError('Email hoặc mật khẩu không đúng. Vui lòng thử lại.');
+      console.error('Lỗi gửi email đặt lại mật khẩu:', error);
+      if (error.code === 'auth/user-not-found') {
+        setError('Email này chưa được đăng ký trong hệ thống.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Email không hợp lệ. Vui lòng kiểm tra lại.');
+      } else {
+        setError('Có lỗi xảy ra khi gửi email. Vui lòng thử lại.');
+      }
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleForgotPassword = () => {
-    setShowForgotPassword(true);
-  };
-
-  const handleCloseForgotPassword = () => {
-    setShowForgotPassword(false);
   };
 
   // Animation variants
@@ -120,24 +100,10 @@ export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) 
     }
   };
 
-  // Nếu đang hiển thị modal quên mật khẩu
-  if (showForgotPassword) {
-    return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <ForgotPassword onSwitchToLogin={handleCloseForgotPassword} />
-      </motion.div>
-    );
-  }
-
   return (
     <motion.div 
       style={{
-        maxWidth: 400,
+        maxWidth: 500,
         margin: '40px auto',
         padding: '40px 30px',
         background: 'rgba(255,255,255,0.95)',
@@ -172,7 +138,7 @@ export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) 
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
         >
-          <span style={{ fontSize: 32, color: 'white' }}>🎓</span>
+          <span style={{ fontSize: 32, color: 'white' }}>🔑</span>
         </motion.div>
         <motion.h2 
           style={{
@@ -185,18 +151,19 @@ export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) 
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          Đăng nhập
+          Quên mật khẩu
         </motion.h2>
         <motion.div 
           style={{
             color: '#718096',
-            fontSize: 16
+            fontSize: 16,
+            lineHeight: 1.5
           }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          Chào mừng bạn trở lại với EduTrack
+          Nhập email của bạn để nhận link đặt lại mật khẩu
         </motion.div>
       </motion.div>
 
@@ -207,7 +174,7 @@ export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) 
         animate="visible"
       >
         <motion.div 
-          style={{ marginBottom: 20 }}
+          style={{ marginBottom: 24 }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.7 }}
@@ -227,45 +194,6 @@ export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) 
             onChange={(e) => setEmail(e.target.value)}
             required
             placeholder="Nhập email của bạn..."
-            style={{
-              width: '100%',
-              padding: '16px',
-              borderRadius: 12,
-              border: '2px solid #e2e8f0',
-              fontSize: 16,
-              color: '#2d3748',
-              background: 'rgba(255,255,255,0.8)',
-              boxSizing: 'border-box'
-            }}
-            variants={inputVariants}
-            initial="blur"
-            whileFocus="focus"
-            whileBlur="blur"
-            disabled={loading}
-          />
-        </motion.div>
-
-        <motion.div 
-          style={{ marginBottom: 24 }}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.8 }}
-        >
-          <label style={{
-            display: 'block',
-            marginBottom: 8,
-            fontSize: 14,
-            fontWeight: 600,
-            color: '#2d3748'
-          }}>
-            🔒 Mật khẩu
-          </label>
-          <motion.input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="Nhập mật khẩu của bạn..."
             style={{
               width: '100%',
               padding: '16px',
@@ -306,11 +234,39 @@ export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) 
           )}
         </AnimatePresence>
 
+        <AnimatePresence>
+          {success && (
+            <motion.div 
+              style={{
+                padding: '16px',
+                background: 'rgba(72, 187, 120, 0.1)',
+                border: '1px solid rgba(72, 187, 120, 0.2)',
+                borderRadius: 12,
+                color: '#48bb78',
+                fontSize: 14,
+                marginBottom: 20,
+                lineHeight: 1.5
+              }}
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div style={{ fontWeight: 600, marginBottom: 8 }}>✅ {success}</div>
+              <div style={{ fontSize: 13, color: '#38a169' }}>
+                📧 Kiểm tra hộp thư đến và thư mục spam<br/>
+                🔗 Click vào link trong email để đặt lại mật khẩu<br/>
+                ⏰ Link có hiệu lực trong 1 giờ
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div 
           style={{ marginBottom: 24 }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
+          transition={{ delay: 0.8 }}
         >
           <motion.button
             type="submit"
@@ -356,29 +312,23 @@ export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) 
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 />
-                Đang đăng nhập...
+                Đang gửi email...
               </motion.div>
             ) : (
-              '🚀 Đăng nhập'
+              '📧 Gửi email đặt lại mật khẩu'
             )}
           </motion.button>
         </motion.div>
 
         <motion.div 
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 12
-          }}
+          style={{ textAlign: 'center' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.0 }}
+          transition={{ delay: 0.9 }}
         >
           <motion.button
             type="button"
-            onClick={handleForgotPassword}
+            onClick={onSwitchToLogin}
             style={{
               background: 'none',
               border: 'none',
@@ -391,28 +341,10 @@ export default function Login({ onSwitchToRegister, onSwitchToForgotPassword }) 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            🔑 Quên mật khẩu?
-          </motion.button>
-          
-          <motion.button
-            type="button"
-            onClick={onSwitchToRegister}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#667eea',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              textDecoration: 'underline'
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            📝 Tạo tài khoản mới
+            🔙 Quay lại đăng nhập
           </motion.button>
         </motion.div>
       </motion.form>
     </motion.div>
   );
-}
+} 

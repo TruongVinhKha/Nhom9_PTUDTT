@@ -3,15 +3,18 @@ import { db } from '../../firebaseConfig';
 import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import UpdateForm from '../common/UpdateForm';
 import Modal from '../common/Modal';
+import CreateUserForm from './CreateUserForm';
 
 export default function UserManager() {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [deletingId, setDeletingId] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [processingId, setProcessingId] = useState(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
   
   // Search và Sort states
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,13 +76,28 @@ export default function UserManager() {
     setFilteredUsers(filtered);
   }, [users, searchTerm, sortBy, sortOrder, roleFilter]);
 
+  // Ẩn thông báo sau 4 giây
+  useEffect(() => {
+    if (success || error) {
+      const timer = setTimeout(() => {
+        setSuccess('');
+        setError('');
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, error]);
+
   const fetchUsers = async () => {
     setLoading(true);
     setError('');
     try {
+      console.log('🔄 Bắt đầu fetch users...');
       const querySnapshot = await getDocs(collection(db, 'users'));
-      setUsers(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const usersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log(`✅ Fetch thành công ${usersData.length} users`);
+      setUsers(usersData);
     } catch (err) {
+      console.error('❌ Lỗi khi fetch users:', err);
       setError('Lỗi khi tải danh sách tài khoản: ' + err.message);
     }
     setLoading(false);
@@ -91,8 +109,11 @@ export default function UserManager() {
     try {
       await deleteDoc(doc(db, 'users', id));
       setUsers(users.filter(u => u.id !== id));
+      setSuccess('Xóa tài khoản thành công!');
+      setError('');
     } catch (err) {
-      alert('Lỗi khi xóa tài khoản: ' + err.message);
+      setError('Lỗi khi xóa tài khoản: ' + err.message);
+      setSuccess('');
     }
     setDeletingId(null);
   };
@@ -109,8 +130,11 @@ export default function UserManager() {
       await updateDoc(doc(db, 'users', editingUser.id), dataToUpdate);
       setEditingUser(null);
       fetchUsers();
+      setSuccess('Cập nhật tài khoản thành công!');
+      setError('');
     } catch (err) {
-      alert('Lỗi khi cập nhật tài khoản: ' + err.message);
+      setError('Lỗi khi cập nhật tài khoản: ' + err.message);
+      setSuccess('');
     }
     setProcessingId(null);
   };
@@ -178,16 +202,75 @@ export default function UserManager() {
       boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
       border: '1px solid rgba(255,255,255,0.2)'
     }}>
+      {/* Thông báo thành công/thất bại */}
+      {success && (
+        <div style={{
+          padding: '16px',
+          background: 'linear-gradient(135deg, #c6f6d5 0%, #38a169 100%)',
+          borderRadius: 14,
+          marginBottom: 24,
+          border: '1.5px solid #38a169',
+          color: '#22543d',
+          fontWeight: 700,
+          fontSize: 17,
+          boxShadow: '0 4px 18px rgba(56, 161, 105, 0.13)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10
+        }}>
+          <span style={{ fontSize: 22 }}>✅</span> {success}
+        </div>
+      )}
+      {error && (
+        <div style={{
+          padding: '16px',
+          background: 'linear-gradient(135deg, #fed7d7 0%, #e53e3e 100%)',
+          borderRadius: 14,
+          marginBottom: 24,
+          border: '1.5px solid #e53e3e',
+          color: '#c53030',
+          fontWeight: 700,
+          fontSize: 17,
+          boxShadow: '0 4px 18px rgba(229, 62, 62, 0.13)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10
+        }}>
+          <span style={{ fontSize: 22 }}>⚠️</span> {error}
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
-        <h3 style={{ 
-          color: '#2d3748', 
-          margin: '0 0 8px 0',
-          fontSize: 28,
-          fontWeight: 700
-        }}>
-          Quản lý tài khoản
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h3 style={{ 
+            color: '#2d3748', 
+            margin: 0,
+            fontSize: 28,
+            fontWeight: 700
+          }}>
+            Quản lý tài khoản
+          </h3>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            style={{
+              padding: '12px 24px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 12,
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}
+          >
+            ➕ Tạo tài khoản mới
+          </button>
+        </div>
         <div style={{ 
           color: '#718096',
           fontSize: 16
@@ -201,6 +284,16 @@ export default function UserManager() {
           )}
         </div>
       </div>
+
+      {/* Create User Modal */}
+      {showCreateForm && (
+        <Modal open={showCreateForm} onClose={() => setShowCreateForm(false)}>
+          <CreateUserForm 
+            onUserCreated={fetchUsers}
+            onCancel={() => setShowCreateForm(false)}
+          />
+        </Modal>
+      )}
 
       {/* Search và Sort Controls */}
       <div style={{ 
@@ -331,6 +424,7 @@ export default function UserManager() {
               <Modal open={!!editingUser} onClose={() => setEditingUser(null)}>
                 <UpdateForm
                   data={editingUser}
+                  exclude={['id', 'createdAt', 'uid']}
                   onChange={setEditingUser}
                   onSubmit={handleUpdate}
                   onCancel={() => setEditingUser(null)}
@@ -347,14 +441,26 @@ export default function UserManager() {
                     wordBreak: 'break-all',
                     marginBottom: 4
                   }}>
-                    {user.email}
+                    {user.fullName || user.email}
                   </div>
                   <div style={{ 
                     color: '#718096', 
                     fontSize: 14,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8
+                    gap: 8,
+                    marginBottom: 4
+                  }}>
+                    <span>Email:</span>
+                    <span style={{ color: '#2d3748' }}>{user.email}</span>
+                  </div>
+                  <div style={{ 
+                    color: '#718096', 
+                    fontSize: 14,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    marginBottom: 4
                   }}>
                     <span>Vai trò:</span>
                     <span style={{
@@ -369,6 +475,18 @@ export default function UserManager() {
                       {user.role || 'teacher'}
                     </span>
                   </div>
+                  {user.phone && (
+                    <div style={{ 
+                      color: '#718096', 
+                      fontSize: 14,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8
+                    }}>
+                      <span>SĐT:</span>
+                      <span style={{ color: '#2d3748' }}>{user.phone}</span>
+                    </div>
+                  )}
                 </div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button 

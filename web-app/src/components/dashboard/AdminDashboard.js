@@ -16,7 +16,7 @@ const TABS = [
   { key: 'users', label: 'Quản lý tài khoản' },
 ];
 
-export default function AdminDashboard({ onBack, currentUser }) {
+export default function AdminDashboard({ onBack, currentUser, userData }) {
   const [tab, setTab] = useState('students');
   const [notificationView, setNotificationView] = useState('list'); // 'list' or 'create'
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -30,7 +30,8 @@ export default function AdminDashboard({ onBack, currentUser }) {
     if (notificationView === 'create') {
       return (
         <NotificationManager 
-          currentUser={currentUser} 
+          currentUser={currentUser}
+          userData={userData}
           onNotificationCreated={handleNotificationCreated}
         />
       );
@@ -57,8 +58,8 @@ export default function AdminDashboard({ onBack, currentUser }) {
             </button>
           </div>
           <NotificationList 
-            currentUser={currentUser} 
-            onBack={() => setNotificationView('create')}
+            currentUser={currentUser}
+            userData={userData}
           />
         </div>
       );

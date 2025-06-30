@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../firebaseConfig';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import UpdateForm from '../common/UpdateForm';
 import Modal from '../common/Modal';
 
@@ -8,13 +8,25 @@ export default function ClassManager() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [newClassName, setNewClassName] = useState('');
+  const [newTeacherId, setNewTeacherId] = useState('');
   const [editingClass, setEditingClass] = useState(null);
   const [processingId, setProcessingId] = useState(null);
 
   useEffect(() => {
     fetchClasses();
   }, []);
+
+  useEffect(() => {
+    if (success || error) {
+      const timer = setTimeout(() => {
+        setSuccess('');
+        setError('');
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, error]);
 
   const fetchClasses = async () => {
     setLoading(true);
@@ -30,14 +42,23 @@ export default function ClassManager() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!newClassName.trim()) return;
+    if (!newClassName.trim() || !newTeacherId.trim()) return;
     setProcessingId('add');
     try {
-      await addDoc(collection(db, 'classes'), { name: newClassName.trim() });
+      const docRef = await addDoc(collection(db, 'classes'), {
+        name: newClassName.trim(),
+        teacherId: newTeacherId.trim(),
+        createdAt: serverTimestamp()
+      });
+      await updateDoc(docRef, { id: docRef.id });
       setNewClassName('');
+      setNewTeacherId('');
       fetchClasses();
+      setSuccess('Thêm lớp thành công!');
+      setError('');
     } catch (err) {
       setError('Lỗi khi thêm lớp: ' + err.message);
+      setSuccess('');
     }
     setProcessingId(null);
   };
@@ -54,8 +75,11 @@ export default function ClassManager() {
       await updateDoc(doc(db, 'classes', editingClass.id), dataToUpdate);
       setEditingClass(null);
       fetchClasses();
+      setSuccess('Cập nhật lớp thành công!');
+      setError('');
     } catch (err) {
       setError('Lỗi khi cập nhật lớp: ' + err.message);
+      setSuccess('');
     }
     setProcessingId(null);
   };
@@ -66,8 +90,11 @@ export default function ClassManager() {
     try {
       await deleteDoc(doc(db, 'classes', id));
       fetchClasses();
+      setSuccess('Xóa lớp thành công!');
+      setError('');
     } catch (err) {
       setError('Lỗi khi xóa lớp: ' + err.message);
+      setSuccess('');
     }
     setProcessingId(null);
   };
@@ -77,6 +104,42 @@ export default function ClassManager() {
 
   return (
     <div>
+      {success && (
+        <div style={{
+          padding: '16px',
+          background: 'linear-gradient(135deg, #c6f6d5 0%, #38a169 100%)',
+          borderRadius: 14,
+          marginBottom: 24,
+          border: '1.5px solid #38a169',
+          color: '#22543d',
+          fontWeight: 700,
+          fontSize: 17,
+          boxShadow: '0 4px 18px rgba(56, 161, 105, 0.13)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10
+        }}>
+          <span style={{ fontSize: 22 }}>✅</span> {success}
+        </div>
+      )}
+      {error && (
+        <div style={{
+          padding: '16px',
+          background: 'linear-gradient(135deg, #fed7d7 0%, #e53e3e 100%)',
+          borderRadius: 14,
+          marginBottom: 24,
+          border: '1.5px solid #e53e3e',
+          color: '#c53030',
+          fontWeight: 700,
+          fontSize: 17,
+          boxShadow: '0 4px 18px rgba(229, 62, 62, 0.13)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10
+        }}>
+          <span style={{ fontSize: 22 }}>⚠️</span> {error}
+        </div>
+      )}
       <h3 style={{ color: '#2d3748', marginBottom: 20 }}>Danh sách lớp học</h3>
       <form onSubmit={handleAdd} style={{ marginBottom: 24, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <input
@@ -84,6 +147,14 @@ export default function ClassManager() {
           value={newClassName}
           onChange={e => setNewClassName(e.target.value)}
           placeholder="Tên lớp mới"
+          className="input-field"
+          style={{ flex: 1, minWidth: 0 }}
+        />
+        <input
+          type="text"
+          value={newTeacherId}
+          onChange={e => setNewTeacherId(e.target.value)}
+          placeholder="Giáo viên dạy lớp (ID hoặc tên)"
           className="input-field"
           style={{ flex: 1, minWidth: 0 }}
         />

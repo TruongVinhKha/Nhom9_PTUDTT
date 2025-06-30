@@ -5,50 +5,35 @@ import {
   query, 
   where, 
   orderBy,
-  deleteDoc,
-  doc,
-  getDoc
+  updateDoc,
+  serverTimestamp,
+  doc
 } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function NotificationList({ currentUser, onBack }) {
+export default function NotificationList({ currentUser, userData }) {
   const [notifications, setNotifications] = useState([]);
   const [multiNotifications, setMultiNotifications] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all'); // all, single, multiple
   const [deletingId, setDeletingId] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  const [editingNotification, setEditingNotification] = useState(null);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    content: ''
+  });
+  const [updatingId, setUpdatingId] = useState(null);
+  const [sortOrder, setSortOrder] = useState('desc'); // 'desc' = mới nhất, 'asc' = cũ nhất
+  const [success, setSuccess] = useState('');
 
-  // Lấy role của user từ Firestore
-  useEffect(() => {
-    const getUserRole = async () => {
-      try {
-        if (currentUser.role) {
-          setUserRole(currentUser.role);
-          return;
-        }
-
-        // Nếu không có role trong currentUser, lấy từ Firestore
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          setUserRole(userData.role);
-        } else {
-          setUserRole('teacher'); // Default role
-        }
-      } catch (err) {
-        console.error('Error getting user role:', err);
-        setUserRole('teacher'); // Default role
-      }
-    };
-
-    getUserRole();
-  }, [currentUser]);
+  // Thêm filter UI cho admin
+  const isAdmin = userData?.role === 'admin';
 
   // Load notifications
   useEffect(() => {
-    if (!userRole) return; // Đợi lấy role trước
+    if (!currentUser || !userData) return; // Đợi userData load xong
 
     const fetchNotifications = async () => {
       try {
@@ -56,115 +41,180 @@ export default function NotificationList({ currentUser, onBack }) {
         setError('');
 
         // Kiểm tra role của user hiện tại
-        const isAdmin = userRole === 'admin';
+        const isAdmin = userData.role === 'admin';
+        const isTeacher = userData.role === 'teacher';
         
         console.log('🔍 Current User Info:', {
           uid: currentUser.uid,
           email: currentUser.email,
-          role: userRole,
-          isAdmin: isAdmin
+          role: userData.role,
+          fullName: userData.fullName,
+          isAdmin: isAdmin,
+          isTeacher: isTeacher
         });
-
-        // Tìm teacherId dựa trên email
-        let teacherId = null;
-        if (!isAdmin && currentUser.email) {
-          // Map email sang teacherId
-          const emailToTeacherId = {
-            'teacher1@example.com': 'teacher1',
-            'teacher2@example.com': 'teacher2', 
-            'teacher3@example.com': 'teacher3',
-            'teacher4@example.com': 'teacher4',
-            'teacher5@example.com': 'teacher5'
-          };
-          teacherId = emailToTeacherId[currentUser.email];
-          console.log('🔍 Mapped teacherId:', teacherId);
-        }
 
         // Fetch single class notifications
         const notificationsRef = collection(db, 'notifications');
         let notificationsQuery;
         
         if (isAdmin) {
-          // Admin: Lấy tất cả thông báo
+          // Admin: Lấy tất cả thông báo, filter isDeleted ở client side
           notificationsQuery = query(
             notificationsRef,
             orderBy('createdAt', 'desc')
           );
+          console.log('🔍 Admin: Fetching all single notifications');
+        } else if (isTeacher) {
+          // Teacher: Chỉ lấy thông báo của mình, filter isDeleted ở client side
+          notificationsQuery = query(
+            notificationsRef,
+            where('teacherId', '==', currentUser.uid),
+            orderBy('createdAt', 'desc')
+          );
+          console.log('🔍 Teacher: Fetching notifications for teacherId:', currentUser.uid);
         } else {
-          // Teacher: Chỉ lấy thông báo của mình
-          if (teacherId) {
-            notificationsQuery = query(
-              notificationsRef,
-              where('teacherId', '==', teacherId),
-              orderBy('createdAt', 'desc')
-            );
-          } else {
-            // Fallback: lấy tất cả nếu không tìm thấy teacherId
-            notificationsQuery = query(
-              notificationsRef,
-              orderBy('createdAt', 'desc')
-            );
-          }
+          // Parent hoặc role khác: Không lấy thông báo
+          console.log('🔍 Non-teacher/admin user: No notifications to fetch');
+          setNotifications([]);
+          setMultiNotifications([]);
+          setLoading(false);
+          return;
         }
         
         const notificationsSnapshot = await getDocs(notificationsQuery);
         console.log('📊 Single notifications found:', notificationsSnapshot.docs.length);
         
-        const notificationsList = notificationsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          type: 'single'
-        }));
+        // Filter isDeleted ở client side
+        const notificationsList = notificationsSnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            type: 'single'
+          }))
+          .filter(notification => !notification.isDeleted);
 
         // Fetch multi-class notifications
         const multiNotificationsRef = collection(db, 'notificationsForClass');
         let multiNotificationsQuery;
         
         if (isAdmin) {
-          // Admin: Lấy tất cả thông báo nhiều lớp
+          // Admin: Lấy tất cả thông báo nhiều lớp, filter isDeleted ở client side
           multiNotificationsQuery = query(
             multiNotificationsRef,
             orderBy('createdAt', 'desc')
           );
+          console.log('🔍 Admin: Fetching all multi-class notifications');
+        } else if (isTeacher) {
+          // Teacher: Chỉ lấy thông báo nhiều lớp của mình, filter isDeleted ở client side
+          multiNotificationsQuery = query(
+            multiNotificationsRef,
+            where('teacherId', '==', currentUser.uid),
+            orderBy('createdAt', 'desc')
+          );
+          console.log('🔍 Teacher: Fetching multi-class notifications for teacherId:', currentUser.uid);
         } else {
-          // Teacher: Chỉ lấy thông báo nhiều lớp của mình
-          if (teacherId) {
-            multiNotificationsQuery = query(
-              multiNotificationsRef,
-              where('teacherId', '==', teacherId),
-              orderBy('createdAt', 'desc')
-            );
-          } else {
-            // Fallback: lấy tất cả nếu không tìm thấy teacherId
-            multiNotificationsQuery = query(
-              multiNotificationsRef,
-              orderBy('createdAt', 'desc')
-            );
-          }
+          // Parent hoặc role khác: Không lấy thông báo
+          multiNotificationsQuery = null;
         }
         
-        const multiNotificationsSnapshot = await getDocs(multiNotificationsQuery);
-        console.log('📊 Multi notifications found:', multiNotificationsSnapshot.docs.length);
-        
-        const multiNotificationsList = multiNotificationsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          type: 'multiple'
-        }));
+        if (multiNotificationsQuery) {
+          const multiNotificationsSnapshot = await getDocs(multiNotificationsQuery);
+          console.log('📊 Multi notifications found:', multiNotificationsSnapshot.docs.length);
+          
+          // Filter isDeleted ở client side
+          const multiNotificationsList = multiNotificationsSnapshot.docs
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+              type: 'multiple'
+            }))
+            .filter(notification => !notification.isDeleted);
+          
+          setMultiNotifications(multiNotificationsList);
+        } else {
+          setMultiNotifications([]);
+        }
 
         setNotifications(notificationsList);
-        setMultiNotifications(multiNotificationsList);
 
       } catch (err) {
         console.error('Error fetching notifications:', err);
-        setError('Lỗi khi tải danh sách thông báo');
+        setError('Lỗi khi tải danh sách thông báo: ' + err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchNotifications();
-  }, [currentUser.uid, currentUser.email, userRole]); // Thêm dependency cho email
+  }, [currentUser.uid, userData]); // Dependency chỉ cần uid và userData
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const notificationVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut"
+      }
+    },
+    hover: {
+      y: -4,
+      scale: 1.02,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut"
+      }
+    }
+  };
+
+  const loadingVariants = {
+    animate: {
+      rotate: 360,
+      transition: {
+        duration: 1,
+        repeat: Infinity,
+        ease: "linear"
+      }
+    }
+  };
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'info': return 'ℹ️';
+      case 'success': return '✅';
+      case 'warning': return '⚠️';
+      case 'error': return '❌';
+      default: return '📢';
+    }
+  };
+
+  const getNotificationColor = (type) => {
+    switch (type) {
+      case 'info': return '#667eea';
+      case 'success': return '#48bb78';
+      case 'warning': return '#ed8936';
+      case 'error': return '#f56565';
+      default: return '#667eea';
+    }
+  };
 
   // Handle delete notification
   const handleDelete = async (notificationId, type) => {
@@ -172,39 +222,16 @@ export default function NotificationList({ currentUser, onBack }) {
       return;
     }
 
+    setDeletingId(notificationId);
     try {
-      setDeletingId(notificationId);
-      
       const collectionName = type === 'multiple' ? 'notificationsForClass' : 'notifications';
       const notificationRef = doc(db, collectionName, notificationId);
       
-      // Kiểm tra quyền xóa
-      const notificationDoc = await getDoc(notificationRef);
-      if (notificationDoc.exists()) {
-        const notificationData = notificationDoc.data();
-        
-        // Tìm teacherId dựa trên email
-        let teacherId = null;
-        if (currentUser.email) {
-          const emailToTeacherId = {
-            'teacher1@example.com': 'teacher1',
-            'teacher2@example.com': 'teacher2', 
-            'teacher3@example.com': 'teacher3',
-            'teacher4@example.com': 'teacher4',
-            'teacher5@example.com': 'teacher5'
-          };
-          teacherId = emailToTeacherId[currentUser.email];
-        }
-        
-        // Admin có thể xóa tất cả, Teacher chỉ xóa thông báo của mình
-        if (userRole !== 'admin' && notificationData.teacherId !== teacherId) {
-          alert('Bạn không có quyền xóa thông báo này!');
-          setDeletingId(null);
-          return;
-        }
-      }
-      
-      await deleteDoc(notificationRef);
+      // Soft delete
+      await updateDoc(notificationRef, {
+        isDeleted: true,
+        deletedAt: serverTimestamp()
+      });
 
       // Update local state
       if (type === 'multiple') {
@@ -212,6 +239,9 @@ export default function NotificationList({ currentUser, onBack }) {
       } else {
         setNotifications(prev => prev.filter(n => n.id !== notificationId));
       }
+
+      console.log('✅ Notification deleted successfully');
+      setSuccess('Thông báo đã được xóa thành công');
 
     } catch (err) {
       console.error('Error deleting notification:', err);
@@ -221,11 +251,83 @@ export default function NotificationList({ currentUser, onBack }) {
     }
   };
 
+  const handleEdit = (notification) => {
+    setEditingNotification(notification);
+    setEditForm({
+      title: notification.title,
+      content: notification.content
+    });
+  };
+
+  const handleUpdate = async () => {
+    if (!editForm.title.trim() || !editForm.content.trim()) {
+      alert('Tiêu đề và nội dung không được để trống');
+      return;
+    }
+
+    setUpdatingId(editingNotification.id);
+    try {
+      const collectionName = editingNotification.type === 'multiple' ? 'notificationsForClass' : 'notifications';
+      const notificationRef = doc(db, collectionName, editingNotification.id);
+      
+      await updateDoc(notificationRef, {
+        title: editForm.title.trim(),
+        content: editForm.content.trim(),
+        updatedAt: serverTimestamp()
+      });
+
+      // Update local state
+      const updatedNotification = {
+        ...editingNotification,
+        title: editForm.title.trim(),
+        content: editForm.content.trim()
+      };
+
+      if (editingNotification.type === 'multiple') {
+        setMultiNotifications(prev => 
+          prev.map(n => n.id === editingNotification.id ? updatedNotification : n)
+        );
+      } else {
+        setNotifications(prev => 
+          prev.map(n => n.id === editingNotification.id ? updatedNotification : n)
+        );
+      }
+
+      setEditingNotification(null);
+      setEditForm({ title: '', content: '' });
+      setSuccess('Thông báo đã được cập nhật thành công');
+    } catch (err) {
+      console.error('Error updating notification:', err);
+      alert('Lỗi khi cập nhật thông báo: ' + err.message);
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingNotification(null);
+    setEditForm({ title: '', content: '' });
+  };
+
   // Format date
   const formatDate = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return date.toLocaleString('vi-VN');
+    if (!timestamp) return 'Vừa xong';
+    
+    try {
+      const date = timestamp._seconds ? 
+        new Date(timestamp._seconds * 1000) : 
+        timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+      
+      return date.toLocaleString('vi-VN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (err) {
+      return 'Vừa xong';
+    }
   };
 
   // Get filtered notifications
@@ -245,301 +347,323 @@ export default function NotificationList({ currentUser, onBack }) {
     }
   };
 
-  const filteredNotifications = getFilteredNotifications();
+  const filteredNotifications = getFilteredNotifications()
+    .slice()
+    .sort((a, b) => {
+      const aTime = a.createdAt?._seconds ? a.createdAt._seconds : (a.createdAt?.seconds || 0);
+      const bTime = b.createdAt?._seconds ? b.createdAt._seconds : (b.createdAt?.seconds || 0);
+      return sortOrder === 'desc' ? bTime - aTime : aTime - bTime;
+    });
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '40vh',
-        flexDirection: 'column',
-        gap: 20
-      }}>
-        <div style={{
-          width: 40,
-          height: 40,
-          border: '3px solid rgba(102, 126, 234, 0.2)',
-          borderTop: '3px solid #667eea',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }} />
-        <div style={{ color: '#667eea', fontSize: 16, fontWeight: 600 }}>
-          Đang tải danh sách thông báo...
-        </div>
-      </div>
+      <motion.div 
+        className="fade-in" 
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '60vh',
+          flexDirection: 'column',
+          gap: 20
+        }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div 
+          style={{
+            width: 50,
+            height: 50,
+            border: '4px solid rgba(102, 126, 234, 0.2)',
+            borderTop: '4px solid #667eea',
+            borderRadius: '50%'
+          }}
+          variants={loadingVariants}
+          animate="animate"
+        />
+        <motion.div 
+          style={{ color: '#667eea', fontSize: 18, fontWeight: 600 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          Đang tải thông báo...
+        </motion.div>
+      </motion.div>
+    );
+  }
+
+  if (error) {
+    return (
+      <motion.div 
+        className="fade-in" 
+        style={{
+          maxWidth: 600,
+          margin: '40px auto',
+          padding: '40px 30px',
+          background: 'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: 24,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          textAlign: 'center'
+        }}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div 
+          style={{
+            width: 70,
+            height: 70,
+            background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            boxShadow: '0 8px 25px rgba(229, 62, 62, 0.3)'
+          }}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+        >
+          <span style={{ fontSize: 28, color: 'white' }}>⚠️</span>
+        </motion.div>
+        <motion.h3 
+          style={{ color: '#e53e3e', marginBottom: 16 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          Có lỗi xảy ra
+        </motion.h3>
+        <motion.div 
+          style={{ color: '#718096' }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          {error}
+        </motion.div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="fade-in" style={{
-      maxWidth: 1000,
-      margin: '40px auto',
-      padding: '40px 30px',
-      background: 'rgba(255,255,255,0.95)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: 24,
-      boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
-      border: '1px solid rgba(255,255,255,0.2)'
-    }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
-        <div>
-          <h4 style={{ 
-            color: '#2d3748', 
+    <motion.div 
+      className="fade-in" 
+      style={{
+        maxWidth: 800,
+        margin: '40px auto',
+        padding: '40px 30px',
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: 24,
+        boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
+        border: '1px solid rgba(255,255,255,0.2)'
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <motion.div 
+        style={{ textAlign: 'center', marginBottom: 40 }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <motion.div 
+          style={{
+            width: 70,
+            height: 70,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 16px',
+            boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
+          }}
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+        >
+          <span style={{ fontSize: 28, color: 'white' }}>🔔</span>
+        </motion.div>
+        <motion.h3 
+          style={{
+            color: '#2d3748',
             margin: '0 0 8px 0',
             fontSize: 24,
             fontWeight: 700
-          }}>
-            Quản lý thông báo
-            {userRole === 'admin' && (
-              <span style={{
-                marginLeft: 12,
-                padding: '4px 8px',
-                background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
-                color: 'white',
-                borderRadius: 6,
-                fontSize: 12,
-                fontWeight: 600
-              }}>
-                ADMIN
-              </span>
-            )}
-          </h4>
-          <div style={{ 
+          }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          Thông báo đã tạo
+        </motion.h3>
+        <motion.div 
+          style={{
             color: '#718096',
             fontSize: 16
-          }}>
-            {filteredNotifications.length} thông báo
-            {userRole === 'admin' && (
-              <span style={{ marginLeft: 8, color: '#e53e3e', fontWeight: 600 }}>
-                (Xem tất cả thông báo trong hệ thống)
-              </span>
-            )}
-          </div>
-        </div>
-        
-        <button
-          onClick={onBack}
-          style={{
-            padding: '12px 24px',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            border: 'none',
-            borderRadius: 12,
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'all 0.3s ease'
           }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
         >
-          ← Quay lại
-        </button>
-      </div>
-
-      {/* Filter */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <button
-            onClick={() => setFilter('all')}
-            style={{
-              padding: '8px 16px',
-              background: filter === 'all' 
-                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                : 'rgba(102, 126, 234, 0.1)',
-              color: filter === 'all' ? 'white' : '#667eea',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            Tất cả ({notifications.length + multiNotifications.length})
-          </button>
-          <button
-            onClick={() => setFilter('single')}
-            style={{
-              padding: '8px 16px',
-              background: filter === 'single' 
-                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                : 'rgba(102, 126, 234, 0.1)',
-              color: filter === 'single' ? 'white' : '#667eea',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            Một lớp ({notifications.length})
-          </button>
-          <button
-            onClick={() => setFilter('multiple')}
-            style={{
-              padding: '8px 16px',
-              background: filter === 'multiple' 
-                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                : 'rgba(102, 126, 234, 0.1)',
-              color: filter === 'multiple' ? 'white' : '#667eea',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            Nhiều lớp ({multiNotifications.length})
-          </button>
-        </div>
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div style={{
-          padding: '16px',
-          background: 'linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%)',
-          borderRadius: 12,
-          marginBottom: 24,
-          border: '1px solid #fc8181',
-          color: '#c53030'
-        }}>
-          ⚠️ {error}
-        </div>
-      )}
-
-      {/* Notifications List */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {filteredNotifications.length === 0 ? (
-          <div style={{
-            textAlign: 'center',
-            padding: '60px 20px',
-            color: '#718096',
-            background: 'rgba(255,255,255,0.5)',
-            borderRadius: 16,
-            border: '2px dashed #e2e8f0'
-          }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
-            <div style={{ fontSize: 18, fontWeight: 500, marginBottom: 8 }}>
-              Chưa có thông báo nào
-            </div>
-            <div style={{ fontSize: 14 }}>
-              Hãy tạo thông báo đầu tiên để gửi đến học sinh
-            </div>
+          Tổng cộng {notifications.length + multiNotifications.length} thông báo
+        </motion.div>
+        {isAdmin && (
+          <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', gap: 12 }}>
+            <button
+              onClick={() => setFilter('all')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: 8,
+                border: filter === 'all' ? '2px solid #667eea' : '2px solid #e2e8f0',
+                background: filter === 'all' ? 'rgba(102, 126, 234, 0.08)' : 'white',
+                color: filter === 'all' ? '#667eea' : '#2d3748',
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Tất cả
+            </button>
+            <button
+              onClick={() => setFilter('multiple')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: 8,
+                border: filter === 'multiple' ? '2px solid #38b2ac' : '2px solid #e2e8f0',
+                background: filter === 'multiple' ? 'rgba(56, 178, 172, 0.08)' : 'white',
+                color: filter === 'multiple' ? '#319795' : '#2d3748',
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Thông báo chung (nhiều lớp)
+            </button>
+            <button
+              onClick={() => setFilter('single')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: 8,
+                border: filter === 'single' ? '2px solid #667eea' : '2px solid #e2e8f0',
+                background: filter === 'single' ? 'rgba(102, 126, 234, 0.08)' : 'white',
+                color: filter === 'single' ? '#667eea' : '#2d3748',
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Thông báo riêng (một lớp)
+            </button>
           </div>
-        ) : (
-          filteredNotifications.map(notification => (
-            <div key={notification.id} style={{
-              padding: '24px',
-              background: 'white',
-              borderRadius: 16,
-              border: '1px solid #e2e8f0',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
-              transition: 'all 0.3s ease'
-            }}>
-              {/* Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+        )}
+      </motion.div>
+
+      <motion.div 
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16
+        }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <AnimatePresence>
+          {filteredNotifications.length === 0 ? (
+            <motion.div 
+              style={{
+                textAlign: 'center',
+                padding: '60px 40px',
+                color: '#718096',
+                fontSize: 16,
+                background: 'rgba(255,255,255,0.5)',
+                borderRadius: 16,
+                border: '2px dashed #e2e8f0'
+              }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.div 
+                style={{ fontSize: 48, marginBottom: 16 }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              >
+                📭
+              </motion.div>
+              <motion.div 
+                style={{ fontSize: 16, fontWeight: 500 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                Bạn chưa tạo thông báo nào.
+              </motion.div>
+            </motion.div>
+          ) : filteredNotifications.map((noti, idx) => (
+            <motion.div
+              key={noti.id}
+              style={{
+                background: 'white',
+                borderRadius: 16,
+                boxShadow: '0 4px 16px rgba(102, 126, 234, 0.08)',
+                border: '1.5px solid #e2e8f0',
+                padding: '28px 24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+              variants={notificationVariants}
+              initial="hidden"
+              animate="visible"
+              whileHover="hover"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: '50%',
+                  background: noti.type === 'multiple' ? 'linear-gradient(135deg, #38b2ac 0%, #319795 100%)' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 24,
+                  color: 'white',
+                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.13)'
+                }}>
+                  {noti.type === 'multiple' ? '📢' : '📋'}
+                </div>
                 <div style={{ flex: 1 }}>
-                  <h5 style={{
-                    margin: '0 0 8px 0',
-                    fontSize: 18,
-                    fontWeight: 600,
-                    color: '#2d3748'
-                  }}>
-                    {notification.title}
-                  </h5>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 16,
-                    fontSize: 14,
-                    color: '#718096'
-                  }}>
-                    <span>📅 {formatDate(notification.createdAt)}</span>
-                    <span>👤 {notification.teacherName}</span>
-                    {userRole === 'admin' && notification.teacherId && (
-                      <span style={{
-                        padding: '2px 6px',
-                        background: 'rgba(229, 62, 62, 0.1)',
-                        color: '#e53e3e',
-                        borderRadius: 4,
-                        fontSize: 11,
-                        fontFamily: 'monospace'
-                      }}>
-                        ID: {notification.teacherId}
-                      </span>
-                    )}
-                    <span style={{
-                      padding: '4px 8px',
-                      background: notification.type === 'multiple' 
-                        ? 'rgba(102, 126, 234, 0.1)' 
-                        : 'rgba(34, 197, 94, 0.1)',
-                      color: notification.type === 'multiple' 
-                        ? '#667eea' 
-                        : '#22c55e',
-                      borderRadius: 6,
-                      fontSize: 12,
-                      fontWeight: 500
-                    }}>
-                      {notification.type === 'multiple' ? 'Nhiều lớp' : 'Một lớp'}
-                    </span>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: '#2d3748', marginBottom: 2 }}>{noti.title}</div>
+                  <div style={{ color: '#718096', fontSize: 14, marginBottom: 4 }}>{noti.content}</div>
+                  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 13 }}>
+                    <div><span style={{ color: '#4a5568', fontWeight: 600 }}>Lớp:</span> {noti.className || (noti.classNames && noti.classNames.join(', ')) || noti.classId || (noti.classIds && noti.classIds.join(', ')) || 'N/A'}</div>
+                    <div><span style={{ color: '#4a5568', fontWeight: 600 }}>Loại:</span> {noti.type === 'multiple' ? 'Nhiều lớp' : 'Một lớp'}</div>
+                    <div><span style={{ color: '#4a5568', fontWeight: 600 }}>Ngày tạo:</span> {noti.createdAt && (noti.createdAt.toDate ? new Date(noti.createdAt.toDate()).toLocaleString('vi-VN') : (typeof noti.createdAt === 'string' ? new Date(noti.createdAt).toLocaleString('vi-VN') : new Date(noti.createdAt.seconds * 1000).toLocaleString('vi-VN')))}</div>
+                    {noti.scheduledDate && <div><span style={{ color: '#4a5568', fontWeight: 600 }}>Ngày gửi:</span> {typeof noti.scheduledDate === 'string' ? new Date(noti.scheduledDate).toLocaleString('vi-VN') : new Date(noti.scheduledDate.seconds * 1000).toLocaleString('vi-VN')}</div>}
+                    {noti.type && <div><span style={{ color: '#4a5568', fontWeight: 600 }}>Trạng thái:</span> <span style={{ color: '#3182ce', fontWeight: 700 }}>{noti.isDeleted ? 'Đã xóa' : 'Đã gửi'}</span></div>}
                   </div>
                 </div>
-                
-                <button
-                  onClick={() => handleDelete(notification.id, notification.type)}
-                  disabled={deletingId === notification.id}
-                  style={{
-                    padding: '8px 12px',
-                    background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: deletingId === notification.id ? 'not-allowed' : 'pointer',
-                    opacity: deletingId === notification.id ? 0.6 : 1,
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  {deletingId === notification.id ? 'Đang xóa...' : '🗑️ Xóa'}
-                </button>
               </div>
-
-              {/* Content */}
-              <div style={{
-                marginBottom: 16,
-                color: '#4a5568',
-                lineHeight: 1.6
-              }}>
-                {notification.content}
-              </div>
-
-              {/* Target Classes */}
-              <div style={{
-                padding: '12px 16px',
-                background: 'rgba(102, 126, 234, 0.05)',
-                borderRadius: 8,
-                border: '1px solid rgba(102, 126, 234, 0.2)'
-              }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#667eea', marginBottom: 4 }}>
-                  📍 Lớp học nhận thông báo:
-                </div>
-                <div style={{ fontSize: 14, color: '#4a5568' }}>
-                  {notification.type === 'multiple' 
-                    ? notification.classNames?.join(', ') || notification.classIds?.join(', ')
-                    : notification.className || notification.classId
-                  }
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
   );
 } 
