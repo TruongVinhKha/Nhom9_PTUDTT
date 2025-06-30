@@ -1,6 +1,6 @@
 // LoginScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Animated, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Animated, Alert, Image } from 'react-native';
 import { TextInput, Button, Text, HelperText, Card, Checkbox } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import LoadingScreen from '../LoadingSceen';
+import BrandingLogo from '../../assets/branding_guideline_sample_lt_rd_lg.svg';
 
 export default function LoginScreen({ navigation }) {
   const { signIn, signInWithGoogle, signOut, authError, loading: authLoading, initialized, loginInProgress, setLoading: setAuthLoading } = useAuth();
@@ -151,19 +152,22 @@ export default function LoginScreen({ navigation }) {
       
     } catch (e) {
       console.log('❌ Lỗi đăng nhập:', e);
-      
       if (e.code === 'firestore/permission-denied' || (e.message && e.message.includes('permission-denied'))) {
         setError('Bạn không có quyền truy cập hệ thống. Vui lòng liên hệ nhà trường để được hỗ trợ.');
       } else if (e.code === 'auth/user-not-found') {
         setError('Tài khoản không tồn tại. Vui lòng kiểm tra lại email.');
-      } else if (e.code === 'auth/wrong-password') {
+      } else if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
         setError('Mật khẩu không đúng. Vui lòng thử lại.');
       } else if (e.code === 'auth/invalid-email') {
         setError('Email không hợp lệ. Vui lòng kiểm tra lại.');
       } else if (e.code === 'auth/too-many-requests') {
-        setError('Quá nhiều lần thử đăng nhập. Vui lòng thử lại sau.');
+        setError('Bạn đã nhập sai quá nhiều lần. Tài khoản tạm thời bị khóa, vui lòng thử lại sau hoặc sử dụng chức năng quên mật khẩu.');
+      } else if (e.code === 'auth/network-request-failed') {
+        setError('Lỗi kết nối mạng. Vui lòng kiểm tra internet và thử lại.');
+      } else if (e.code === 'auth/user-disabled') {
+        setError('Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ nhà trường để được hỗ trợ.');
       } else {
-        setError(e.message || 'Lỗi đăng nhập. Vui lòng thử lại.');
+        setError('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin hoặc thử lại sau.');
       }
     } finally {
       setAuthLoading(false);
@@ -286,6 +290,7 @@ export default function LoginScreen({ navigation }) {
                       },
                     }}
                     error={error && !email.trim()}
+                    left={<TextInput.Icon icon="email-outline" />}
                   />
                 </View>
 
@@ -315,6 +320,7 @@ export default function LoginScreen({ navigation }) {
                       },
                     }}
                     error={error && !password}
+                    left={<TextInput.Icon icon="lock-outline" />}
                   />
                 </View>
 
@@ -323,6 +329,8 @@ export default function LoginScreen({ navigation }) {
                     status={rememberMe ? 'checked' : 'unchecked'}
                     onPress={() => setRememberMe(!rememberMe)}
                     color="#006A5C"
+                    uncheckedIcon="checkbox-blank-outline"
+                    checkedIcon="checkbox-marked"
                   />
                   <Text style={{ color: '#17375F', fontWeight: '500' }}>Nhớ tài khoản và mật khẩu</Text>
                 </View>
@@ -354,6 +362,7 @@ export default function LoginScreen({ navigation }) {
                 labelStyle={styles.loginButtonLabel}
                 buttonColor={authLoading ? '#E5E7EB' : '#7AE582'}
                 textColor="#17375F"
+                icon="login-variant"
               >
                 {authLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
               </Button>
@@ -371,18 +380,14 @@ export default function LoginScreen({ navigation }) {
 
           {/* Social Login */}
           <View style={styles.socialLoginContainer}>
-            <Button
-              mode="outlined"
-              style={styles.socialButton}
-              labelStyle={styles.socialButtonLabel}
+            <TouchableOpacity
               onPress={handleGoogleLogin}
-              loading={googleLoading}
               disabled={authLoading || googleLoading}
-              buttonColor={googleLoading ? '#006A5C' : '#FFFFFF'}
-              textColor={googleLoading ? '#FFFFFF' : '#006A5C'}
+              style={{ alignItems: 'center', opacity: (authLoading || googleLoading) ? 0.6 : 1 }}
+              activeOpacity={0.7}
             >
-              {googleLoading ? 'Đang đăng nhập...' : 'Google'}
-            </Button>
+              <BrandingLogo width={175} height={40} />
+            </TouchableOpacity>
           </View>
 
           {/* Footer */}

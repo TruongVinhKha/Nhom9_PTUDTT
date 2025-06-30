@@ -178,6 +178,7 @@ export default function RegisterScreen({ navigation }) {
                     }}
                     style={styles.input}
                     outlineStyle={styles.inputOutline}
+                    left={<TextInput.Icon icon="email-outline" />}
                     theme={{
                       colors: {
                         primary: '#006A5C',
@@ -206,6 +207,7 @@ export default function RegisterScreen({ navigation }) {
                     }}
                     style={styles.input}
                     outlineStyle={styles.inputOutline}
+                    left={<TextInput.Icon icon="phone-outline" />}
                     theme={{
                       colors: {
                         primary: '#006A5C',
@@ -229,6 +231,7 @@ export default function RegisterScreen({ navigation }) {
                     onChangeText={(text) => setFullName(text)}
                     style={styles.input}
                     outlineStyle={styles.inputOutline}
+                    left={<TextInput.Icon icon="account-outline" />}
                     theme={{
                       colors: {
                         primary: '#006A5C',
@@ -256,6 +259,7 @@ export default function RegisterScreen({ navigation }) {
                     }}
                     style={styles.input}
                     outlineStyle={styles.inputOutline}
+                    left={<TextInput.Icon icon="lock-outline" />}
                     right={
                       <TextInput.Icon
                         icon={showPassword ? "eye-off-outline" : "eye-outline"}
@@ -292,6 +296,7 @@ export default function RegisterScreen({ navigation }) {
                     }}
                     style={styles.input}
                     outlineStyle={styles.inputOutline}
+                    left={<TextInput.Icon icon="lock-check-outline" />}
                     right={
                       <TextInput.Icon
                         icon={showConfirm ? "eye-off-outline" : "eye-outline"}
@@ -328,6 +333,8 @@ export default function RegisterScreen({ navigation }) {
                   status={acceptTerms ? 'checked' : 'unchecked'}
                   onPress={() => setAcceptTerms(!acceptTerms)}
                   color="#006A5C"
+                  uncheckedIcon="checkbox-blank-outline"
+                  checkedIcon="checkbox-marked"
                 />
                 <View style={styles.termsTextContainer}>
                   <Text style={styles.termsText}>
@@ -348,6 +355,7 @@ export default function RegisterScreen({ navigation }) {
                 labelStyle={styles.registerButtonLabel}
                 buttonColor={loading ? '#E5E7EB' : '#7AE582'}
                 textColor="#17375F"
+                icon="account-plus-outline"
               >
                 {loading ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
               </Button>

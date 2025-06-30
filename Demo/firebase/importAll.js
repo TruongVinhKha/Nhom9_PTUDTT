@@ -10,6 +10,7 @@ admin.initializeApp({
 const auth = admin.auth();
 const firestore = admin.firestore();
 
+<<<<<<< HEAD:Demo/data/importAll.js
 // Hàm tạo search keywords từ content
 function generateSearchKeywords(content) {
   if (!content) return [];
@@ -135,6 +136,8 @@ function createOptimizedComment(commentData, studentsMap, teachersMap, classesMa
   };
 }
 
+=======
+>>>>>>> c2cc58b64035e0c58b33fe04f3553b9cd39d6024:Demo/firebase/importAll.js
 async function importData() {
   console.log('🚀 Bắt đầu import tất cả dữ liệu...');
   
@@ -202,11 +205,8 @@ async function importData() {
           email: teacher.email,
           phone: teacher.phone,
           role: teacher.role,
-          subjects: teacher.subjects,
           classIds: teacher.classIds,
-          avatar: teacher.avatar,
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
         console.log(`  ✅ Imported teacher: ${teacher.fullName}`);
       } catch (err) {
@@ -225,8 +225,12 @@ async function importData() {
           dateOfBirth: student.dateOfBirth,
           gender: student.gender,
           academicYear: student.academicYear,
+<<<<<<< HEAD:Demo/data/importAll.js
           createdAt: admin.firestore.FieldValue.serverTimestamp(),
           updatedAt: admin.firestore.FieldValue.serverTimestamp()
+=======
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+>>>>>>> c2cc58b64035e0c58b33fe04f3553b9cd39d6024:Demo/firebase/importAll.js
         });
         console.log(`  ✅ Imported student: ${student.fullName}`);
       } catch (err) {
@@ -241,16 +245,18 @@ async function importData() {
       try {
         await firestore.collection("classes").doc(classData.id).set({
           ...classData,
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
+          createdAt: classData.createdAt ? new Date(classData.createdAt) : admin.firestore.FieldValue.serverTimestamp()
         });
+        console.log(`  ✅ Imported class: ${classData.name}`);
       } catch (err) {
         console.error(`  ❌ Error importing class ${classData.id}:`, err.message);
       }
     }
     console.log(`  ✅ Imported ${classes.length} classes`);
 
-    // 5. Import Comments với cấu trúc tối ưu
+    // 5. Import Comments
     console.log('\n💬 Importing Comments...');
+<<<<<<< HEAD:Demo/data/importAll.js
     
     // Tạo map để truy cập nhanh thông tin
     const studentsMap = {};
@@ -294,6 +300,30 @@ async function importData() {
             readAt: null
           });
         }
+=======
+    for (const commentData of comments) {
+      try {
+        const commentId = commentData.id || `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Import đúng dữ liệu gốc từ JSON
+        const commentToSave = {
+          content: commentData.content,
+          studentId: commentData.studentId,
+          teacherId: commentData.teacherId,
+          classId: commentData.classId,
+          subject: commentData.subject,
+          rating: commentData.rating,
+          createdAt: commentData.createdAt ? new Date(commentData.createdAt) : admin.firestore.FieldValue.serverTimestamp()
+        };
+        
+        await firestore.collection("comments").doc(commentId).set(commentToSave);
+        
+        // Tạo subcollection isRead với 1 document parent1
+        await firestore.collection("comments").doc(commentId).collection("isRead").doc("parent1").set({
+          isRead: false,
+          readAt: null
+        });
+>>>>>>> c2cc58b64035e0c58b33fe04f3553b9cd39d6024:Demo/firebase/importAll.js
         
         console.log(`  ✅ Imported comment: ${commentId}`);
       } catch (err) {
@@ -311,13 +341,11 @@ async function importData() {
           createdAt: notification.createdAt ? new Date(notification.createdAt) : admin.firestore.FieldValue.serverTimestamp(),
           isDeleted: false
         });
-        // Tạo subcollection isRead cho tất cả parent
-        for (const parentId of allParentIds) {
-          await firestore.collection("notifications").doc(notification.id).collection("isRead").doc(parentId).set({
-            isRead: false,
-            readAt: null
-          });
-        }
+        // Tạo subcollection isRead với 1 document parent1
+        await firestore.collection("notifications").doc(notification.id).collection("isRead").doc("parent1").set({
+          isRead: false,
+          readAt: null
+        });
       } catch (err) {
         console.error(`  ❌ Error importing notification ${notification.id}:`, err.message);
       }
@@ -333,13 +361,11 @@ async function importData() {
           createdAt: notification.createdAt ? new Date(notification.createdAt) : admin.firestore.FieldValue.serverTimestamp(),
           isDeleted: false
         });
-        // Tạo subcollection isRead cho tất cả parent
-        for (const parentId of allParentIds) {
-          await firestore.collection("notificationsForClass").doc(notification.id).collection("isRead").doc(parentId).set({
-            isRead: false,
-            readAt: null
-          });
-        }
+        // Tạo subcollection isRead với 1 document parent1
+        await firestore.collection("notificationsForClass").doc(notification.id).collection("isRead").doc("parent1").set({
+          isRead: false,
+          readAt: null
+        });
       } catch (err) {
         console.error(`  ❌ Error importing notificationForClass ${notification.id}:`, err.message);
       }

@@ -74,7 +74,11 @@ export const AuthProvider = ({ children }) => {
               console.log('✅ User tồn tại trong Firestore với role:', userData.role);
               
               success = true;
-              setUser(u);
+              setUser({
+                uid: u.uid,
+                email: u.email,
+                ...userData
+              });
               setAuthError(null);
             } catch (err) {
               if (err.code === 'firestore/permission-denied') {
@@ -88,7 +92,10 @@ export const AuthProvider = ({ children }) => {
               } else if (err.message === 'not-found') {
                 // User không tồn tại trong Firestore - đây là trường hợp bình thường cho guests
                 console.log('ℹ️ User không có trong collection users (có thể là guest)');
-                setUser(u);
+                setUser({
+                  uid: u.uid,
+                  email: u.email
+                });
                 setAuthError(null);
                 success = true;
               } else {
