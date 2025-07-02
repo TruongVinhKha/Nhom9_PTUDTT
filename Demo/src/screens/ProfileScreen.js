@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Avatar, Button, Card, Modal, Portal, Text, TextInput, Dialog } from 'react-native-paper';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudent } from '../contexts/StudentContext';
-import firestore from '@react-native-firebase/firestore';
-import { Button, Avatar, Modal, Portal, TextInput } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
-  const { user, resetPassword } = useAuth();
+  const { user, resetPassword, signOut } = useAuth();
   const { students } = useStudent();
   const [teacherMap, setTeacherMap] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
@@ -15,7 +15,6 @@ export default function ProfileScreen() {
   const [sending, setSending] = useState(false);
   const navigation = useNavigation();
 
-  // Lấy thông tin giáo viên chủ nhiệm cho từng học sinh
   useEffect(() => {
     const fetchTeachers = async () => {
       if (!students || students.length === 0) return;
@@ -64,67 +63,104 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={{ paddingBottom: 32 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#17375F', borderBottomLeftRadius: 18, borderBottomRightRadius: 18 }}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ padding: 12 }}>
-          <Avatar.Icon size={32} icon="arrow-left" style={{ backgroundColor: '#7AE582' }} color="#17375F" />
-        </TouchableOpacity>
-        <View style={{ flex: 1, alignItems: 'center', marginRight: 44 }}>
-          <Avatar.Icon size={64} icon="account" style={{ backgroundColor: '#7AE582', marginBottom: 8 }} color="#17375F" />
-          <Text style={styles.headerTitle}>Trang tài khoản</Text>
-        </View>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.scrollContent}>
+      {/* Header Avatar + Tên */}
+      <View style={styles.headerSection}>
+        <Avatar.Icon size={90} icon="account" style={styles.avatar} color="#17375F" />
+        <Text style={styles.headerTitle}>Trang tài khoản</Text>
+        <Text style={styles.headerSub}>{user?.fullName || user?.email || '---'}</Text>
       </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Thông tin phụ huynh</Text>
-        <Text style={styles.label}>Họ tên:</Text>
-        <Text style={styles.value}>{user?.fullName || '---'}</Text>
-        <Text style={styles.label}>Email:</Text>
-        <Text style={styles.value}>{user?.email || '---'}</Text>
-        <Text style={styles.label}>Số điện thoại:</Text>
-        <Text style={styles.value}>{user?.phone || '---'}</Text>
-        <Button mode="outlined" style={styles.changePassBtn} onPress={() => setModalVisible(true)} textColor="#FE7743">
-          Đổi mật khẩu
-        </Button>
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Thông tin các con</Text>
-        {students.length === 0 && <Text style={styles.value}>Không có dữ liệu</Text>}
-        {students.map((student, idx) => (
-          <View key={student.id} style={styles.childCard}>
-            <Text style={styles.childName}>{student.fullName}</Text>
-            <Text style={styles.childInfo}>Mã học sinh: {student.id || '---'}</Text>
-            <Text style={styles.childInfo}>Lớp: {student.className || student.classId || '---'}</Text>
-            <Text style={styles.childInfo}>Năm học: {student.academicYear || '---'}</Text>
-            <Text style={styles.childInfo}>Ngày sinh: {formatDateVN(student.dateOfBirth)}</Text>
-            <Text style={styles.childInfo}>Giới tính: {student.gender || '---'}</Text>
-            {teacherMap[student.classId] && (
-              <View style={styles.teacherBox}>
-                <Text style={styles.teacherTitle}>Giáo viên chủ nhiệm:</Text>
-                <View style={styles.teacherRow}>
-                  <Avatar.Icon size={40} icon="account" style={{ backgroundColor: '#5F8B4C' }} color="#fff" />
-                  <View style={{ marginLeft: 10 }}>
-                    <Text style={styles.teacherName}>{teacherMap[student.classId].fullName}</Text>
-                    <Text style={styles.teacherInfo}>Email: {teacherMap[student.classId].email}</Text>
-                    <Text style={styles.teacherInfo}>SĐT: {teacherMap[student.classId].phone}</Text>
+
+      {/* Thông tin phụ huynh */}
+      <Card style={styles.card} elevation={4}>
+        <Card.Title titleStyle={styles.sectionTitle}>Thông tin phụ huynh</Card.Title>
+        <Card.Content>
+          <View style={styles.infoRow}><Text style={styles.label}>Họ tên:</Text><Text style={styles.value}>{user?.fullName || '---'}</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Email:</Text><Text style={styles.value}>{user?.email || '---'}</Text></View>
+          <View style={styles.infoRow}><Text style={styles.label}>Số điện thoại:</Text><Text style={styles.value}>{user?.phone || '---'}</Text></View>
+          <Button mode="outlined" style={styles.changePassBtn} onPress={() => setModalVisible(true)} textColor="#006A5C">
+            Đổi mật khẩu
+          </Button>
+        </Card.Content>
+      </Card>
+
+      {/* Thông tin các con */}
+      <Card style={styles.card} elevation={4}>
+        <Card.Title titleStyle={styles.sectionTitle}>Thông tin các con</Card.Title>
+        <Card.Content>
+          {students.length === 0 && <Text style={styles.value}>Không có dữ liệu</Text>}
+          {students.map((student, idx) => (
+            <Card key={student.id} style={styles.childCard} elevation={2}>
+              <Card.Content>
+                <View style={styles.childHeader}>
+                  <Avatar.Text size={40} label={student.fullName?.charAt(0).toUpperCase() || '?'} style={styles.childAvatar} />
+                  <View style={{ marginLeft: 12 }}>
+                    <Text style={styles.childName}>{student.fullName}</Text>
+                    <Text style={styles.childInfo}>Mã học sinh: <Text style={styles.childValue}>{student.id || '---'}</Text></Text>
                   </View>
                 </View>
-              </View>
-            )}
-          </View>
-        ))}
-      </View>
+                <View style={styles.childInfoBlock}>
+                  <Text style={styles.childInfo}>Lớp: <Text style={styles.childValue}>{student.className || student.classId || '---'}</Text></Text>
+                  <Text style={styles.childInfo}>Năm học: <Text style={styles.childValue}>{student.academicYear || '---'}</Text></Text>
+                  <Text style={styles.childInfo}>Ngày sinh: <Text style={styles.childValue}>{formatDateVN(student.dateOfBirth)}</Text></Text>
+                  <Text style={styles.childInfo}>Giới tính: <Text style={styles.childValue}>{student.gender || '---'}</Text></Text>
+                </View>
+                {teacherMap[student.classId] && (
+                  <Card style={styles.teacherBox} elevation={0}>
+                    <Card.Content style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Avatar.Icon size={36} icon="account" style={{ backgroundColor: '#5F8B4C', marginRight: 10 }} color="#fff" />
+                      <View>
+                        <Text style={styles.teacherTitle}>Giáo viên chủ nhiệm:</Text>
+                        <Text style={styles.teacherName}>{teacherMap[student.classId].fullName}</Text>
+                        <Text style={styles.teacherInfo}>Email: {teacherMap[student.classId].email}</Text>
+                        <Text style={styles.teacherInfo}>SĐT: {teacherMap[student.classId].phone}</Text>
+                      </View>
+                    </Card.Content>
+                  </Card>
+                )}
+              </Card.Content>
+            </Card>
+          ))}
+        </Card.Content>
+      </Card>
+
+      {/* Nút đăng xuất */}
+      <Button
+        mode="contained-tonal"
+        style={styles.signOutBtn}
+        textColor="#D32F2F"
+        onPress={signOut}
+        icon="logout"
+      >
+        Đăng xuất
+      </Button>
+
+      {/* Modal đổi mật khẩu */}
       <Portal>
         <Modal visible={modalVisible} onDismiss={() => setModalVisible(false)} contentContainerStyle={styles.modalContainer}>
+          <View style={{ alignItems: 'flex-end' }}>
+            <Button icon="close" onPress={() => setModalVisible(false)} compact />
+          </View>
           <Text style={styles.modalTitle}>Đổi mật khẩu</Text>
+          <Text style={styles.modalDesc}>Nhập email để nhận link đổi mật khẩu.</Text>
           <TextInput
             label="Email"
             value={emailInput}
             onChangeText={setEmailInput}
-            style={{ marginBottom: 16 }}
+            style={styles.modalInput}
             autoCapitalize="none"
             keyboardType="email-address"
+            mode="outlined"
           />
-          <Button mode="contained" onPress={handleResetPassword} loading={sending} disabled={sending || !emailInput}>
+          <Button
+            mode="contained"
+            onPress={handleResetPassword}
+            loading={sending}
+            disabled={sending || !emailInput}
+            style={styles.modalButton}
+            contentStyle={{ paddingVertical: 8 }}
+            labelStyle={{ fontWeight: 'bold', fontSize: 16 }}
+          >
             Gửi email đổi mật khẩu
           </Button>
         </Modal>
@@ -134,22 +170,106 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: { backgroundColor: '#17375F', padding: 24, borderBottomLeftRadius: 18, borderBottomRightRadius: 18, alignItems: 'center' },
-  headerTitle: { color: '#FFFFFF', fontSize: 22, fontWeight: 'bold', marginTop: 8 },
-  section: { backgroundColor: '#ECFAE5', borderRadius: 12, margin: 16, padding: 16, elevation: 2 },
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#006A5C', marginBottom: 8 },
-  label: { fontSize: 14, color: '#17375F', fontWeight: 'bold', marginTop: 8 },
-  value: { fontSize: 15, color: '#17375F', marginBottom: 4 },
-  changePassBtn: { marginTop: 16, borderColor: '#006A5C' },
-  childCard: { backgroundColor: '#DDF6D2', borderRadius: 12, padding: 12, marginBottom: 12 },
-  childName: { fontWeight: 'bold', fontSize: 16, color: '#17375F' },
-  childInfo: { color: '#006A5C', fontSize: 13, marginBottom: 2 },
-  teacherBox: { backgroundColor: '#CAE8BD', borderRadius: 12, padding: 8, marginTop: 8, borderWidth: 1, borderColor: '#B0DB9C' },
-  teacherTitle: { fontWeight: 'bold', color: '#17375F', marginBottom: 4 },
-  teacherRow: { flexDirection: 'row', alignItems: 'center' },
-  teacherName: { fontWeight: 'bold', color: '#006A5C' },
-  teacherInfo: { color: '#17375F', fontSize: 13 },
-  modalContainer: { backgroundColor: '#FFFFFF', padding: 24, margin: 24, borderRadius: 12 },
-  modalTitle: { fontWeight: 'bold', fontSize: 18, color: '#17375F', marginBottom: 16, textAlign: 'center' },
-}); 
+  screen: { flex: 1, backgroundColor: '#F4F6FA' },
+  scrollContent: { paddingBottom: 120, paddingHorizontal: 0 },
+  
+  headerSection: {
+    alignItems: 'center',
+    paddingTop: 36,
+    paddingBottom: 24,
+    backgroundColor: '#17375F',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    marginBottom: 20,
+  },
+  avatar: { backgroundColor: '#7AE582', marginBottom: 10 },
+  headerTitle: { color: '#FFFFFF', fontSize: 24, fontWeight: 'bold' },
+  headerSub: { color: '#B2FFB2', fontSize: 16, fontWeight: '500', marginTop: 4 },
+  
+  card: {
+    marginHorizontal: 20,
+    marginBottom: 22,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  sectionTitle: { fontWeight: 'bold', fontSize: 18, color: '#006A5C' },
+  infoRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 6 },
+  label: { fontSize: 14, color: '#555', fontWeight: '500', width: 110 },
+  value: { fontSize: 15, color: '#17375F', fontWeight: '600' },
+  changePassBtn: { marginTop: 16, alignSelf: 'flex-end', borderColor: '#006A5C', borderRadius: 8 },
+
+  childCard: {
+    borderRadius: 14,
+    marginBottom: 16,
+    backgroundColor: '#E9F7EF',
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+  },
+  childHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  childAvatar: { backgroundColor: '#7AE582' },
+  childName: { fontWeight: 'bold', fontSize: 17, color: '#17375F' },
+  childInfoBlock: { marginLeft: 52, marginBottom: 6 },
+  childInfo: { color: '#444', fontSize: 13, marginBottom: 3 },
+  childValue: { color: '#17375F', fontWeight: '600' },
+
+  teacherBox: {
+    backgroundColor: '#DDF6D2',
+    borderRadius: 10,
+    marginTop: 12,
+    padding: 10,
+  },
+  teacherTitle: { fontWeight: '600', color: '#333', fontSize: 13 },
+  teacherName: { fontWeight: 'bold', color: '#006A5C', fontSize: 14 },
+  teacherInfo: { color: '#555', fontSize: 12 },
+
+  signOutBtn: {
+    marginHorizontal: 40,
+    marginTop: 20,
+    marginBottom: 40,
+    borderRadius: 14,
+    backgroundColor: '#fff',
+    borderWidth: 1.2,
+    borderColor: '#D32F2F',
+    elevation: 3,
+  },
+
+  modalContainer: {
+    backgroundColor: '#fff',
+    padding: 28,
+    margin: 24,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  modalTitle: {
+    fontWeight: 'bold',
+    fontSize: 22,
+    color: '#17375F',
+    textAlign: 'center',
+    marginBottom: 6,
+  },
+  modalDesc: {
+    textAlign: 'center',
+    color: '#666',
+    marginBottom: 18,
+    fontSize: 14,
+  },
+  modalInput: {
+    marginBottom: 18,
+    backgroundColor: '#F4F6FA',
+    borderRadius: 10,
+  },
+  modalButton: {
+    borderRadius: 12,
+    marginTop: 4,
+    backgroundColor: '#7C4DFF',
+  },
+});

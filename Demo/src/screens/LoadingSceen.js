@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, memo } from 'react';
-import { View, StyleSheet, ActivityIndicator, Animated, Easing } from 'react-native';
+import React, { memo, useEffect, useRef } from 'react';
+import { Animated, Easing, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 
 const LoadingScreen = memo(() => {
