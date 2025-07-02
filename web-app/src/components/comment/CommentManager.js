@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, doc, deleteDoc, updateDoc, query, where, serverTimestamp, getDoc } from 'firebase/firestore';
 
@@ -15,6 +16,36 @@ export default function CommentManager() {
   const studentNameCache = useRef({});
   const teacherNameCache = useRef({});
   const [nameMap, setNameMap] = useState({});
+
+  // Framer Motion variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3 }
+    }
+  };
+
+  const modalVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.3 }
+    }
+  };
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -214,231 +245,116 @@ export default function CommentManager() {
 
   if (loading) {
     return (
-      <div className="fade-in" style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '40vh',
-        flexDirection: 'column',
-        gap: 20
-      }}>
-        <div style={{
-          width: 40,
-          height: 40,
-          border: '3px solid rgba(102, 126, 234, 0.2)',
-          borderTop: '3px solid #667eea',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }} />
-        <div style={{ color: '#667eea', fontSize: 16, fontWeight: 600 }}>Đang tải danh sách nhận xét...</div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <div className="loading-text">Đang tải danh sách nhận xét...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="fade-in" style={{
-        maxWidth: 600,
-        margin: '40px auto',
-        padding: '30px',
-        background: 'rgba(255,255,255,0.95)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: 20,
-        boxShadow: '0 15px 40px rgba(0,0,0,0.1)',
-        border: '1px solid rgba(255,255,255,0.2)',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          width: 60,
-          height: 60,
-          background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 16px',
-          boxShadow: '0 6px 20px rgba(229, 62, 62, 0.3)'
-        }}>
-          <span style={{ fontSize: 24, color: 'white' }}>⚠️</span>
-        </div>
-        <h4 style={{ color: '#e53e3e', marginBottom: 12 }}>Có lỗi xảy ra</h4>
-        <div style={{ color: '#718096' }}>{error}</div>
+      <div className="error-container">
+        <div className="error-icon">⚠️</div>
+        <h4 className="error-title">Có lỗi xảy ra</h4>
+        <div className="error-message">{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="fade-in" style={{
-      maxWidth: 1200,
-      margin: '40px auto',
-      padding: '40px 30px',
-      background: 'rgba(255,255,255,0.95)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: 24,
-      boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
-      border: '1px solid rgba(255,255,255,0.2)'
-    }}>
+    <motion.div 
+      className="main-container"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Thông báo thành công/thất bại */}
-      {success && (
-        <div style={{
-          padding: '16px',
-          background: 'linear-gradient(135deg, #c6f6d5 0%, #38a169 100%)',
-          borderRadius: 14,
-          marginBottom: 24,
-          border: '1.5px solid #38a169',
-          color: '#22543d',
-          fontWeight: 700,
-          fontSize: 17,
-          boxShadow: '0 4px 18px rgba(56, 161, 105, 0.13)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10
-        }}>
-          <span style={{ fontSize: 22 }}>✅</span> {success}
-        </div>
-      )}
-      {error && (
-        <div style={{
-          padding: '16px',
-          background: 'linear-gradient(135deg, #fed7d7 0%, #e53e3e 100%)',
-          borderRadius: 14,
-          marginBottom: 24,
-          border: '1.5px solid #e53e3e',
-          color: '#c53030',
-          fontWeight: 700,
-          fontSize: 17,
-          boxShadow: '0 4px 18px rgba(229, 62, 62, 0.13)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10
-        }}>
-          <span style={{ fontSize: 22 }}>⚠️</span> {error}
-        </div>
-      )}
+      <AnimatePresence>
+        {success && (
+          <motion.div 
+            className="success-notification"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <span className="notification-icon">✅</span> {success}
+          </motion.div>
+        )}
+        {error && (
+          <motion.div 
+            className="error-notification"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <span className="notification-icon">⚠️</span> {error}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <div style={{
-          width: 70,
-          height: 70,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 16px',
-          boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
-        }}>
-          <span style={{ fontSize: 28, color: 'white' }}>📝</span>
-        </div>
-        <h4 style={{ 
-          color: '#2d3748', 
-          margin: '0 0 8px 0',
-          fontSize: 24,
-          fontWeight: 700
-        }}>
-          Quản lý nhận xét
-        </h4>
-        <div style={{ 
-          color: '#718096',
-          fontSize: 16
-        }}>
-          {comments.length} nhận xét trong hệ thống
-        </div>
-      </div>
+      <motion.div 
+        className="page-header"
+        variants={itemVariants}
+      >
+        <div className="header-icon">📝</div>
+        <h4 className="header-title">Quản lý nhận xét</h4>
+        <div className="header-subtitle">{comments.length} nhận xét trong hệ thống</div>
+      </motion.div>
 
       {/* Search */}
-      <div style={{
-        background: 'rgba(255,255,255,0.8)',
-        padding: '24px',
-        borderRadius: 16,
-        border: '1px solid #e2e8f0',
-        marginBottom: 32
-      }}>
-        <h5 style={{ 
-          color: '#2d3748', 
-          margin: '0 0 16px 0',
-          fontSize: 18,
-          fontWeight: 600
-        }}>
-          🔍 Tìm kiếm nhận xét
-        </h5>
+      <motion.div 
+        className="search-section"
+        variants={itemVariants}
+      >
+        <h5 className="search-title">🔍 Tìm kiếm nhận xét</h5>
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Tìm kiếm theo nội dung, học sinh, giáo viên..."
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            border: '2px solid #e2e8f0',
-            borderRadius: 12,
-            fontSize: 16,
-            transition: 'all 0.3s ease',
-            boxSizing: 'border-box'
-          }}
-          onFocus={(e) => e.target.style.borderColor = '#667eea'}
-          onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+          className="search-input"
         />
-      </div>
+      </motion.div>
 
       {/* Comments List */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-        gap: 20,
-        marginBottom: 40
-      }}>
+      <motion.div 
+        className="comments-grid"
+        variants={itemVariants}
+      >
         {comments.length === 0 ? (
-          <div style={{
-            gridColumn: '1 / -1',
-            textAlign: 'center',
-            padding: '60px 40px',
-            color: '#718096',
-            background: 'rgba(255,255,255,0.5)',
-            borderRadius: 16,
-            border: '2px dashed #e2e8f0'
-          }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
-            <div style={{ fontSize: 16, fontWeight: 500 }}>Chưa có nhận xét nào</div>
+          <div className="empty-state">
+            <div className="empty-icon">📭</div>
+            <div className="empty-text">Chưa có nhận xét nào</div>
           </div>
         ) : comments.map((comment) => {
           const studentName = comment.studentName || nameMap[comment.id + '_student'] || 'Không rõ học sinh';
           const teacherName = comment.teacherName || nameMap[comment.id + '_teacher'] || 'Không rõ giáo viên';
           return (
-            <div key={comment.id} style={{
-              background: 'white',
-              borderRadius: 16,
-              boxShadow: '0 4px 16px rgba(102, 126, 234, 0.08)',
-              border: '1.5px solid #e2e8f0',
-              padding: '28px 24px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 10,
-              minHeight: 180,
-              justifyContent: 'space-between',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
+            <motion.div 
+              key={comment.id} 
+              className="comment-card"
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
               {/* Tên học sinh */}
-              <div style={{
-                fontWeight: 700,
-                fontSize: 18,
-                color: '#2d3748',
-                marginBottom: 6
-              }}>
+              <div className="student-name">
                 {studentName}
               </div>
               {/* Nội dung nhận xét */}
-              <div style={{ color: '#4a5568', fontSize: 15, marginBottom: 8 }}>
+              <div className="comment-content">
                 {comment.content}
               </div>
               {/* Thông tin phụ */}
-              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 13, marginTop: 'auto' }}>
-                <div><span style={{ color: '#4a5568', fontWeight: 600 }}>Giáo viên:</span> {teacherName}</div>
-                <div><span style={{ color: '#4a5568', fontWeight: 600 }}>Loại:</span> {comment.type === 'positive' ? 'Tích cực' : comment.type === 'negative' ? 'Cần cải thiện' : 'Chung'}</div>
+              <div className="comment-info">
+                <div><span className="info-label">Giáo viên:</span> {teacherName}</div>
+                <div><span className="info-label">Loại:</span> {comment.type === 'positive' ? 'Tích cực' : comment.type === 'negative' ? 'Cần cải thiện' : 'Chung'}</div>
                 {/* Thời gian tạo */}
-                <div><span style={{ color: '#4a5568', fontWeight: 600 }}>Thời gian:</span> {(() => {
+                <div><span className="info-label">Thời gian:</span> {(() => {
                   const v = comment.createdAt;
                   if (!v) return 'N/A';
                   if (typeof v === 'string' || typeof v === 'number') return new Date(v).toLocaleString('vi-VN');
@@ -447,230 +363,93 @@ export default function CommentManager() {
                   return 'N/A';
                 })()}</div>
               </div>
-              {/* Action buttons giữ nguyên */}
-              <div style={{ display: 'flex', gap: 8 }}>
+              {/* Action buttons */}
+              <div className="action-buttons">
                 <button 
                   onClick={() => handleEditComment(comment)} 
-                  style={{
-                    padding: '8px 16px',
-                    background: 'linear-gradient(135deg, #38b2ac 0%, #319795 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    flex: 1
-                  }}
+                  className="btn-edit"
                 >
                   ✏️ Sửa
                 </button>
                 <button 
                   onClick={() => handleDelete(comment.id)} 
                   disabled={deletingId === comment.id} 
-                  style={{
-                    padding: '8px 16px',
-                    background: deletingId === comment.id 
-                      ? 'rgba(203, 213, 224, 0.8)' 
-                      : 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: deletingId === comment.id ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.3s ease',
-                    flex: 1
-                  }}
+                  className={`btn-delete ${deletingId === comment.id ? 'btn-loading' : ''}`}
                 >
                   {deletingId === comment.id ? 'Đang xóa...' : '🗑️ Xóa'}
                 </button>
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Edit Modal */}
-      {editingComment && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.6)',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px',
-          paddingTop: '40px'
-        }}>
-          <div className="fade-in" style={{
-            background: 'white',
-            borderRadius: 20,
-            padding: '30px',
-            maxWidth: 500,
-            width: '100%',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-            boxShadow: '0 25px 80px rgba(0, 0, 0, 0.4)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            animation: 'slideDown 0.3s ease-out'
-          }}>
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <div style={{
-                width: 60,
-                height: 60,
-                background: 'linear-gradient(135deg, #38b2ac 0%, #319795 100%)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 16px',
-                boxShadow: '0 8px 25px rgba(56, 178, 172, 0.3)'
-              }}>
-                <span style={{ fontSize: 24, color: 'white' }}>✏️</span>
+      <AnimatePresence>
+        {editingComment && (
+          <motion.div 
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div 
+              className="modal-content"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+            >
+              <div className="modal-header">
+                <div className="modal-icon">✏️</div>
+                <h4 className="modal-title">Chỉnh sửa nhận xét</h4>
+                <div className="modal-subtitle">
+                  Cập nhật nội dung nhận xét cho học sinh: <strong>{editingComment.studentName}</strong>
+                </div>
               </div>
-              <h4 style={{
-                color: '#2d3748',
-                margin: '0 0 8px 0',
-                fontSize: 20,
-                fontWeight: 700
-              }}>
-                Chỉnh sửa nhận xét
-              </h4>
-              <div style={{
-                color: '#718096',
-                fontSize: 14
-              }}>
-                Cập nhật nội dung nhận xét cho học sinh: <strong>{editingComment.studentName}</strong>
+
+              <div className="form-group">
+                <label className="form-label">
+                  📝 Nội dung nhận xét *
+                </label>
+                <textarea
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  required
+                  rows={6}
+                  className="form-textarea"
+                  placeholder="Nhập nội dung nhận xét mới..."
+                />
               </div>
-            </div>
 
-            <div style={{ marginBottom: 24 }}>
-              <label style={{
-                display: 'block',
-                fontWeight: 600,
-                color: '#2d3748',
-                marginBottom: 8,
-                fontSize: 14
-              }}>
-                📝 Nội dung nhận xét *
-              </label>
-              <textarea
-                value={editText}
-                onChange={(e) => setEditText(e.target.value)}
-                required
-                rows={6}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: '2px solid #e2e8f0',
-                  borderRadius: 12,
-                  fontSize: 16,
-                  transition: 'all 0.3s ease',
-                  boxSizing: 'border-box',
-                  resize: 'vertical'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
-                onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
-                placeholder="Nhập nội dung nhận xét mới..."
-              />
-            </div>
+              <div className="modal-actions">
+                <button
+                  onClick={handleCancelEdit}
+                  className="btn-cancel"
+                >
+                  ❌ Hủy bỏ
+                </button>
+                <button
+                  onClick={handleUpdateComment}
+                  disabled={updatingCommentId === editingComment.id}
+                  className={`btn-update ${updatingCommentId === editingComment.id ? 'btn-loading' : ''}`}
+                >
+                  {updatingCommentId === editingComment.id ? (
+                    <>
+                      <div className="loading-spinner-small"></div>
+                      Đang cập nhật...
+                    </>
+                  ) : (
+                    '💾 Cập nhật'
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
 
-            <div style={{
-              display: 'flex',
-              gap: 12,
-              justifyContent: 'center'
-            }}>
-              <button
-                onClick={handleCancelEdit}
-                style={{
-                  padding: '12px 24px',
-                  background: 'rgba(226, 232, 240, 0.8)',
-                  color: '#4a5568',
-                  border: 'none',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  minWidth: 120
-                }}
-              >
-                ❌ Hủy bỏ
-              </button>
-              <button
-                onClick={handleUpdateComment}
-                disabled={updatingCommentId === editingComment.id}
-                style={{
-                  padding: '12px 24px',
-                  background: updatingCommentId === editingComment.id 
-                    ? 'rgba(203, 213, 224, 0.8)' 
-                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: 600,
-                  cursor: updatingCommentId === editingComment.id ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
-                  minWidth: 120,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8
-                }}
-              >
-                {updatingCommentId === editingComment.id ? (
-                  <>
-                    <div style={{
-                      width: 16,
-                      height: 16,
-                      border: '2px solid rgba(255,255,255,0.3)',
-                      borderTop: '2px solid white',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite'
-                    }} />
-                    Đang cập nhật...
-                  </>
-                ) : (
-                  '💾 Cập nhật'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <style jsx>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .fade-in {
-          animation: fadeIn 0.3s ease-in;
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-      `}</style>
-    </div>
   );
 } 

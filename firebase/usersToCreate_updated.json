@@ -1,0 +1,449 @@
+[
+  {
+    "email": "admin1@example.com",
+    "password": "admin123",
+    "fullName": "Admin 1",
+    "role": "admin"
+  },
+  {
+    "email": "admin2@example.com",
+    "password": "admin123",
+    "fullName": "Admin 2",
+    "role": "admin"
+  },
+  {
+    "email": "teacher1@example.com",
+    "password": "teacher123",
+    "fullName": "Nguyễn Thị Anh",
+    "role": "teacher",
+    "phone": "0909000001"
+  },
+  {
+    "email": "teacher2@example.com",
+    "password": "teacher123",
+    "fullName": "Trần Văn Bình",
+    "role": "teacher",
+    "phone": "0909000002"
+  },
+  {
+    "email": "teacher3@example.com",
+    "password": "teacher123",
+    "fullName": "Lê Thị Cẩm",
+    "role": "teacher",
+    "phone": "0909000003"
+  },
+  {
+    "email": "teacher4@example.com",
+    "password": "teacher123",
+    "fullName": "Phạm Văn Dũng",
+    "role": "teacher",
+    "phone": "0909000004"
+  },
+  {
+    "email": "teacher5@example.com",
+    "password": "teacher123",
+    "fullName": "Hoàng Thị Em",
+    "role": "teacher",
+    "phone": "0909000005"
+  },
+  {
+    "email": "parent1@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 1",
+    "role": "parent",
+    "phone": "0911000001",
+    "linkedStudentIds": [
+      "student001"
+    ]
+  },
+  {
+    "email": "parent2@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 2",
+    "role": "parent",
+    "phone": "0911000002",
+    "linkedStudentIds": [
+      "student002"
+    ]
+  },
+  {
+    "email": "parent3@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 3",
+    "role": "parent",
+    "phone": "0911000003",
+    "linkedStudentIds": [
+      "student003"
+    ]
+  },
+  {
+    "email": "parent4@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 4",
+    "role": "parent",
+    "phone": "0911000004",
+    "linkedStudentIds": [
+      "student004"
+    ]
+  },
+  {
+    "email": "parent5@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 5",
+    "role": "parent",
+    "phone": "0911000005",
+    "linkedStudentIds": [
+      "student005"
+    ]
+  },
+  {
+    "email": "parent6@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 6",
+    "role": "parent",
+    "phone": "0911000006",
+    "linkedStudentIds": [
+      "student006"
+    ]
+  },
+  {
+    "email": "parent7@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 7",
+    "role": "parent",
+    "phone": "0911000007",
+    "linkedStudentIds": [
+      "student007"
+    ]
+  },
+  {
+    "email": "parent8@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 8",
+    "role": "parent",
+    "phone": "0911000008",
+    "linkedStudentIds": [
+      "student008"
+    ]
+  },
+  {
+    "email": "parent9@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 9",
+    "role": "parent",
+    "phone": "0911000009",
+    "linkedStudentIds": [
+      "student009"
+    ]
+  },
+  {
+    "email": "parent10@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 10",
+    "role": "parent",
+    "phone": "0911000010",
+    "linkedStudentIds": [
+      "student010"
+    ]
+  },
+  {
+    "email": "parent11@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 11",
+    "role": "parent",
+    "phone": "0911000011",
+    "linkedStudentIds": [
+      "student011"
+    ]
+  },
+  {
+    "email": "parent12@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 12",
+    "role": "parent",
+    "phone": "0911000012",
+    "linkedStudentIds": [
+      "student012"
+    ]
+  },
+  {
+    "email": "parent13@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 13",
+    "role": "parent",
+    "phone": "0911000013",
+    "linkedStudentIds": [
+      "student013"
+    ]
+  },
+  {
+    "email": "parent14@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 14",
+    "role": "parent",
+    "phone": "0911000014",
+    "linkedStudentIds": [
+      "student014"
+    ]
+  },
+  {
+    "email": "parent15@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 15",
+    "role": "parent",
+    "phone": "0911000015",
+    "linkedStudentIds": [
+      "student015"
+    ]
+  },
+  {
+    "email": "parent16@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 16",
+    "role": "parent",
+    "phone": "0911000016",
+    "linkedStudentIds": [
+      "student016"
+    ]
+  },
+  {
+    "email": "parent17@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 17",
+    "role": "parent",
+    "phone": "0911000017",
+    "linkedStudentIds": [
+      "student017"
+    ]
+  },
+  {
+    "email": "parent18@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 18",
+    "role": "parent",
+    "phone": "0911000018",
+    "linkedStudentIds": [
+      "student018"
+    ]
+  },
+  {
+    "email": "parent19@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 19",
+    "role": "parent",
+    "phone": "0911000019",
+    "linkedStudentIds": [
+      "student019"
+    ]
+  },
+  {
+    "email": "parent20@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 20",
+    "role": "parent",
+    "phone": "0911000020",
+    "linkedStudentIds": [
+      "student020"
+    ]
+  },
+  {
+    "email": "parent21@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 21",
+    "role": "parent",
+    "phone": "0911000021",
+    "linkedStudentIds": [
+      "student021"
+    ]
+  },
+  {
+    "email": "parent22@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 22",
+    "role": "parent",
+    "phone": "0911000022",
+    "linkedStudentIds": [
+      "student022"
+    ]
+  },
+  {
+    "email": "parent23@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 23",
+    "role": "parent",
+    "phone": "0911000023",
+    "linkedStudentIds": [
+      "student023"
+    ]
+  },
+  {
+    "email": "parent24@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 24",
+    "role": "parent",
+    "phone": "0911000024",
+    "linkedStudentIds": [
+      "student024"
+    ]
+  },
+  {
+    "email": "parent25@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 25",
+    "role": "parent",
+    "phone": "0911000025",
+    "linkedStudentIds": [
+      "student025"
+    ]
+  },
+  {
+    "email": "parent26@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 26",
+    "role": "parent",
+    "phone": "0911000026",
+    "linkedStudentIds": [
+      "student026"
+    ]
+  },
+  {
+    "email": "parent27@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 27",
+    "role": "parent",
+    "phone": "0911000027",
+    "linkedStudentIds": [
+      "student027"
+    ]
+  },
+  {
+    "email": "parent28@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 28",
+    "role": "parent",
+    "phone": "0911000028",
+    "linkedStudentIds": [
+      "student028"
+    ]
+  },
+  {
+    "email": "parent29@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 29",
+    "role": "parent",
+    "phone": "0911000029",
+    "linkedStudentIds": [
+      "student029"
+    ]
+  },
+  {
+    "email": "parent30@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 30",
+    "role": "parent",
+    "phone": "0911000030",
+    "linkedStudentIds": [
+      "student030"
+    ]
+  },
+  {
+    "email": "parent31@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 31",
+    "role": "parent",
+    "phone": "0911000031",
+    "linkedStudentIds": [
+      "student031"
+    ]
+  },
+  {
+    "email": "parent32@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 32",
+    "role": "parent",
+    "phone": "0911000032",
+    "linkedStudentIds": [
+      "student032"
+    ]
+  },
+  {
+    "email": "parent33@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 33",
+    "role": "parent",
+    "phone": "0911000033",
+    "linkedStudentIds": [
+      "student033"
+    ]
+  },
+  {
+    "email": "parent34@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 34",
+    "role": "parent",
+    "phone": "0911000034",
+    "linkedStudentIds": [
+      "student034"
+    ]
+  },
+  {
+    "email": "parent35@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 35",
+    "role": "parent",
+    "phone": "0911000035",
+    "linkedStudentIds": [
+      "student035"
+    ]
+  },
+  {
+    "email": "parent36@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 36",
+    "role": "parent",
+    "phone": "0911000036",
+    "linkedStudentIds": [
+      "student036"
+    ]
+  },
+  {
+    "email": "parent37@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 37",
+    "role": "parent",
+    "phone": "0911000037",
+    "linkedStudentIds": [
+      "student037"
+    ]
+  },
+  {
+    "email": "parent38@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 38",
+    "role": "parent",
+    "phone": "0911000038",
+    "linkedStudentIds": [
+      "student038"
+    ]
+  },
+  {
+    "email": "parent39@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 39",
+    "role": "parent",
+    "phone": "0911000039",
+    "linkedStudentIds": [
+      "student039"
+    ]
+  },
+  {
+    "email": "parent40@example.com",
+    "password": "parent123",
+    "fullName": "Phụ huynh 40",
+    "role": "parent",
+    "phone": "0911000040",
+    "linkedStudentIds": [
+      "student040"
+    ]
+  }
+]

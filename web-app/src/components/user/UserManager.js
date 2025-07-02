@@ -166,6 +166,25 @@ export default function UserManager() {
     }
   };
 
+  // Hàm cập nhật deviceToken cho tất cả phụ huynh
+  const setDeviceTokenForAllParents = async () => {
+    if (!window.confirm('Bạn có chắc chắn muốn thêm trường deviceToken cho tất cả phụ huynh?')) return;
+    try {
+      const querySnapshot = await getDocs(collection(db, 'users'));
+      let count = 0;
+      for (const docSnap of querySnapshot.docs) {
+        const user = docSnap.data();
+        if (user.role === 'parent' && !user.deviceToken) {
+          await updateDoc(doc(db, 'users', docSnap.id), { deviceToken: "" });
+          count++;
+        }
+      }
+      alert(`Đã thêm trường deviceToken cho ${count} phụ huynh!`);
+    } catch (err) {
+      alert('Lỗi khi cập nhật deviceToken: ' + err.message);
+    }
+  };
+
   if (loading) return (
     <div style={{
       display: 'flex',
@@ -533,6 +552,10 @@ export default function UserManager() {
           </div>
         ))}
       </div>
+
+      <button onClick={setDeviceTokenForAllParents} style={{marginBottom: 20, background: '#38a169', color: 'white', padding: 10, borderRadius: 5}}>
+        Thêm trường deviceToken cho tất cả phụ huynh
+      </button>
     </div>
   );
 } 

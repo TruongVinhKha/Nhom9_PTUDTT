@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../../firebaseConfig';
 import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import UpdateForm from '../common/UpdateForm';
 import Modal from '../common/Modal';
+import { 
+  unifiedEntranceVariants, 
+  containerVariants, 
+  itemVariants, 
+  buttonVariants,
+  cardVariants,
+  notificationVariants,
+  modalVariants,
+  spinnerVariants
+} from '../../utils/animations';
 
 export default function StudentManager() {
   const [students, setStudents] = useState([]);
@@ -129,524 +140,523 @@ export default function StudentManager() {
 
   if (loading) {
     return (
-      <div className="fade-in" style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '40vh',
-        flexDirection: 'column',
-        gap: 20
-      }}>
-        <div style={{
-          width: 40,
-          height: 40,
-          border: '3px solid rgba(102, 126, 234, 0.2)',
-          borderTop: '3px solid #667eea',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }} />
-        <div style={{ color: '#667eea', fontSize: 16, fontWeight: 600 }}>Đang tải danh sách học sinh...</div>
-      </div>
+      <motion.div 
+        className="App flex items-center justify-center"
+        style={{ minHeight: '40vh', flexDirection: 'column', gap: 24 }}
+        variants={unifiedEntranceVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div 
+          className="unified-loading"
+          variants={spinnerVariants}
+          animate="animate"
+        />
+        <motion.div 
+          className="unified-gradient-text"
+          style={{ fontSize: 18, fontWeight: 600, textAlign: 'center' }}
+          variants={unifiedEntranceVariants}
+          initial="hidden"
+          animate="visible"
+          transition={{ delay: 0.2 }}
+        >
+          Đang tải danh sách học sinh...
+        </motion.div>
+      </motion.div>
     );
   }
 
   if (error) {
     return (
-      <div className="fade-in" style={{
-        maxWidth: 600,
-        margin: '40px auto',
-        padding: '30px',
-        background: 'rgba(255,255,255,0.95)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: 20,
-        boxShadow: '0 15px 40px rgba(0,0,0,0.1)',
-        border: '1px solid rgba(255,255,255,0.2)',
-        textAlign: 'center'
-      }}>
-        <div style={{
-          width: 60,
-          height: 60,
-          background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 16px',
-          boxShadow: '0 6px 20px rgba(229, 62, 62, 0.3)'
-        }}>
-          <span style={{ fontSize: 24, color: 'white' }}>⚠️</span>
-        </div>
-        <h4 style={{ color: '#e53e3e', marginBottom: 12 }}>Có lỗi xảy ra</h4>
-        <div style={{ color: '#718096' }}>{error}</div>
-      </div>
+      <motion.div 
+        className="unified-card text-center"
+        style={{
+          maxWidth: 600,
+          margin: '40px auto',
+          padding: '30px'
+        }}
+        variants={unifiedEntranceVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div
+          className="unified-avatar"
+          style={{ 
+            width: 60, 
+            height: 60, 
+            margin: '0 auto 16px',
+            background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
+            fontSize: 24
+          }}
+          variants={itemVariants}
+        >
+          ⚠️
+        </motion.div>
+        <motion.h4 
+          className="unified-gradient-text"
+          style={{ marginBottom: 12, fontSize: 20 }}
+          variants={itemVariants}
+        >
+          Có lỗi xảy ra
+        </motion.h4>
+        <motion.div 
+          style={{ color: '#666' }}
+          variants={itemVariants}
+        >
+          {error}
+        </motion.div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="fade-in" style={{
-      maxWidth: 1200,
-      margin: '40px auto',
-      padding: '40px 30px',
-      background: 'rgba(255,255,255,0.95)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: 24,
-      boxShadow: '0 20px 60px rgba(0,0,0,0.1)',
-      border: '1px solid rgba(255,255,255,0.2)'
-    }}>
+    <motion.div
+      className="unified-card"
+      style={{
+        maxWidth: 1200,
+        margin: '40px auto',
+        padding: '40px 30px'
+      }}
+      variants={unifiedEntranceVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <div style={{
-          width: 70,
-          height: 70,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 16px',
-          boxShadow: '0 8px 25px rgba(102, 126, 234, 0.3)'
-        }}>
-          <span style={{ fontSize: 28, color: 'white' }}>👨‍🎓</span>
-        </div>
-        <h4 style={{ 
-          color: '#2d3748', 
-          margin: '0 0 8px 0',
-          fontSize: 24,
-          fontWeight: 700
-        }}>
+      <motion.div 
+        className="text-center mb-24"
+        variants={itemVariants}
+      >
+        <motion.div
+          className="unified-avatar"
+          style={{ 
+            width: 70, 
+            height: 70, 
+            margin: '0 auto 16px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            fontSize: 28
+          }}
+          variants={itemVariants}
+        >
+          👨‍🎓
+        </motion.div>
+        <motion.h4 
+          className="unified-gradient-text"
+          style={{ 
+            margin: '0 0 8px 0',
+            fontSize: 24,
+            fontWeight: 700
+          }}
+          variants={itemVariants}
+        >
           Quản lý học sinh
-        </h4>
-        <div style={{ 
-          color: '#718096',
-          fontSize: 16
-        }}>
+        </motion.h4>
+        <motion.div 
+          style={{ 
+            color: '#666',
+            fontSize: 16
+          }}
+          variants={itemVariants}
+        >
           {students.length} học sinh trong hệ thống
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      {/* Thông báo thành công/thất bại */}
-      {success && (
-        <div style={{
-          padding: '16px',
-          background: 'linear-gradient(135deg, #c6f6d5 0%, #38a169 100%)',
-          borderRadius: 14,
-          marginBottom: 24,
-          border: '1.5px solid #38a169',
-          color: '#22543d',
-          fontWeight: 700,
-          fontSize: 17,
-          boxShadow: '0 4px 18px rgba(56, 161, 105, 0.13)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10
-        }}>
-          <span style={{ fontSize: 22 }}>✅</span> {success}
-        </div>
-      )}
-      {error && (
-        <div style={{
-          padding: '16px',
-          background: 'linear-gradient(135deg, #fed7d7 0%, #e53e3e 100%)',
-          borderRadius: 14,
-          marginBottom: 24,
-          border: '1.5px solid #e53e3e',
-          color: '#c53030',
-          fontWeight: 700,
-          fontSize: 17,
-          boxShadow: '0 4px 18px rgba(229, 62, 62, 0.13)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10
-        }}>
-          <span style={{ fontSize: 22 }}>⚠️</span> {error}
-        </div>
-      )}
+      {/* Notifications */}
+      <AnimatePresence>
+        {success && (
+          <motion.div
+            className="unified-notification success"
+            variants={notificationVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <motion.span variants={itemVariants}>
+              ✅ {success}
+            </motion.span>
+          </motion.div>
+        )}
+        
+        {error && (
+          <motion.div
+            className="unified-notification error"
+            variants={notificationVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <motion.span variants={itemVariants}>
+              ❌ {error}
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Add Student Form */}
-      <div style={{
-        background: 'rgba(255,255,255,0.8)',
-        padding: '24px',
-        borderRadius: 16,
-        border: '1px solid #e2e8f0',
-        marginBottom: 32
-      }}>
-        <h5 style={{ 
-          color: '#2d3748', 
-          margin: '0 0 16px 0',
-          fontSize: 18,
-          fontWeight: 600
-        }}>
+      <motion.div
+        className="unified-card mb-24"
+        style={{ padding: '24px' }}
+        variants={cardVariants}
+        whileHover="hover"
+      >
+        <motion.h5 
+          className="unified-gradient-text mb-16"
+          style={{ fontSize: 18, fontWeight: 600 }}
+          variants={itemVariants}
+        >
           📝 Thêm học sinh mới
-        </h5>
+        </motion.h5>
         
-        <form onSubmit={handleAdd} style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 16,
-          alignItems: 'end'
-        }}>
-          <div>
-            <label style={{
-              display: 'block',
-              fontWeight: 600,
-              color: '#2d3748',
-              marginBottom: 8,
-              fontSize: 14
-            }}>
+        <motion.form 
+          onSubmit={handleAdd} 
+          className="grid grid-2 gap-16"
+          style={{ alignItems: 'end' }}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={itemVariants}>
+            <motion.label
+              className="unified-input-label"
+              style={{ display: 'block', fontWeight: 600, marginBottom: 8, color: '#333', fontSize: 14 }}
+              variants={itemVariants}
+            >
               👤 Tên học sinh *
-            </label>
-            <input
+            </motion.label>
+            <motion.input
               type="text"
               value={newStudent.name}
               onChange={e => setNewStudent(s => ({ ...s, name: e.target.value }))}
               placeholder="Nhập tên học sinh"
               required
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '2px solid #e2e8f0',
-                borderRadius: 12,
-                fontSize: 16,
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              className="unified-input"
+              variants={itemVariants}
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label style={{
-              display: 'block',
-              fontWeight: 600,
-              color: '#2d3748',
-              marginBottom: 8,
-              fontSize: 14
-            }}>
+          <motion.div variants={itemVariants}>
+            <motion.label
+              className="unified-input-label"
+              style={{ display: 'block', fontWeight: 600, marginBottom: 8, color: '#333', fontSize: 14 }}
+              variants={itemVariants}
+            >
               🆔 Mã học sinh
-            </label>
-            <input
+            </motion.label>
+            <motion.input
               type="text"
               value={newStudent.studentCode}
               onChange={e => setNewStudent(s => ({ ...s, studentCode: e.target.value }))}
               placeholder="Nhập mã học sinh"
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '2px solid #e2e8f0',
-                borderRadius: 12,
-                fontSize: 16,
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              className="unified-input"
+              variants={itemVariants}
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label style={{
-              display: 'block',
-              fontWeight: 600,
-              color: '#2d3748',
-              marginBottom: 8,
-              fontSize: 14
-            }}>
+          <motion.div variants={itemVariants}>
+            <motion.label
+              className="unified-input-label"
+              style={{ display: 'block', fontWeight: 600, marginBottom: 8, color: '#333', fontSize: 14 }}
+              variants={itemVariants}
+            >
               🏫 Mã lớp *
-            </label>
-            <input
+            </motion.label>
+            <motion.input
               type="text"
               value={newStudent.classId}
               onChange={e => setNewStudent(s => ({ ...s, classId: e.target.value }))}
               placeholder="Nhập mã lớp"
               required
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '2px solid #e2e8f0',
-                borderRadius: 12,
-                fontSize: 16,
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              className="unified-input"
+              variants={itemVariants}
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label style={{
-              display: 'block',
-              fontWeight: 600,
-              color: '#2d3748',
-              marginBottom: 8,
-              fontSize: 14
-            }}>
+          <motion.div variants={itemVariants}>
+            <motion.label
+              className="unified-input-label"
+              style={{ display: 'block', fontWeight: 600, marginBottom: 8, color: '#333', fontSize: 14 }}
+              variants={itemVariants}
+            >
               📅 Ngày sinh
-            </label>
-            <input
+            </motion.label>
+            <motion.input
               type="date"
               value={newStudent.dateOfBirth}
               onChange={e => setNewStudent(s => ({ ...s, dateOfBirth: e.target.value }))}
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '2px solid #e2e8f0',
-                borderRadius: 12,
-                fontSize: 16,
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              className="unified-input"
+              variants={itemVariants}
             />
-          </div>
+          </motion.div>
 
-          <div>
-            <label style={{
-              display: 'block',
-              fontWeight: 600,
-              color: '#2d3748',
-              marginBottom: 8,
-              fontSize: 14
-            }}>
+          <motion.div variants={itemVariants}>
+            <motion.label
+              className="unified-input-label"
+              style={{ display: 'block', fontWeight: 600, marginBottom: 8, color: '#333', fontSize: 14 }}
+              variants={itemVariants}
+            >
               👥 Giới tính
-            </label>
-            <select
+            </motion.label>
+            <motion.select
               value={newStudent.gender}
               onChange={e => setNewStudent(s => ({ ...s, gender: e.target.value }))}
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '2px solid #e2e8f0',
-                borderRadius: 12,
-                fontSize: 16,
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box',
-                background: 'white'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              className="unified-input"
+              style={{ background: 'white' }}
+              variants={itemVariants}
             >
               <option value="">Chọn giới tính</option>
               <option value="Nam">Nam</option>
               <option value="Nữ">Nữ</option>
               <option value="Khác">Khác</option>
-            </select>
-          </div>
+            </motion.select>
+          </motion.div>
 
-          <div>
-            <label style={{
-              display: 'block',
-              fontWeight: 600,
-              color: '#2d3748',
-              marginBottom: 8,
-              fontSize: 14
-            }}>
+          <motion.div variants={itemVariants}>
+            <motion.label
+              className="unified-input-label"
+              style={{ display: 'block', fontWeight: 600, marginBottom: 8, color: '#333', fontSize: 14 }}
+              variants={itemVariants}
+            >
               🎓 Niên khóa
-            </label>
-            <input
+            </motion.label>
+            <motion.input
               type="text"
               value={newStudent.academicYear}
               onChange={e => setNewStudent(s => ({ ...s, academicYear: e.target.value }))}
               placeholder="VD: 2023-2024"
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                border: '2px solid #e2e8f0',
-                borderRadius: 12,
-                fontSize: 16,
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              className="unified-input"
+              variants={itemVariants}
             />
-          </div>
+          </motion.div>
 
-          <button 
+          <motion.button 
             type="submit" 
             disabled={processingId === 'add'} 
-            style={{
-              padding: '12px 24px',
-              background: processingId === 'add' 
-                ? 'rgba(203, 213, 224, 0.8)' 
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 12,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: processingId === 'add' ? 'not-allowed' : 'pointer',
-              transition: 'all 0.3s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              minHeight: '48px'
-            }}
+            className="unified-button"
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            style={{ minHeight: '48px' }}
           >
             {processingId === 'add' ? (
-              <>
-                <div style={{
-                  width: 16,
-                  height: 16,
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  borderTop: '2px solid white',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite'
-                }} />
-                Đang thêm...
-              </>
+              <motion.div
+                className="flex items-center gap-8"
+                variants={itemVariants}
+              >
+                <motion.div 
+                  className="unified-loading"
+                  style={{ width: 16, height: 16, borderWidth: 2 }}
+                  variants={spinnerVariants}
+                  animate="animate"
+                />
+                <motion.span variants={itemVariants}>
+                  Đang thêm...
+                </motion.span>
+              </motion.div>
             ) : (
-              '➕ Thêm học sinh'
+              <motion.span variants={itemVariants}>
+                ➕ Thêm học sinh
+              </motion.span>
             )}
-          </button>
-        </form>
-      </div>
+          </motion.button>
+        </motion.form>
+      </motion.div>
 
       {/* Students List */}
-      <div style={{ marginBottom: 24 }}>
-        <h5 style={{ 
-          color: '#2d3748', 
-          margin: '0 0 16px 0',
-          fontSize: 18,
-          fontWeight: 600
-        }}>
+      <motion.div 
+        className="mb-24"
+        variants={itemVariants}
+      >
+        <motion.h5 
+          className="unified-gradient-text"
+          style={{ 
+            margin: '0 0 16px 0',
+            fontSize: 18,
+            fontWeight: 600
+          }}
+          variants={itemVariants}
+        >
           📋 Danh sách học sinh
-        </h5>
-      </div>
+        </motion.h5>
+      </motion.div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: 16
-      }}>
+      <motion.div
+        className="grid grid-2 gap-16"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {students.length === 0 ? (
-          <div style={{
-            gridColumn: '1 / -1',
-            textAlign: 'center',
-            padding: '40px 20px',
-            color: '#718096',
-            background: 'rgba(255,255,255,0.5)',
-            borderRadius: 16,
-            border: '2px dashed #e2e8f0'
-          }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
-            <div style={{ fontSize: 16, fontWeight: 500 }}>Chưa có học sinh nào</div>
-            <div style={{ fontSize: 14, marginTop: 8 }}>Hãy thêm học sinh đầu tiên</div>
-          </div>
+          <motion.div
+            className="text-center"
+            style={{
+              gridColumn: '1 / -1',
+              padding: '40px 20px',
+              color: '#666',
+              background: 'rgba(255,255,255,0.5)',
+              borderRadius: 16,
+              border: '2px dashed #e2e8f0'
+            }}
+            variants={itemVariants}
+          >
+            <motion.div 
+              className="unified-avatar"
+              style={{ width: 64, height: 64, margin: '0 auto 16px', fontSize: 48 }}
+              variants={itemVariants}
+            >
+              📭
+            </motion.div>
+            <motion.div 
+              style={{ fontSize: 16, fontWeight: 500 }}
+              variants={itemVariants}
+            >
+              Chưa có học sinh nào
+            </motion.div>
+            <motion.div 
+              style={{ fontSize: 14, marginTop: 8 }}
+              variants={itemVariants}
+            >
+              Hãy thêm học sinh đầu tiên
+            </motion.div>
+          </motion.div>
         ) : students.map(stu => (
-          <div key={stu.id} style={{
-            padding: '20px',
-            background: 'rgba(255,255,255,0.8)',
-            border: '1px solid #e2e8f0',
-            borderRadius: 16,
-            transition: 'all 0.3s ease'
-          }}>
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ 
-                fontWeight: 700, 
-                color: '#667eea', 
-                fontSize: 18,
-                marginBottom: 8
-              }}>
+          <motion.div
+            key={stu.id}
+            className="unified-list-item"
+            variants={itemVariants}
+            whileHover="hover"
+            style={{ padding: '20px' }}
+          >
+            <motion.div 
+              className="mb-16"
+              variants={itemVariants}
+            >
+              <motion.div 
+                style={{ 
+                  fontWeight: 700, 
+                  color: '#667eea', 
+                  fontSize: 18,
+                  marginBottom: 8
+                }}
+                variants={itemVariants}
+              >
                 {stu.fullName || stu.name || stu.id}
-              </div>
+              </motion.div>
               
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: 8,
-                fontSize: 14,
-                color: '#4a5568'
-              }}>
-                <div>
+              <motion.div
+                className="grid grid-2 gap-8"
+                style={{ fontSize: 14, color: '#4a5568' }}
+                variants={itemVariants}
+              >
+                <motion.div variants={itemVariants}>
                   <span style={{ fontWeight: 600, color: '#2d3748' }}>🆔 Mã HS:</span> {stu.studentCode || 'Chưa có'}
-                </div>
-                <div>
+                </motion.div>
+                <motion.div variants={itemVariants}>
                   <span style={{ fontWeight: 600, color: '#2d3748' }}>🏫 Lớp:</span> {stu.classId}
-                </div>
-                <div>
+                </motion.div>
+                <motion.div variants={itemVariants}>
                   <span style={{ fontWeight: 600, color: '#2d3748' }}>📅 Ngày sinh:</span> {stu.dateOfBirth ? new Date(stu.dateOfBirth).toLocaleDateString('vi-VN') : 'Chưa có'}
-                </div>
-                <div>
+                </motion.div>
+                <motion.div variants={itemVariants}>
                   <span style={{ fontWeight: 600, color: '#2d3748' }}>👥 Giới tính:</span> {stu.gender || 'Chưa có'}
-                </div>
-                <div style={{ gridColumn: '1 / -1' }}>
+                </motion.div>
+                <motion.div 
+                  style={{ gridColumn: '1 / -1' }}
+                  variants={itemVariants}
+                >
                   <span style={{ fontWeight: 600, color: '#2d3748' }}>🎓 Niên khóa:</span> {stu.academicYear || 'Chưa có'}
-                </div>
-              </div>
-            </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
             
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button 
+            <motion.div 
+              className="flex gap-8"
+              variants={itemVariants}
+            >
+              <motion.button 
                 onClick={() => handleEdit(stu)} 
+                className="unified-button"
                 style={{
-                  padding: '8px 16px',
                   background: 'linear-gradient(135deg, #38b2ac 0%, #319795 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 8,
+                  padding: '8px 16px',
                   fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
                   flex: 1
                 }}
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
               >
                 ✏️ Sửa
-              </button>
-              <button 
+              </motion.button>
+              <motion.button 
                 onClick={() => handleDelete(stu.id)} 
                 disabled={processingId === stu.id} 
+                className="unified-button"
                 style={{
+                  background: 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
                   padding: '8px 16px',
-                  background: processingId === stu.id 
-                    ? 'rgba(203, 213, 224, 0.8)' 
-                    : 'linear-gradient(135deg, #e53e3e 0%, #c53030 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: 8,
                   fontSize: 12,
-                  fontWeight: 600,
-                  cursor: processingId === stu.id ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
                   flex: 1
                 }}
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
               >
-                {processingId === stu.id ? 'Đang xóa...' : '🗑️ Xóa'}
-              </button>
-            </div>
-          </div>
+                {processingId === stu.id ? (
+                  <motion.div
+                    className="unified-loading"
+                    style={{ width: 16, height: 16, borderWidth: 2 }}
+                    variants={spinnerVariants}
+                    animate="animate"
+                  />
+                ) : (
+                  '🗑️ Xóa'
+                )}
+              </motion.button>
+            </motion.div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Edit Modal */}
-      {editingStudent && (
-        <Modal open={!!editingStudent} onClose={() => setEditingStudent(null)}>
-          <UpdateForm
-            data={editingStudent}
-            onChange={setEditingStudent}
-            onSubmit={handleUpdate}
-            onCancel={() => setEditingStudent(null)}
-            loading={processingId === editingStudent.id}
-            fields={[
-              { key: 'fullName', label: 'Tên học sinh', type: 'text', required: true },
-              { key: 'studentCode', label: 'Mã học sinh', type: 'text' },
-              { key: 'classId', label: 'Mã lớp', type: 'text', required: true },
-              { key: 'dateOfBirth', label: 'Ngày sinh', type: 'date' },
-              { key: 'gender', label: 'Giới tính', type: 'select', options: [
-                { value: '', label: 'Chọn giới tính' },
-                { value: 'Nam', label: 'Nam' },
-                { value: 'Nữ', label: 'Nữ' },
-                { value: 'Khác', label: 'Khác' }
-              ]},
-              { key: 'academicYear', label: 'Niên khóa', type: 'text' }
-            ]}
-          />
-        </Modal>
-      )}
-    </div>
+      <AnimatePresence>
+        {editingStudent && (
+          <motion.div
+            className="unified-modal"
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            onClick={() => setEditingStudent(null)}
+          >
+            <motion.div
+              className="unified-modal-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="unified-gradient-text mb-16">✏️ Chỉnh Sửa Học Sinh</h3>
+              <UpdateForm
+                data={editingStudent}
+                onChange={setEditingStudent}
+                onSubmit={handleUpdate}
+                onCancel={() => setEditingStudent(null)}
+                loading={processingId === editingStudent.id}
+                fields={[
+                  { key: 'fullName', label: 'Tên học sinh', type: 'text', required: true },
+                  { key: 'studentCode', label: 'Mã học sinh', type: 'text' },
+                  { key: 'classId', label: 'Mã lớp', type: 'text', required: true },
+                  { key: 'dateOfBirth', label: 'Ngày sinh', type: 'date' },
+                  { key: 'gender', label: 'Giới tính', type: 'select', options: [
+                    { value: '', label: 'Chọn giới tính' },
+                    { value: 'Nam', label: 'Nam' },
+                    { value: 'Nữ', label: 'Nữ' },
+                    { value: 'Khác', label: 'Khác' }
+                  ]},
+                  { key: 'academicYear', label: 'Niên khóa', type: 'text' }
+                ]}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 } 

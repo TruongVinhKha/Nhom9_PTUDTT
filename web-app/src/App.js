@@ -46,30 +46,12 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        background: '#f7fafd'
-      }}>
-        <div style={{
-          textAlign: 'center',
-          padding: '32px',
-          background: 'white',
-          borderRadius: '16px',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)'
-        }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            border: '4px solid #e3eefd',
-            borderTop: '4px solid #2d6cdf',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 16px'
-          }} />
-          <div style={{ color: '#2d6cdf', fontSize: '18px', fontWeight: '500' }}>Đang tải...</div>
+      <div className="App flex items-center justify-center" style={{ minHeight: '100vh' }}>
+        <div className="unified-card text-center" style={{ padding: '32px' }}>
+          <div className="unified-loading mb-16"></div>
+          <div className="unified-gradient-text" style={{ fontSize: '18px', fontWeight: '500' }}>
+            Đang tải...
+          </div>
         </div>
       </div>
     );

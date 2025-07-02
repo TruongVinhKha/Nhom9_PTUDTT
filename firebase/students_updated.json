@@ -1,0 +1,902 @@
+[
+  {
+    "id": "student001",
+    "fullName": "Học sinh 1",
+    "classId": "6A1",
+    "dateOfBirth": "2009-08-23",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student002",
+    "fullName": "Học sinh 2",
+    "classId": "6A1",
+    "dateOfBirth": "2009-05-02",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student003",
+    "fullName": "Học sinh 3",
+    "classId": "6A1",
+    "dateOfBirth": "2011-05-04",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student004",
+    "fullName": "Học sinh 4",
+    "classId": "6A1",
+    "dateOfBirth": "2010-10-16",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student005",
+    "fullName": "Học sinh 5",
+    "classId": "6A1",
+    "dateOfBirth": "2011-12-26",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student006",
+    "fullName": "Học sinh 6",
+    "classId": "6A1",
+    "dateOfBirth": "2011-11-13",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student007",
+    "fullName": "Học sinh 7",
+    "classId": "6A1",
+    "dateOfBirth": "2010-01-11",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student008",
+    "fullName": "Học sinh 8",
+    "classId": "6A1",
+    "dateOfBirth": "2009-10-31",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student009",
+    "fullName": "Học sinh 9",
+    "classId": "6A1",
+    "dateOfBirth": "2011-05-14",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student010",
+    "fullName": "Học sinh 10",
+    "classId": "6A1",
+    "dateOfBirth": "2011-06-13",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student011",
+    "fullName": "Học sinh 11",
+    "classId": "6A2",
+    "dateOfBirth": "2011-09-08",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student012",
+    "fullName": "Học sinh 12",
+    "classId": "6A2",
+    "dateOfBirth": "2009-04-17",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student013",
+    "fullName": "Học sinh 13",
+    "classId": "6A2",
+    "dateOfBirth": "2011-02-15",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student014",
+    "fullName": "Học sinh 14",
+    "classId": "6A2",
+    "dateOfBirth": "2010-04-28",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student015",
+    "fullName": "Học sinh 15",
+    "classId": "6A2",
+    "dateOfBirth": "2009-01-30",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student016",
+    "fullName": "Học sinh 16",
+    "classId": "6A2",
+    "dateOfBirth": "2011-07-13",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student017",
+    "fullName": "Học sinh 17",
+    "classId": "6A2",
+    "dateOfBirth": "2009-04-14",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student018",
+    "fullName": "Học sinh 18",
+    "classId": "6A2",
+    "dateOfBirth": "2009-04-30",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student019",
+    "fullName": "Học sinh 19",
+    "classId": "6A2",
+    "dateOfBirth": "2009-07-11",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student020",
+    "fullName": "Học sinh 20",
+    "classId": "6A2",
+    "dateOfBirth": "2011-01-31",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student021",
+    "fullName": "Học sinh 21",
+    "classId": "6A3",
+    "dateOfBirth": "2010-09-01",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student022",
+    "fullName": "Học sinh 22",
+    "classId": "6A3",
+    "dateOfBirth": "2009-12-05",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student023",
+    "fullName": "Học sinh 23",
+    "classId": "6A3",
+    "dateOfBirth": "2009-06-05",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student024",
+    "fullName": "Học sinh 24",
+    "classId": "6A3",
+    "dateOfBirth": "2009-11-03",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student025",
+    "fullName": "Học sinh 25",
+    "classId": "6A3",
+    "dateOfBirth": "2011-05-27",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student026",
+    "fullName": "Học sinh 26",
+    "classId": "6A3",
+    "dateOfBirth": "2010-03-19",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student027",
+    "fullName": "Học sinh 27",
+    "classId": "6A3",
+    "dateOfBirth": "2011-08-22",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student028",
+    "fullName": "Học sinh 28",
+    "classId": "6A3",
+    "dateOfBirth": "2010-07-08",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student029",
+    "fullName": "Học sinh 29",
+    "classId": "6A3",
+    "dateOfBirth": "2009-02-14",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student030",
+    "fullName": "Học sinh 30",
+    "classId": "6A3",
+    "dateOfBirth": "2011-04-09",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student031",
+    "fullName": "Học sinh 31",
+    "classId": "6A4",
+    "dateOfBirth": "2010-12-25",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student032",
+    "fullName": "Học sinh 32",
+    "classId": "6A4",
+    "dateOfBirth": "2011-01-18",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student033",
+    "fullName": "Học sinh 33",
+    "classId": "6A4",
+    "dateOfBirth": "2009-03-07",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student034",
+    "fullName": "Học sinh 34",
+    "classId": "6A4",
+    "dateOfBirth": "2010-06-20",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student035",
+    "fullName": "Học sinh 35",
+    "classId": "6A4",
+    "dateOfBirth": "2011-10-12",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student036",
+    "fullName": "Học sinh 36",
+    "classId": "6A4",
+    "dateOfBirth": "2009-09-29",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student037",
+    "fullName": "Học sinh 37",
+    "classId": "6A4",
+    "dateOfBirth": "2010-11-05",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student038",
+    "fullName": "Học sinh 38",
+    "classId": "6A4",
+    "dateOfBirth": "2011-03-16",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student039",
+    "fullName": "Học sinh 39",
+    "classId": "6A4",
+    "dateOfBirth": "2009-08-07",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student040",
+    "fullName": "Học sinh 40",
+    "classId": "6A4",
+    "dateOfBirth": "2010-02-28",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student041",
+    "fullName": "Học sinh 41",
+    "classId": "6A5",
+    "dateOfBirth": "2011-07-04",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student042",
+    "fullName": "Học sinh 42",
+    "classId": "6A5",
+    "dateOfBirth": "2009-12-11",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student043",
+    "fullName": "Học sinh 43",
+    "classId": "6A5",
+    "dateOfBirth": "2010-05-24",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student044",
+    "fullName": "Học sinh 44",
+    "classId": "6A5",
+    "dateOfBirth": "2011-11-30",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student045",
+    "fullName": "Học sinh 45",
+    "classId": "6A5",
+    "dateOfBirth": "2009-06-18",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student046",
+    "fullName": "Học sinh 46",
+    "classId": "6A5",
+    "dateOfBirth": "2010-08-13",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student047",
+    "fullName": "Học sinh 47",
+    "classId": "6A5",
+    "dateOfBirth": "2011-04-01",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student048",
+    "fullName": "Học sinh 48",
+    "classId": "6A5",
+    "dateOfBirth": "2009-10-09",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student049",
+    "fullName": "Học sinh 49",
+    "classId": "6A5",
+    "dateOfBirth": "2010-01-26",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student050",
+    "fullName": "Học sinh 50",
+    "classId": "6A5",
+    "dateOfBirth": "2011-09-15",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student051",
+    "fullName": "Học sinh 51",
+    "classId": "6A6",
+    "dateOfBirth": "2010-03-03",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student052",
+    "fullName": "Học sinh 52",
+    "classId": "6A6",
+    "dateOfBirth": "2011-12-08",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student053",
+    "fullName": "Học sinh 53",
+    "classId": "6A6",
+    "dateOfBirth": "2009-07-22",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student054",
+    "fullName": "Học sinh 54",
+    "classId": "6A6",
+    "dateOfBirth": "2010-11-17",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student055",
+    "fullName": "Học sinh 55",
+    "classId": "6A6",
+    "dateOfBirth": "2011-02-10",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student056",
+    "fullName": "Học sinh 56",
+    "classId": "6A6",
+    "dateOfBirth": "2009-04-05",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student057",
+    "fullName": "Học sinh 57",
+    "classId": "6A6",
+    "dateOfBirth": "2010-09-28",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student058",
+    "fullName": "Học sinh 58",
+    "classId": "6A6",
+    "dateOfBirth": "2011-06-07",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student059",
+    "fullName": "Học sinh 59",
+    "classId": "6A6",
+    "dateOfBirth": "2009-01-19",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student060",
+    "fullName": "Học sinh 60",
+    "classId": "6A6",
+    "dateOfBirth": "2010-12-02",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student061",
+    "fullName": "Học sinh 61",
+    "classId": "6A7",
+    "dateOfBirth": "2011-08-14",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student062",
+    "fullName": "Học sinh 62",
+    "classId": "6A7",
+    "dateOfBirth": "2009-05-31",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student063",
+    "fullName": "Học sinh 63",
+    "classId": "6A7",
+    "dateOfBirth": "2010-07-21",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student064",
+    "fullName": "Học sinh 64",
+    "classId": "6A7",
+    "dateOfBirth": "2011-03-12",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student065",
+    "fullName": "Học sinh 65",
+    "classId": "6A7",
+    "dateOfBirth": "2009-11-25",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student066",
+    "fullName": "Học sinh 66",
+    "classId": "6A7",
+    "dateOfBirth": "2010-04-15",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student067",
+    "fullName": "Học sinh 67",
+    "classId": "6A7",
+    "dateOfBirth": "2011-10-03",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student068",
+    "fullName": "Học sinh 68",
+    "classId": "6A7",
+    "dateOfBirth": "2009-08-16",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student069",
+    "fullName": "Học sinh 69",
+    "classId": "6A7",
+    "dateOfBirth": "2010-01-08",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student070",
+    "fullName": "Học sinh 70",
+    "classId": "6A7",
+    "dateOfBirth": "2011-05-20",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student071",
+    "fullName": "Học sinh 71",
+    "classId": "6A8",
+    "dateOfBirth": "2010-06-11",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student072",
+    "fullName": "Học sinh 72",
+    "classId": "6A8",
+    "dateOfBirth": "2011-12-19",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student073",
+    "fullName": "Học sinh 73",
+    "classId": "6A8",
+    "dateOfBirth": "2009-02-27",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student074",
+    "fullName": "Học sinh 74",
+    "classId": "6A8",
+    "dateOfBirth": "2010-09-06",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student075",
+    "fullName": "Học sinh 75",
+    "classId": "6A8",
+    "dateOfBirth": "2011-07-29",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student076",
+    "fullName": "Học sinh 76",
+    "classId": "6A8",
+    "dateOfBirth": "2009-03-14",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student077",
+    "fullName": "Học sinh 77",
+    "classId": "6A8",
+    "dateOfBirth": "2010-11-30",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student078",
+    "fullName": "Học sinh 78",
+    "classId": "6A8",
+    "dateOfBirth": "2011-04-08",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student079",
+    "fullName": "Học sinh 79",
+    "classId": "6A8",
+    "dateOfBirth": "2009-10-22",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student080",
+    "fullName": "Học sinh 80",
+    "classId": "6A8",
+    "dateOfBirth": "2010-08-05",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student081",
+    "fullName": "Học sinh 81",
+    "classId": "6A9",
+    "dateOfBirth": "2011-01-13",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student082",
+    "fullName": "Học sinh 82",
+    "classId": "6A9",
+    "dateOfBirth": "2009-06-28",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student083",
+    "fullName": "Học sinh 83",
+    "classId": "6A9",
+    "dateOfBirth": "2010-12-07",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student084",
+    "fullName": "Học sinh 84",
+    "classId": "6A9",
+    "dateOfBirth": "2011-09-02",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student085",
+    "fullName": "Học sinh 85",
+    "classId": "6A9",
+    "dateOfBirth": "2009-04-19",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student086",
+    "fullName": "Học sinh 86",
+    "classId": "6A9",
+    "dateOfBirth": "2010-07-31",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student087",
+    "fullName": "Học sinh 87",
+    "classId": "6A9",
+    "dateOfBirth": "2011-02-24",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student088",
+    "fullName": "Học sinh 88",
+    "classId": "6A9",
+    "dateOfBirth": "2009-11-08",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student089",
+    "fullName": "Học sinh 89",
+    "classId": "6A9",
+    "dateOfBirth": "2010-05-16",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student090",
+    "fullName": "Học sinh 90",
+    "classId": "6A9",
+    "dateOfBirth": "2011-08-09",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student091",
+    "fullName": "Học sinh 91",
+    "classId": "6A10",
+    "dateOfBirth": "2010-03-25",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student092",
+    "fullName": "Học sinh 92",
+    "classId": "6A10",
+    "dateOfBirth": "2011-11-18",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student093",
+    "fullName": "Học sinh 93",
+    "classId": "6A10",
+    "dateOfBirth": "2009-07-03",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student094",
+    "fullName": "Học sinh 94",
+    "classId": "6A10",
+    "dateOfBirth": "2010-10-29",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student095",
+    "fullName": "Học sinh 95",
+    "classId": "6A10",
+    "dateOfBirth": "2011-06-21",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student096",
+    "fullName": "Học sinh 96",
+    "classId": "6A10",
+    "dateOfBirth": "2009-01-05",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student097",
+    "fullName": "Học sinh 97",
+    "classId": "6A10",
+    "dateOfBirth": "2010-12-14",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student098",
+    "fullName": "Học sinh 98",
+    "classId": "6A10",
+    "dateOfBirth": "2011-04-26",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student099",
+    "fullName": "Học sinh 99",
+    "classId": "6A10",
+    "dateOfBirth": "2009-09-12",
+    "gender": "Nam",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "student100",
+    "fullName": "Học sinh 100",
+    "classId": "6A10",
+    "dateOfBirth": "2010-08-01",
+    "gender": "Nữ",
+    "academicYear": "2024-2025",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]
