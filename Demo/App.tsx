@@ -1,17 +1,15 @@
 // App.tsx - Sửa lỗi Google Sign-In cấu hình
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import AuthNavigator from './src/navigation/AuthNavigator';
-import HomeScreen from './src/screens/HomeScreen';
-import LoadingScreen from './src/screens/LoadingSceen';
-import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import messaging from '@react-native-firebase/messaging';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { Alert, Platform, View, Text, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import firestore from '@react-native-firebase/firestore';
-import AppNavigator from './src/navigation/AppNavigator';
-import { StudentProvider } from './src/contexts/StudentContext';
+import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Platform } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
+import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import { StudentProvider } from './src/contexts/StudentContext';
+import AppNavigator from './src/navigation/AppNavigator';
+import AuthNavigator from './src/navigation/AuthNavigator';
+import LoadingScreen from './src/screens/LoadingSceen';
 
 // Cấu hình Google Sign-in - PHIÊN BẢN SỬA LỖI
 const configureGoogleSignIn = async () => {
@@ -81,6 +79,61 @@ export default function App() {
       }
     };
     initGoogleSignIn();
+
+    // --- Thêm chức năng nhận thông báo đẩy ---
+    // Xin quyền nhận thông báo
+    messaging().requestPermission().then(authStatus => {
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+      if (enabled) {
+        console.log('Đã được cấp quyền nhận thông báo!');
+      }
+    });
+
+    // Lắng nghe thông báo khi app đang mở (foreground)
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      Alert.alert(
+        remoteMessage.notification?.title || 'Thông báo',
+        remoteMessage.notification?.body || 'Bạn có thông báo mới!'
+      );
+    });
+
+    // (Tùy chọn) Lắng nghe khi user bấm vào thông báo khi app đang background/quit
+    const unsubscribeOpened = messaging().onNotificationOpenedApp(remoteMessage => {
+      if (remoteMessage) {
+        Alert.alert(
+          remoteMessage.notification?.title || 'Thông báo',
+          remoteMessage.notification?.body || 'Bạn có thông báo mới!'
+        );
+      }
+    });
+
+    // (Tùy chọn) Kiểm tra nếu app được mở từ thông báo khi đã quit
+    messaging().getInitialNotification().then(remoteMessage => {
+      if (remoteMessage) {
+        Alert.alert(
+          remoteMessage.notification?.title || 'Thông báo',
+          remoteMessage.notification?.body || 'Bạn có thông báo mới!'
+        );
+      }
+    });
+
+    // Lấy FCM token và log ra console
+    messaging()
+      .getToken()
+      .then(token => {
+        console.log('FCM Token:', token);
+      })
+      .catch(error => {
+        console.log('Lỗi lấy FCM token:', error);
+      });
+
+    return () => {
+      unsubscribe();
+      unsubscribeOpened();
+    };
+    // --- Kết thúc thêm chức năng nhận thông báo đẩy ---
   }, []);
 
   return (

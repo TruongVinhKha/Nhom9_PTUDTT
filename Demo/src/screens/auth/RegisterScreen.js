@@ -1,18 +1,17 @@
 // RegisterScreen.js - Phiên bản tối ưu
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Animated, Alert } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { Alert, Animated, ScrollView, StyleSheet, View } from 'react-native';
 import {
-  TextInput,
   Button,
-  Text,
-  HelperText,
   Card,
   Checkbox,
+  Text,
+  TextInput
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';
 import LoadingScreen from '../LoadingSceen';
-import firestore from '@react-native-firebase/firestore';
 
 export default function RegisterScreen({ navigation }) {
   const { signUp } = useAuth();
@@ -176,7 +175,7 @@ export default function RegisterScreen({ navigation }) {
                       setEmail(text);
                       if (error) setError('');
                     }}
-                    style={styles.input}
+                    style={[styles.input, { fontWeight: 'bold' }]}
                     outlineStyle={styles.inputOutline}
                     left={<TextInput.Icon icon="email-outline" />}
                     theme={{
@@ -205,7 +204,7 @@ export default function RegisterScreen({ navigation }) {
                       setPhoneNumber(text);
                       if (error) setError('');
                     }}
-                    style={styles.input}
+                    style={[styles.input, { fontWeight: 'bold' }]}
                     outlineStyle={styles.inputOutline}
                     left={<TextInput.Icon icon="phone-outline" />}
                     theme={{
@@ -229,7 +228,7 @@ export default function RegisterScreen({ navigation }) {
                     placeholder="Nhập họ và tên"
                     value={fullName}
                     onChangeText={(text) => setFullName(text)}
-                    style={styles.input}
+                    style={[styles.input, { fontWeight: 'bold' }]}
                     outlineStyle={styles.inputOutline}
                     left={<TextInput.Icon icon="account-outline" />}
                     theme={{
@@ -257,7 +256,7 @@ export default function RegisterScreen({ navigation }) {
                       setPassword(text);
                       if (error) setError('');
                     }}
-                    style={styles.input}
+                    style={[styles.input, { fontWeight: 'bold' }]}
                     outlineStyle={styles.inputOutline}
                     left={<TextInput.Icon icon="lock-outline" />}
                     right={
@@ -294,7 +293,7 @@ export default function RegisterScreen({ navigation }) {
                       setConfirm(text);
                       if (error) setError('');
                     }}
-                    style={styles.input}
+                    style={[styles.input, { fontWeight: 'bold' }]}
                     outlineStyle={styles.inputOutline}
                     left={<TextInput.Icon icon="lock-check-outline" />}
                     right={

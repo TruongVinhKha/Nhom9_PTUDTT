@@ -1,14 +1,13 @@
 // LoginScreen.js
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Animated, Alert, Image } from 'react-native';
-import { TextInput, Button, Text, HelperText, Card, Checkbox } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../../contexts/AuthContext';
-import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
-import LoadingScreen from '../LoadingSceen';
+import firestore from '@react-native-firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, Card, Checkbox, Text, TextInput } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import BrandingLogo from '../../assets/branding_guideline_sample_lt_rd_lg.svg';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginScreen({ navigation }) {
   const { signIn, signInWithGoogle, signOut, authError, loading: authLoading, initialized, loginInProgress, setLoading: setAuthLoading } = useAuth();
@@ -276,7 +275,7 @@ export default function LoginScreen({ navigation }) {
                       setEmail(text);
                       if (error && text.trim()) setError('');
                     }}
-                    style={styles.input}
+                    style={[styles.input, { fontWeight: 'bold' }]}
                     outlineStyle={styles.inputOutline}
                     theme={{
                       colors: {
@@ -305,7 +304,7 @@ export default function LoginScreen({ navigation }) {
                       setPassword(text);
                       if (error && text) setError('');
                     }}
-                    style={styles.input}
+                    style={[styles.input, { fontWeight: 'bold' }]}
                     outlineStyle={styles.inputOutline}
                     right={<TextInput.Icon icon={showPassword ? 'eye-off-outline' : 'eye-outline'} onPress={() => setShowPassword(!showPassword)} iconColor="#006A5C" forceTextInputFocus={false} />}
                     theme={{
@@ -409,7 +408,7 @@ export default function LoginScreen({ navigation }) {
             <View style={styles.appVersionContainer}>
               <Text style={styles.appVersion}>EduTrack v1.0.0</Text>
               <View style={styles.dotSeparator} />
-              <Text style={styles.appCopyright}>© 2024 EduTrack Team</Text>
+              <Text style={styles.appCopyright}>© 2025 EduTrack Team</Text>
             </View>
           </View>
         </Animated.View>
@@ -529,7 +528,8 @@ const styles = StyleSheet.create({
   },
   input: { 
     backgroundColor: '#FFFFFF',
-    fontSize: 16
+    fontSize: 16,
+    color: '#17375F',
   },
   inputOutline: {
     borderRadius: 12,
