@@ -1,9 +1,9 @@
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
 import {
+  ForgotPasswordScreen,
   LoginScreen,
   RegisterScreen,
-  ForgotPasswordScreen,
 } from '../screens/auth';
 import HomeScreen from '../screens/HomeScreen';
 

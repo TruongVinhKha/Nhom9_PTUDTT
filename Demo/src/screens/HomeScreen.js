@@ -1,15 +1,58 @@
 import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View, Modal, FlatList, TouchableHighlight, Dimensions } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View, Modal, FlatList, TouchableHighlight, Dimensions, Animated, RefreshControl } from 'react-native';
 import { Avatar, Button, Divider, Text, Card, Surface, Badge, Portal, Dialog } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudent } from '../contexts/StudentContext';
+import { Easing } from 'react';
 
 const { width } = Dimensions.get('window');
 
+// Hiệu ứng scale khi nhấn
+function ScaleTouchable({ onPress, children, style, accessibilityLabel, ...props }) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.96,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 8,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 8,
+    }).start();
+  };
+
+  return (
+    <Animated.View
+      style={[{ transform: [{ scale }] }, style]}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+    >
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        style={{ flex: 1 }}
+        {...props}
+      >
+        {children}
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
 
 // Khu vực thông tin người dùng (UserInfo)
 function UserInfo({ user, selectedStudent }) {
@@ -86,34 +129,30 @@ function FavoriteUtilities({ onSelect, badgeCounts = {} }) {
       <View style={favoriteStyles.header}>
         <Text style={favoriteStyles.title}>{String('Tiện ích yêu thích')}</Text>
       </View>
-      <Card style={sharedCardStyles.card} elevation={4}>
-        <Card.Content style={favoriteStyles.cardContent}>
-          <View style={favoriteStyles.container}>
-            {favorites.map((item, idx) => (
-              <Surface key={idx} style={favoriteStyles.itemSurface} elevation={0}>
-                <TouchableOpacity
-                  style={favoriteStyles.item}
-                  onPress={() => onSelect(item.key)}
-                  activeOpacity={0.7}
+      <View style={favoriteStyles.cardRow}>
+        {favorites.map((item) => (
+          <ScaleTouchable
+            key={item.key}
+            onPress={() => onSelect(item.key)}
+            accessibilityLabel={item.label}
+            style={favoriteStyles.cardItem}
+          >
+            <View style={favoriteStyles.iconBadgeContainer}>
+              <MaterialIcons name={item.icon} size={32} color="#00FFDE" style={favoriteStyles.icon} />
+              {badgeCounts[item.key] > 0 && (
+                <Badge
+                  style={favoriteStyles.badge}
+                  size={15}
+                  accessibilityLabel={`Có ${badgeCounts[item.key]} thông báo mới`}
                 >
-                  <View style={favoriteStyles.iconContainer}>
-                    <MaterialIcons name={item.icon} size={30} color="#00FFDE" />
-                    {badgeCounts[item.key] > 0 && (
-                      <Badge
-                        style={favoriteStyles.badge}
-                        size={16}
-                      >
-                        {String(badgeCounts[item.key])}
-                      </Badge>
-                    )}
-                  </View>
-                  <Text style={favoriteStyles.label}>{String(item.label)}</Text>
-                </TouchableOpacity>
-              </Surface>
-            ))}
-          </View>
-        </Card.Content>
-      </Card>
+                  {String(badgeCounts[item.key])}
+                </Badge>
+              )}
+            </View>
+            <Text style={favoriteStyles.label}>{String(item.label)}</Text>
+          </ScaleTouchable>
+        ))}
+      </View>
     </View>
   );
 }
@@ -196,6 +235,7 @@ const sharedCardStyles = StyleSheet.create({
   },
 });
 
+
 const favoriteStyles = StyleSheet.create({
   wrapper: {
     marginTop: 10,
@@ -212,34 +252,41 @@ const favoriteStyles = StyleSheet.create({
     fontSize: 18,
     color: '#17375F',
   },
-  cardContent: {
-    padding: 14,
-  },
-  container: {
+  cardRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginHorizontal: 8,
   },
-  itemSurface: {
-    width: (width - 80) / 3,
-    borderRadius: 12,
-    backgroundColor: 'transparent',
-    marginBottom: 8,
-    marginHorizontal: 2,
-  },
-  item: {
+  cardItem: {
+    flex: 1,
+    backgroundColor: '#F5ECD5',
+    borderRadius: 18,
+    marginHorizontal: 6,
     alignItems: 'center',
-    padding: 12,
+    paddingVertical: 18,
+    minWidth: 110,
+    minHeight: 120,
+    elevation: 4,
+    shadowColor: '#17375F',
+    shadowOpacity: 0.10,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    justifyContent: 'flex-start',
   },
-  iconContainer: {
+  iconBadgeContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center', 
     position: 'relative',
-    alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 10,
+    marginTop: 2,
   },
+  
   badge: {
     position: 'absolute',
-    top: -6,
-    right: -10,
+    top: -8,
+    right: -8,
     backgroundColor: '#FF3B30',
     color: '#FFFFFF',
     fontSize: 10,
@@ -247,19 +294,26 @@ const favoriteStyles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#FFF',
-    elevation: 1,
+    elevation: 2,
     minWidth: 16,
     height: 16,
     textAlign: 'center',
     paddingHorizontal: 0,
     paddingVertical: 0,
+    zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   label: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#006A5C',
     textAlign: 'center',
-    fontWeight: '500',
-    lineHeight: 16,
+    fontWeight: '600',
+    lineHeight: 18,
+    marginTop: 2,
+    flex: 1,
+    flexWrap: 'wrap',
+    paddingHorizontal: 4,
   },
 });
 
@@ -273,6 +327,7 @@ export default function HomeScreen() {
   const [commentsObj, setCommentsObj] = useState({});
   const [notiObj, setNotiObj] = useState({});
   const [notiForClassObj, setNotiForClassObj] = useState({});
+  const [refreshing, setRefreshing] = useState(false);
 
   // Helper lấy ngày đẹp
   const formatDate = (value) => {
@@ -343,15 +398,11 @@ export default function HomeScreen() {
       }
       const userData = userDoc.data();
       const linkedStudentIds = userData.linkedStudentIds || [];
-      console.log('linkedStudentIds:', linkedStudentIds);
-
       // 2. Lấy thông tin từng học sinh
       const studentDocs = await Promise.all(
         linkedStudentIds.map(id => firestore().collection('students').doc(id).get())
       );
       const studentsArr = studentDocs.map(doc => doc.exists ? { ...doc.data(), id: doc.id } : null).filter(Boolean);
-      console.log('studentsArr:', studentsArr);
-
       // 3. Lấy nhận xét cho từng học sinh từ collection comments riêng
       const commentsObj = {};
       if (studentsArr.length > 0) {
@@ -361,8 +412,7 @@ export default function HomeScreen() {
           .where('studentId', 'in', studentIds)
           .orderBy('createdAt', 'desc')
           .get();
-
-        // Batch kiểm tra trạng thái đọc cho tất cả comments
+        // Batch kiểm tra trạng thái đọc cho tất cả comments song song
         const commentIds = commentsSnap.docs.map(doc => doc.id);
         const readStatusPromises = commentIds.map(commentId =>
           firestore()
@@ -372,14 +422,12 @@ export default function HomeScreen() {
             .doc(user.uid)
             .get()
         );
-
         const readStatusResults = await Promise.all(readStatusPromises);
         const readStatusMap = {};
         commentIds.forEach((commentId, index) => {
           const doc = readStatusResults[index];
           readStatusMap[commentId] = doc.exists && doc.data()?.isRead === true;
         });
-
         commentsSnap.docs.forEach(doc => {
           const comment = {
             ...doc.data(),
@@ -387,25 +435,20 @@ export default function HomeScreen() {
             isReadByCurrentUser: readStatusMap[doc.id] || false
           };
           const studentId = comment.studentId;
-
           if (!commentsObj[studentId]) {
             commentsObj[studentId] = [];
           }
           commentsObj[studentId].push(comment);
         });
       }
-      console.log('commentsObj:', commentsObj);
-
       // 4. Lấy thông báo cho từng lớp
       const classIds = studentsArr.map(s => s.classId);
-      console.log('classIds:', classIds);
-
       // 4a. Thông báo cho từng lớp (notifications)
       const notiObj = {};
       if (classIds.length > 0) {
         const notiSnap = await firestore().collection('notifications').where('classId', 'in', classIds).get();
         if (notiSnap.docs.length > 0) {
-          // Batch kiểm tra trạng thái đọc cho notifications
+          // Batch kiểm tra trạng thái đọc cho notifications song song
           const notificationIds = notiSnap.docs.map(doc => doc.id);
           const notiReadStatusPromises = notificationIds.map(notificationId =>
             firestore()
@@ -415,34 +458,29 @@ export default function HomeScreen() {
               .doc(user.uid)
               .get()
           );
-
           const notiReadStatusResults = await Promise.all(notiReadStatusPromises);
           const notiReadStatusMap = {};
           notificationIds.forEach((notificationId, index) => {
             const doc = notiReadStatusResults[index];
             notiReadStatusMap[notificationId] = doc.exists && doc.data()?.isRead === true;
           });
-
           notiSnap.docs.forEach(doc => {
             const n = {
               ...doc.data(),
               id: doc.id,
               isReadByCurrentUser: notiReadStatusMap[doc.id] || false
             };
-
             if (!notiObj[n.classId]) notiObj[n.classId] = [];
             notiObj[n.classId].push(n);
           });
         }
       }
-      console.log('notifications:', notiObj);
-
       // 4b. Thông báo nhiều lớp (notificationsForClass)
       const notiForClassObj = {};
       if (classIds.length > 0) {
         const notiForClassSnap = await firestore().collection('notificationsForClass').where('classIds', 'array-contains-any', classIds).get();
         if (notiForClassSnap.docs.length > 0) {
-          // Batch kiểm tra trạng thái đọc cho notificationsForClass
+          // Batch kiểm tra trạng thái đọc cho notificationsForClass song song
           const notiForClassIds = notiForClassSnap.docs.map(doc => doc.id);
           const notiForClassReadStatusPromises = notiForClassIds.map(notificationId =>
             firestore()
@@ -452,21 +490,18 @@ export default function HomeScreen() {
               .doc(user.uid)
               .get()
           );
-
           const notiForClassReadStatusResults = await Promise.all(notiForClassReadStatusPromises);
           const notiForClassReadStatusMap = {};
           notiForClassIds.forEach((notificationId, index) => {
             const doc = notiForClassReadStatusResults[index];
             notiForClassReadStatusMap[notificationId] = doc.exists && doc.data()?.isRead === true;
           });
-
           notiForClassSnap.docs.forEach(doc => {
             const n = {
               ...doc.data(),
               id: doc.id,
               isReadByCurrentUser: notiForClassReadStatusMap[doc.id] || false
             };
-
             (n.classIds || []).forEach(cid => {
               if (classIds.includes(cid)) {
                 if (!notiForClassObj[cid]) notiForClassObj[cid] = [];
@@ -479,8 +514,6 @@ export default function HomeScreen() {
           });
         }
       }
-      console.log('notificationsForClass:', notiForClassObj);
-
       // Sau khi lấy xong dữ liệu, lưu vào state để đồng bộ badge
       setCommentsObj(commentsObj);
       setNotiObj(notiObj);
@@ -550,6 +583,13 @@ export default function HomeScreen() {
     updateBadgeCounts(commentsObj, notiObj, notiForClassObj);
   }, [selectedStudent, commentsObj, notiObj, notiForClassObj]);
 
+  // Hàm xử lý khi kéo để làm mới
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
+
   return (
     <>
       <Surface style={styles.headerSurface} elevation={10}>
@@ -571,15 +611,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </Surface>
-      <UserInfo user={user} selectedStudent={selectedStudent} />
-      {selectedStudent && (
-        <StudentInfo
-          students={students}
-          onSelectStudent={handleSelectStudent}
-          selectedStudentIndex={students.findIndex(s => s.id === selectedStudent.id)}
-        />
-      )}
-      <FavoriteUtilities onSelect={handleFeatureSelect} badgeCounts={badgeCounts} />
       <Portal>
         <Dialog visible={modalVisible} onDismiss={() => setModalVisible(false)} style={modalStyles.dialog}>
           <Dialog.Title style={modalStyles.title}>
@@ -590,9 +621,10 @@ export default function HomeScreen() {
               data={students}
               keyExtractor={item => item.id}
               renderItem={({ item }) => (
-                <TouchableOpacity
+                <ScaleTouchable
                   onPress={() => handleStudentPick(item)}
-                  style={modalStyles.item}
+                  accessibilityLabel={`Chọn học sinh ${item.fullName}`}
+                  style={{ borderRadius: 14, marginVertical: 5 }}
                 >
                   <Surface style={modalStyles.itemSurface} elevation={2}>
                     <View style={modalStyles.itemContent}>
@@ -605,7 +637,7 @@ export default function HomeScreen() {
                       <Text style={modalStyles.itemText}>{String(item.fullName)}</Text>
                     </View>
                   </Surface>
-                </TouchableOpacity>
+                </ScaleTouchable>
               )}
               showsVerticalScrollIndicator={false}
             />
@@ -619,8 +651,27 @@ export default function HomeScreen() {
       </Portal>
       <Divider style={{ marginVertical: 10, marginHorizontal: 24, backgroundColor: '#7AE582', height: 2, borderRadius: 2 }} />
       <SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'bottom']}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          {/* No need to include UserInfo here */}
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent} 
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#7AE582"]}
+              tintColor="#7AE582"
+            />
+          }
+        >
+          <UserInfo user={user} selectedStudent={selectedStudent} />
+          {selectedStudent && (
+            <StudentInfo
+              students={students}
+              onSelectStudent={handleSelectStudent}
+              selectedStudentIndex={students.findIndex(s => s.id === selectedStudent.id)}
+            />
+          )}
+          <FavoriteUtilities onSelect={handleFeatureSelect} badgeCounts={badgeCounts} />
         </ScrollView>
       </SafeAreaView>
     </>

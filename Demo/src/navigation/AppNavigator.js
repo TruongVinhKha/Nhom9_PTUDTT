@@ -1,9 +1,9 @@
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import BottomTabNavigator from './BottomTabNavigator';
-import CommentsScreen from '../screens/CommentsScreen';
+import React from 'react';
 import ClassNotificationsScreen from '../screens/ClassNotificationsScreen';
+import CommentsScreen from '../screens/CommentsScreen';
 import GeneralNotificationsScreen from '../screens/GeneralNotificationsScreen';
+import BottomTabNavigator from './BottomTabNavigator';
 
 const Stack = createStackNavigator();
 

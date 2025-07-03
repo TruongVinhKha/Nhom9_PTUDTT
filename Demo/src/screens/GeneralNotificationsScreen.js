@@ -28,17 +28,24 @@ export default function GeneralNotificationsScreen() {
           .orderBy('createdAt', 'desc')
           .get();
         const notiList = [];
-        for (const doc of snap.docs) {
-          let isRead = false;
-          const readDoc = await firestore()
-            .collection('notificationsForClass')
-            .doc(doc.id)
-            .collection('isRead')
-            .doc(user.uid)
-            .get();
-          if (readDoc.exists && readDoc.data()?.isRead) isRead = true;
-          notiList.push({ ...doc.data(), id: doc.id, isReadByCurrentUser: isRead });
-        }
+        const notificationIds = snap.docs.map(doc => doc.id);
+        // Lấy trạng thái đã đọc song song
+        const readStatusPromises = notificationIds.map(id =>
+          firestore().collection('notificationsForClass').doc(id).collection('isRead').doc(user.uid).get()
+        );
+        const readStatusResults = await Promise.all(readStatusPromises);
+        const readStatusMap = {};
+        notificationIds.forEach((id, idx) => {
+          const doc = readStatusResults[idx];
+          readStatusMap[id] = doc.exists && doc.data()?.isRead === true;
+        });
+        snap.docs.forEach(doc => {
+          notiList.push({
+            ...doc.data(),
+            id: doc.id,
+            isReadByCurrentUser: readStatusMap[doc.id] || false
+          });
+        });
         setNotifications(notiList);
       } catch (e) {
         setNotifications([]);
@@ -108,7 +115,10 @@ export default function GeneralNotificationsScreen() {
       </View>
 
       {/* Content */}
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.container} 
+        showsVerticalScrollIndicator={false}
+      >
         {loading ? (
           <View style={styles.centerContainer}>
             <Text style={styles.loadingText}>Đang tải...</Text>

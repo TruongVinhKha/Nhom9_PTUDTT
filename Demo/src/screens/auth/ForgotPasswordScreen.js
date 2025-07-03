@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Dimensions, Text as RNText } from 'react-native';
+import { Dimensions, Text as RNText, ScrollView, StyleSheet, View } from 'react-native';
 import {
-  TextInput,
   Button,
-  Text,
+  Card,
   HelperText,
-  Card
+  Text,
+  TextInput
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../contexts/AuthContext';

@@ -3,19 +3,13 @@ import messaging from '@react-native-firebase/messaging';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Platform, Text, Dimensions, StyleSheet } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import { StudentProvider } from './src/contexts/StudentContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import AuthNavigator from './src/navigation/AuthNavigator';
 import LoadingScreen from './src/screens/LoadingSceen';
-import firestore from '@react-native-firebase/firestore';
-import DeviceTokenHandler from './src/contexts/DeviceTokenHandler';
-import { Snackbar } from 'react-native-paper';
-import InitialNotificationHandler from './src/contexts/InitialNotificationHandler';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import NotificationPopupHandler from './src/contexts/NotificationPopupHandler';
 
 // Cấu hình Google Sign-in - PHIÊN BẢN SỬA LỖI
 const configureGoogleSignIn = async () => {
@@ -70,10 +64,6 @@ function RootNavigator() {
 
 export default function App() {
   const [googleConfigured, setGoogleConfigured] = useState(false);
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarTitle, setSnackbarTitle] = useState('');
-  const [currentCommentId, setCurrentCommentId] = useState(null);
 
   useEffect(() => {
     const initGoogleSignIn = async () => {
@@ -91,6 +81,7 @@ export default function App() {
     initGoogleSignIn();
 
     // --- Thêm chức năng nhận thông báo đẩy ---
+    // Xin quyền nhận thông báo
     messaging().requestPermission().then(authStatus => {
       const enabled =
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -100,30 +91,43 @@ export default function App() {
       }
     });
 
-    // Lắng nghe notification push từ FCM khi app đang foreground
+    // Lắng nghe thông báo khi app đang mở (foreground)
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      setSnackbarTitle(remoteMessage.notification?.title || 'Thông báo');
-      setSnackbarMessage(remoteMessage.notification?.body || 'Bạn có thông báo mới!');
-      setSnackbarVisible(true);
+      Alert.alert(
+        remoteMessage.notification?.title || 'Thông báo',
+        remoteMessage.notification?.body || 'Bạn có thông báo mới!'
+      );
     });
 
-    // Lắng nghe khi user bấm vào thông báo khi app đang background/quit
+    // (Tùy chọn) Lắng nghe khi user bấm vào thông báo khi app đang background/quit
     const unsubscribeOpened = messaging().onNotificationOpenedApp(remoteMessage => {
       if (remoteMessage) {
-        setSnackbarTitle(remoteMessage.notification?.title || 'Thông báo');
-        setSnackbarMessage(remoteMessage.notification?.body || 'Bạn có thông báo mới!');
-        setSnackbarVisible(true);
+        Alert.alert(
+          remoteMessage.notification?.title || 'Thông báo',
+          remoteMessage.notification?.body || 'Bạn có thông báo mới!'
+        );
       }
     });
 
-    // Kiểm tra nếu app được mở từ thông báo khi đã quit
+    // (Tùy chọn) Kiểm tra nếu app được mở từ thông báo khi đã quit
     messaging().getInitialNotification().then(remoteMessage => {
       if (remoteMessage) {
-        setSnackbarTitle(remoteMessage.notification?.title || 'Thông báo');
-        setSnackbarMessage(remoteMessage.notification?.body || 'Bạn có thông báo mới!');
-        setSnackbarVisible(true);
+        Alert.alert(
+          remoteMessage.notification?.title || 'Thông báo',
+          remoteMessage.notification?.body || 'Bạn có thông báo mới!'
+        );
       }
     });
+
+    // Lấy FCM token và log ra console
+    messaging()
+      .getToken()
+      .then(token => {
+        console.log('FCM Token:', token);
+      })
+      .catch(error => {
+        console.log('Lỗi lấy FCM token:', error);
+      });
 
     return () => {
       unsubscribe();
@@ -136,93 +140,11 @@ export default function App() {
     <PaperProvider>
       <AuthProvider>
         <StudentProvider>
-          <DeviceTokenHandler />
-          <NotificationPopupHandler
-            setSnackbarTitle={setSnackbarTitle}
-            setSnackbarMessage={setSnackbarMessage}
-            setSnackbarVisible={setSnackbarVisible}
-            setCurrentCommentId={setCurrentCommentId}
-          />
           <NavigationContainer>
             <RootNavigator />
           </NavigationContainer>
-          <Snackbar
-            visible={snackbarVisible}
-            onDismiss={() => {
-              setSnackbarVisible(false);
-              if (typeof NotificationPopupHandler.onPopupClose === 'function') {
-                NotificationPopupHandler.onPopupClose();
-              }
-            }}
-            duration={4000}
-            action={{
-              label: 'Đóng',
-              onPress: () => {
-                setSnackbarVisible(false);
-                if (typeof NotificationPopupHandler.onPopupClose === 'function') {
-                  NotificationPopupHandler.onPopupClose();
-                }
-              },
-              textColor: '#fff'
-            }}
-            style={styles.centeredSnackbar}
-            wrapperStyle={styles.snackbarWrapper}
-          >
-            <MaterialCommunityIcons name="bell-ring" size={28} color="#fff" style={{ marginBottom: 6, alignSelf: 'center' }} />
-            <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 4, color: '#fff', textAlign: 'center' }}>
-              {snackbarTitle}
-            </Text>
-            <Text style={{ color: '#fff', fontSize: 16, textAlign: 'center' }}>{snackbarMessage}</Text>
-          </Snackbar>
         </StudentProvider>
       </AuthProvider>
     </PaperProvider>
   );
 }
-
-// Thêm style ở cuối file
-const { height } = Dimensions.get('window');
-
-const styles = StyleSheet.create({
-  dialogBox: {
-    borderRadius: 24,
-    backgroundColor: '#fff',
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-    alignSelf: 'center',
-    width: '85%',
-    elevation: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 16,
-  },
-  centeredSnackbar: {
-    position: 'absolute',
-    left: 24,
-    right: 24,
-    top: height / 2 - 80,
-    backgroundColor: '#1976d2',
-    borderRadius: 24,
-    paddingVertical: 28,
-    paddingHorizontal: 24,
-    elevation: 16,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    opacity: 0.98,
-  },
-  snackbarWrapper: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 9999,
-    backgroundColor: 'rgba(0,0,0,0.08)',
-  },
-});
