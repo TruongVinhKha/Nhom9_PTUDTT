@@ -28,17 +28,24 @@ export default function CommentsScreen() {
           .orderBy('createdAt', 'desc')
           .get();
         const commentList = [];
-        for (const doc of snap.docs) {
-          let isRead = false;
-          const readDoc = await firestore()
-            .collection('comments')
-            .doc(doc.id)
-            .collection('isRead')
-            .doc(user.uid)
-            .get();
-          if (readDoc.exists && readDoc.data()?.isRead) isRead = true;
-          commentList.push({ ...doc.data(), id: doc.id, isReadByCurrentUser: isRead });
-        }
+        const commentIds = snap.docs.map(doc => doc.id);
+        // Lấy trạng thái đã đọc song song
+        const readStatusPromises = commentIds.map(id =>
+          firestore().collection('comments').doc(id).collection('isRead').doc(user.uid).get()
+        );
+        const readStatusResults = await Promise.all(readStatusPromises);
+        const readStatusMap = {};
+        commentIds.forEach((id, idx) => {
+          const doc = readStatusResults[idx];
+          readStatusMap[id] = doc.exists && doc.data()?.isRead === true;
+        });
+        snap.docs.forEach(doc => {
+          commentList.push({
+            ...doc.data(),
+            id: doc.id,
+            isReadByCurrentUser: readStatusMap[doc.id] || false
+          });
+        });
         setComments(commentList);
       } catch (e) {
         setComments([]);
@@ -108,7 +115,10 @@ export default function CommentsScreen() {
       </View>
 
       {/* Content */}
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.container} 
+        showsVerticalScrollIndicator={false}
+      >
         {loading ? (
           <View style={styles.centerContainer}>
             <Text style={styles.loadingText}>Đang tải...</Text>

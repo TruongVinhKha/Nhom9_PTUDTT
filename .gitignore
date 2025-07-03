@@ -1,4 +1,31 @@
-
+# Node modules
 node_modules/
-"Demo/firebase/serviceAccountKey.json" 
-"firestore-listener/serviceAccountKey.json"
+
+# Build output
+build/
+android/app/build/
+android/build/
+ios/build/
+
+# VSCode settings
+.vscode/
+
+# Log files
+*.log
+
+# Android/ios keys & secrets
+android/app/debug.keystore
+android/app/release.keystore
+android/app/google-services.json
+
+# Firebase service account
+firestore-listener/serviceAccountKey.json
+Demo/firebase/serviceAccountKey.json
+
+# Environment files
+.env
+.env.*
+
+# Mac/Windows system files
+.DS_Store
+Thumbs.db 

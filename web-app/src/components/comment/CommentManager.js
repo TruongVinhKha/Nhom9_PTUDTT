@@ -306,31 +306,47 @@ export default function CommentManager() {
       </motion.div>
 
       {/* Search */}
-      <motion.div 
-        className="search-section"
-        variants={itemVariants}
-      >
-        <h5 className="search-title">🔍 Tìm kiếm nhận xét</h5>
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Tìm kiếm theo nội dung, học sinh, giáo viên..."
-          className="search-input"
-        />
-      </motion.div>
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '0 0 24px 0' }}>
+        <div style={{ position: 'relative', width: 400 }}>
+          <span style={{
+            position: 'absolute',
+            left: 18,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: '#667eea',
+            fontSize: 24,
+            pointerEvents: 'none'
+          }}>🔍</span>
+          <input
+            type="text"
+            placeholder="Tìm kiếm nhận xét..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 20px 14px 54px',
+              borderRadius: 28,
+              border: '1.5px solid #e2e8f0',
+              fontSize: 18,
+              boxShadow: '0 2px 8px rgba(102,126,234,0.06)',
+              outline: 'none',
+              transition: 'border 0.2s',
+            }}
+          />
+        </div>
+      </div>
 
       {/* Comments List */}
       <motion.div 
         className="comments-grid"
         variants={itemVariants}
       >
-        {comments.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📭</div>
             <div className="empty-text">Chưa có nhận xét nào</div>
           </div>
-        ) : comments.map((comment) => {
+        ) : filtered.map((comment) => {
           const studentName = comment.studentName || nameMap[comment.id + '_student'] || 'Không rõ học sinh';
           const teacherName = comment.teacherName || nameMap[comment.id + '_teacher'] || 'Không rõ giáo viên';
           return (

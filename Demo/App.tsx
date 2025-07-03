@@ -3,7 +3,7 @@ import messaging from '@react-native-firebase/messaging';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, Platform, Text, Dimensions, StyleSheet } from 'react-native';
+import { Alert, Platform, Text, Dimensions, StyleSheet, PermissionsAndroid } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import { StudentProvider } from './src/contexts/StudentContext';
@@ -16,6 +16,7 @@ import { Snackbar } from 'react-native-paper';
 import InitialNotificationHandler from './src/contexts/InitialNotificationHandler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import NotificationPopupHandler from './src/contexts/NotificationPopupHandler';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 
 // Cấu hình Google Sign-in - PHIÊN BẢN SỬA LỖI
 const configureGoogleSignIn = async () => {
@@ -68,6 +69,21 @@ function RootNavigator() {
   return <AppNavigator />;
 }
 
+async function requestNotificationPermission() {
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      {
+        title: 'Thông báo',
+        message: 'Ứng dụng cần quyền gửi thông báo cho bạn.',
+        buttonPositive: 'Đồng ý',
+      }
+    );
+    return granted === PermissionsAndroid.RESULTS.GRANTED;
+  }
+  return true;
+}
+
 export default function App() {
   const [googleConfigured, setGoogleConfigured] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -89,6 +105,10 @@ export default function App() {
       }
     };
     initGoogleSignIn();
+
+    // --- Thêm xin quyền thông báo Android 13+ ---
+    requestNotificationPermission();
+    // --- Kết thúc xin quyền ---
 
     // --- Thêm chức năng nhận thông báo đẩy ---
     messaging().requestPermission().then(authStatus => {
@@ -125,6 +145,18 @@ export default function App() {
       }
     });
 
+    // Tạo notification channel cho Android để hỗ trợ heads-up notification
+    async function createChannel() {
+      if (Platform.OS === 'android') {
+        await notifee.createChannel({
+          id: 'default',
+          name: 'Default Channel',
+          importance: AndroidImportance.HIGH,
+        });
+      }
+    }
+    createChannel();
+
     return () => {
       unsubscribe();
       unsubscribeOpened();
@@ -150,18 +182,12 @@ export default function App() {
             visible={snackbarVisible}
             onDismiss={() => {
               setSnackbarVisible(false);
-              if (typeof NotificationPopupHandler.onPopupClose === 'function') {
-                NotificationPopupHandler.onPopupClose();
-              }
             }}
             duration={4000}
             action={{
               label: 'Đóng',
               onPress: () => {
                 setSnackbarVisible(false);
-                if (typeof NotificationPopupHandler.onPopupClose === 'function') {
-                  NotificationPopupHandler.onPopupClose();
-                }
               },
               textColor: '#fff'
             }}

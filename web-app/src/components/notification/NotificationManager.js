@@ -182,7 +182,8 @@ export default function NotificationManager({ currentUser, userData, onNotificat
         createdByEmail: currentUser.email,
         createdAt: serverTimestamp(),
         type: notificationType,
-        status: 'active'
+        status: 'active',
+        teacherId: currentUser.uid
       };
 
       if (notificationType === 'single') {
@@ -194,8 +195,9 @@ export default function NotificationManager({ currentUser, userData, onNotificat
           .filter(c => selectedClasses.includes(c.id))
           .map(c => c.name);
       }
-
-      await addDoc(collection(db, 'notifications'), notificationData);
+      console.log('notificationData:', JSON.stringify(notificationData, null, 2));
+      const collectionName = notificationType === 'multiple' ? 'notificationsForClass' : 'notifications';
+      await addDoc(collection(db, collectionName), notificationData);
 
       setSuccess('Thông báo đã được tạo thành công!');
       setTitle('');

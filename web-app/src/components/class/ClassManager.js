@@ -24,6 +24,7 @@ export default function ClassManager() {
   const [newTeacherId, setNewTeacherId] = useState('');
   const [editingClass, setEditingClass] = useState(null);
   const [processingId, setProcessingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchClasses();
@@ -110,6 +111,10 @@ export default function ClassManager() {
     setProcessingId(null);
   };
 
+  const filteredClasses = classes.filter(cls =>
+    cls.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return (
       <motion.div 
@@ -147,17 +152,45 @@ export default function ClassManager() {
       animate="visible"
     >
       {/* Header */}
-      <motion.div
-        className="text-center mb-24"
-        variants={itemVariants}
-      >
-        <h1 className="unified-gradient-text" style={{ fontSize: 28, marginBottom: 16 }}>
-          🏫 Quản Lý Lớp Học
-        </h1>
-        <p style={{ color: '#666', fontSize: 16 }}>
+      <div style={{ textAlign: 'center', margin: '32px 0 8px 0' }}>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 12,
+            fontSize: 36,
+            fontWeight: 800,
+            letterSpacing: 1,
+          }}
+        >
+          <span style={{
+            fontSize: 38,
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '50%',
+            padding: 8,
+            color: 'white',
+            boxShadow: '0 2px 8px rgba(102,126,234,0.10)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            🏫
+          </span>
+          <span
+            style={{
+              background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              textShadow: '0 2px 8px rgba(102,126,234,0.10)',
+            }}
+          >
+            Quản Lý Lớp Học
+          </span>
+        </span>
+        <div style={{ color: '#666', fontSize: 18, marginTop: 8 }}>
           Thêm, sửa, xóa và quản lý các lớp học trong hệ thống
-        </p>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Notifications */}
       <AnimatePresence>
@@ -285,6 +318,37 @@ export default function ClassManager() {
         </motion.form>
       </motion.div>
 
+      {/* Thanh tìm kiếm đẹp mắt */}
+      <div style={{ display: 'flex', justifyContent: 'center', margin: '0 0 24px 0' }}>
+        <div style={{ position: 'relative', width: 400 }}>
+          <span style={{
+            position: 'absolute',
+            left: 18,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: '#667eea',
+            fontSize: 24,
+            pointerEvents: 'none'
+          }}>🔍</span>
+          <input
+            type="text"
+            placeholder="Tìm kiếm lớp học..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '14px 20px 14px 54px',
+              borderRadius: 28,
+              border: '1.5px solid #e2e8f0',
+              fontSize: 18,
+              boxShadow: '0 2px 8px rgba(102,126,234,0.06)',
+              outline: 'none',
+              transition: 'border 0.2s',
+            }}
+          />
+        </div>
+      </div>
+
       {/* Classes List */}
       <motion.div
         className="unified-card"
@@ -296,10 +360,10 @@ export default function ClassManager() {
           className="unified-gradient-text mb-16 text-center"
           variants={itemVariants}
         >
-          📚 Danh Sách Lớp Học ({classes.length})
+          📚 Danh Sách Lớp Học ({filteredClasses.length})
         </motion.h3>
 
-        {classes.length === 0 ? (
+        {filteredClasses.length === 0 ? (
           <motion.div
             className="text-center"
             style={{ color: '#666', fontSize: 16, padding: '40px 20px' }}
@@ -317,7 +381,7 @@ export default function ClassManager() {
             initial="hidden"
             animate="visible"
           >
-            {classes.map((cls, index) => (
+            {filteredClasses.map((cls, index) => (
               <motion.div
                 key={cls.id}
                 className="unified-list-item"

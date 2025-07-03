@@ -27,6 +27,7 @@ export default function NotificationList({ currentUser, userData }) {
   const [updatingId, setUpdatingId] = useState(null);
   const [sortOrder, setSortOrder] = useState('desc'); // 'desc' = mới nhất, 'asc' = cũ nhất
   const [success, setSuccess] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Thêm filter UI cho admin
   const isAdmin = userData?.role === 'admin';
@@ -270,6 +271,7 @@ export default function NotificationList({ currentUser, userData }) {
       const collectionName = editingNotification.type === 'multiple' ? 'notificationsForClass' : 'notifications';
       const notificationRef = doc(db, collectionName, editingNotification.id);
       
+      // Chỉ cập nhật các trường cần thiết, không làm mất các trường khác
       await updateDoc(notificationRef, {
         title: editForm.title.trim(),
         content: editForm.content.trim(),
@@ -347,13 +349,12 @@ export default function NotificationList({ currentUser, userData }) {
     }
   };
 
-  const filteredNotifications = getFilteredNotifications()
-    .slice()
-    .sort((a, b) => {
-      const aTime = a.createdAt?._seconds ? a.createdAt._seconds : (a.createdAt?.seconds || 0);
-      const bTime = b.createdAt?._seconds ? b.createdAt._seconds : (b.createdAt?.seconds || 0);
-      return sortOrder === 'desc' ? bTime - aTime : aTime - bTime;
-    });
+  const filteredNotifications = getFilteredNotifications().filter(noti =>
+    (noti.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (noti.content || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (noti.className || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (noti.classNames ? noti.classNames.join(', ').toLowerCase() : '').includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -568,6 +569,35 @@ export default function NotificationList({ currentUser, userData }) {
             </button>
           </div>
         )}
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '0 0 24px 0' }}>
+          <div style={{ position: 'relative', width: 400 }}>
+            <span style={{
+              position: 'absolute',
+              left: 18,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#667eea',
+              fontSize: 24,
+              pointerEvents: 'none'
+            }}>🔍</span>
+            <input
+              type="text"
+              placeholder="Tìm kiếm thông báo..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '14px 20px 14px 54px',
+                borderRadius: 28,
+                border: '1.5px solid #e2e8f0',
+                fontSize: 18,
+                boxShadow: '0 2px 8px rgba(102,126,234,0.06)',
+                outline: 'none',
+                transition: 'border 0.2s',
+              }}
+            />
+          </div>
+        </div>
       </motion.div>
 
       <motion.div 
@@ -660,10 +690,104 @@ export default function NotificationList({ currentUser, userData }) {
                   </div>
                 </div>
               </div>
+              {isAdmin && (
+                <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                  <button
+                    onClick={() => handleEdit(noti)}
+                    style={{
+                      padding: '6px 18px',
+                      borderRadius: 8,
+                      border: '1.5px solid #667eea',
+                      background: 'white',
+                      color: '#667eea',
+                      fontWeight: 600,
+                      fontSize: 14,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    onClick={() => handleDelete(noti.id, noti.type)}
+                    style={{
+                      padding: '6px 18px',
+                      borderRadius: 8,
+                      border: '1.5px solid #e53e3e',
+                      background: 'white',
+                      color: '#e53e3e',
+                      fontWeight: 600,
+                      fontSize: 14,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    Xóa
+                  </button>
+                </div>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>
       </motion.div>
+
+      {editingNotification && (
+        <div className="unified-modal">
+          <div className="unified-modal-content">
+            <h3 style={{ marginBottom: 16 }}>Sửa thông báo</h3>
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontWeight: 600 }}>Tiêu đề</label>
+              <input
+                type="text"
+                value={editForm.title}
+                onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
+                style={{ width: '100%', padding: 8, marginTop: 4, borderRadius: 6, border: '1px solid #e2e8f0' }}
+              />
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontWeight: 600 }}>Nội dung</label>
+              <textarea
+                value={editForm.content}
+                onChange={e => setEditForm(f => ({ ...f, content: e.target.value }))}
+                style={{ width: '100%', padding: 8, minHeight: 80, marginTop: 4, borderRadius: 6, border: '1px solid #e2e8f0' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                onClick={handleCancelEdit}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: 8,
+                  border: '1.5px solid #e2e8f0',
+                  background: 'white',
+                  color: '#2d3748',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer'
+                }}
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleUpdate}
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: 8,
+                  border: '1.5px solid #667eea',
+                  background: '#667eea',
+                  color: 'white',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer'
+                }}
+                disabled={updatingId === editingNotification.id}
+              >
+                {updatingId === editingNotification.id ? 'Đang lưu...' : 'Lưu'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 } 
