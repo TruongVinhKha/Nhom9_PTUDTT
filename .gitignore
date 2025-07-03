@@ -2,3 +2,4 @@
 node_modules/
 "Demo/firebase/serviceAccountKey.json" 
 "firestore-listener/serviceAccountKey.json"
+"Demo/firebase/serviceAccountKey.json" 
