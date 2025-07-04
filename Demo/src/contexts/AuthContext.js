@@ -307,14 +307,12 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     try {
       console.log('🚪 Bắt đầu đăng xuất...');
-      
       try {
         await AsyncStorage.removeItem('justRegistered');
         console.log('🧹 Đã clear flag justRegistered');
       } catch (clearError) {
         console.log('⚠️ Không thể clear flag justRegistered:', clearError);
       }
-      
       // Kiểm tra và đăng xuất Google nếu cần
       const currentUser = auth().currentUser;
       if (currentUser?.providerData?.some(provider => provider.providerId === 'google.com')) {
@@ -326,9 +324,9 @@ export const AuthProvider = ({ children }) => {
           console.log('⚠️ Lỗi đăng xuất Google (không ảnh hưởng):', googleError.message);
         }
       }
-      
       await auth().signOut();
       console.log('✅ Đăng xuất hoàn tất!');
+      setUser(null); // Đảm bảo set user = null sau khi đăng xuất
     } catch (error) {
       console.log('❌ Lỗi đăng xuất:', error);
       try {
@@ -336,6 +334,7 @@ export const AuthProvider = ({ children }) => {
       } catch (firebaseError) {
         console.log('❌ Lỗi đăng xuất Firebase:', firebaseError);
       }
+      setUser(null); // Đảm bảo set user = null kể cả khi lỗi
     }
   };
 

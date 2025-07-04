@@ -6,6 +6,8 @@ import {
   RegisterScreen,
 } from '../screens/auth';
 import HomeScreen from '../screens/HomeScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +33,16 @@ export default function AuthNavigator() {
         name="Home"
         component={HomeScreen}
         options={{ title: 'Trang chủ' }}
+      />
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
+        options={{ title: 'Chính sách bảo mật' }}
+      />
+      <Stack.Screen
+        name="TermsOfService"
+        component={TermsOfServiceScreen}
+        options={{ title: 'Điều khoản sử dụng' }}
       />
     </Stack.Navigator>
   );

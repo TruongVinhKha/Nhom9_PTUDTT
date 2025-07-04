@@ -112,6 +112,15 @@ service cloud.firestore {
              data.teacherId is string;
     }
 
+    // Thêm hàm kiểm tra notification cho notificationsForClass
+    function isValidNotificationForClass(data) {
+      return data.keys().hasAll(['title', 'content', 'teacherId', 'classIds']) &&
+             data.title is string && data.title.size() > 0 &&
+             data.content is string && data.content.size() > 0 &&
+             data.teacherId is string &&
+             data.classIds is list && data.classIds.size() > 0;
+    }
+
     // --- COLLECTION RULES ---
 
     // USERS: Only the user themselves or an admin can access a user document.
@@ -162,7 +171,7 @@ service cloud.firestore {
     // NOTIFICATIONS: Phụ huynh chỉ xem thông báo lớp con mình
     match /notifications/{notificationId} {
       allow read: if isTeacherOrAdmin() || parentHasStudentInClass(resource.data.classId);
-      allow create: if isTeacherOrAdmin() && isValidNotification(resource.data);
+      allow create: if isTeacherOrAdmin() && isValidNotification(request.resource.data);
       allow update: if isTeacherOrAdmin() && isValidNotification(resource.data);
       allow delete: if isTeacherOrAdmin();
       
@@ -174,8 +183,8 @@ service cloud.firestore {
     // NOTIFICATIONS FOR CLASS: Phụ huynh chỉ xem thông báo chung nếu có lớp con mình
     match /notificationsForClass/{notificationId} {
       allow read: if isTeacherOrAdmin() || parentHasStudentInAnyClass(resource.data.classIds);
-      allow create: if isTeacherOrAdmin() && isValidNotification(resource.data);
-      allow update: if isTeacherOrAdmin() && isValidNotification(resource.data);
+      allow create: if isTeacherOrAdmin() && isValidNotificationForClass(request.resource.data);
+      allow update: if isTeacherOrAdmin() && isValidNotificationForClass(request.resource.data);
       allow delete: if isTeacherOrAdmin();
       
       match /isRead/{parentId} {

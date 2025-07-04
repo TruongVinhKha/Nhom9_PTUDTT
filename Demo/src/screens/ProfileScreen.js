@@ -5,6 +5,7 @@ import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { Avatar, Button, Card, Modal, Portal, Text, TextInput, Dialog } from 'react-native-paper';
 import { useAuth } from '../contexts/AuthContext';
 import { useStudent } from '../contexts/StudentContext';
+import auth from '@react-native-firebase/auth';
 
 export default function ProfileScreen() {
   const { user, resetPassword, signOut } = useAuth();
@@ -50,6 +51,31 @@ export default function ProfileScreen() {
     } finally {
       setSending(false);
     }
+  };
+
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      'Xác nhận xóa tài khoản',
+      'Bạn có chắc chắn muốn xóa tài khoản này? Hành động này không thể hoàn tác.',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        {
+          text: 'Xóa', style: 'destructive', onPress: async () => {
+            try {
+              await auth().currentUser.delete();
+              Alert.alert('Đã xóa tài khoản', 'Tài khoản của bạn đã được xóa thành công.');
+              signOut();
+            } catch (e) {
+              if (e.code === 'auth/requires-recent-login') {
+                Alert.alert('Lỗi', 'Vui lòng đăng nhập lại để xóa tài khoản.');
+              } else {
+                Alert.alert('Lỗi', 'Không thể xóa tài khoản.');
+              }
+            }
+          }
+        }
+      ]
+    );
   };
 
   function formatDateVN(dateString) {
@@ -133,6 +159,16 @@ export default function ProfileScreen() {
         icon="logout"
       >
         Đăng xuất
+      </Button>
+      {/* Nút xóa tài khoản */}
+      <Button
+        mode="contained"
+        style={{ marginHorizontal: 20, marginTop: 8, backgroundColor: '#FF6B6B' }}
+        textColor="#fff"
+        onPress={handleDeleteAccount}
+        icon="delete"
+      >
+        Xóa tài khoản
       </Button>
 
       {/* Modal đổi mật khẩu */}
