@@ -1,0 +1,82 @@
+[
+  {
+    "id": "6A1",
+    "name": "Lớp 6A1",
+    "teacherId": "teacher1",
+    "grade": "6",
+    "section": "A1",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A2",
+    "name": "Lớp 6A2", 
+    "teacherId": "teacher1",
+    "grade": "6",
+    "section": "A2",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A3",
+    "name": "Lớp 6A3",
+    "teacherId": "teacher2",
+    "grade": "6",
+    "section": "A3",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A4",
+    "name": "Lớp 6A4",
+    "teacherId": "teacher2",
+    "grade": "6",
+    "section": "A4",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A5",
+    "name": "Lớp 6A5",
+    "teacherId": "teacher3",
+    "grade": "6",
+    "section": "A5",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A6",
+    "name": "Lớp 6A6",
+    "teacherId": "teacher3",
+    "grade": "6",
+    "section": "A6",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A7",
+    "name": "Lớp 6A7",
+    "teacherId": "teacher4",
+    "grade": "6",
+    "section": "A7",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A8",
+    "name": "Lớp 6A8",
+    "teacherId": "teacher4",
+    "grade": "6",
+    "section": "A8",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A9",
+    "name": "Lớp 6A9",
+    "teacherId": "teacher5",
+    "grade": "6",
+    "section": "A9",
+    "createdAt": "2025-01-01T00:00:00Z"
+  },
+  {
+    "id": "6A10",
+    "name": "Lớp 6A10",
+    "teacherId": "teacher5",
+    "grade": "6",
+    "section": "A10",
+    "createdAt": "2025-01-01T00:00:00Z"
+  }
+]

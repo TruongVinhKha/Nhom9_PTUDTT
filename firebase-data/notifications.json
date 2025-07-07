@@ -1,0 +1,252 @@
+[
+  {
+    "id": "noti001",
+    "title": "Thông báo kiểm tra Toán",
+    "content": "Lớp 6A1 sẽ kiểm tra Toán vào ngày 10/07.",
+    "teacherId": "teacher1",
+    "classId": "6A1",
+    "type": "exam",
+    "createdAt": "2025-07-01T08:00:00Z",
+    "scheduledDate": "2025-07-10T08:00:00Z"
+  },
+  {
+    "id": "noti002",
+    "title": "Sinh hoạt ngoại khóa",
+    "content": "Lớp 6A2 sẽ tham gia hoạt động ngoại khóa vào ngày 12/07.",
+    "teacherId": "teacher2",
+    "classId": "6A2",
+    "type": "activity",
+    "createdAt": "2025-07-02T09:00:00Z",
+    "scheduledDate": "2025-07-12T09:00:00Z"
+  },
+  {
+    "id": "noti003",
+    "title": "Nộp bài tập Văn",
+    "content": "Lớp 6A3 nộp bài tập Văn trước ngày 15/07.",
+    "teacherId": "teacher3",
+    "classId": "6A3",
+    "type": "homework",
+    "createdAt": "2025-07-03T10:00:00Z",
+    "scheduledDate": "2025-07-15T10:00:00Z"
+  },
+  {
+    "id": "noti004",
+    "title": "Thông báo nhận đồng phục",
+    "content": "Lớp 6A4 nhận đồng phục mới vào ngày 16/07.",
+    "teacherId": "teacher4",
+    "classId": "6A4",
+    "type": "announcement",
+    "createdAt": "2025-07-04T11:00:00Z",
+    "scheduledDate": "2025-07-16T11:00:00Z"
+  },
+  {
+    "id": "noti005",
+    "title": "Kiểm tra Sinh học",
+    "content": "Lớp 6A1 kiểm tra Sinh học vào ngày 18/07.",
+    "teacherId": "teacher1",
+    "classId": "6A1",
+    "type": "exam",
+    "createdAt": "2025-07-05T12:00:00Z",
+    "scheduledDate": "2025-07-18T12:00:00Z"
+  },
+  {
+    "id": "noti006",
+    "title": "Kiểm tra Vật lý",
+    "content": "Lớp 6A2 kiểm tra Vật lý chương Cơ học vào ngày 20/07.",
+    "teacherId": "teacher2",
+    "classId": "6A2",
+    "type": "exam",
+    "createdAt": "2025-07-06T13:00:00Z",
+    "scheduledDate": "2025-07-20T13:00:00Z"
+  },
+  {
+    "id": "noti007",
+    "title": "Nộp bài tập Địa lý",
+    "content": "Lớp 6A3 nộp bài tập Địa lý về khí hậu Việt Nam trước ngày 22/07.",
+    "teacherId": "teacher3",
+    "classId": "6A3",
+    "type": "homework",
+    "createdAt": "2025-07-07T14:00:00Z",
+    "scheduledDate": "2025-07-22T14:00:00Z"
+  },
+  {
+    "id": "noti008",
+    "title": "Kiểm tra Hóa học",
+    "content": "Lớp 6A4 kiểm tra Hóa học chương Chất và sự biến đổi vào ngày 24/07.",
+    "teacherId": "teacher4",
+    "classId": "6A4",
+    "type": "exam",
+    "createdAt": "2025-07-08T15:00:00Z",
+    "scheduledDate": "2025-07-24T15:00:00Z"
+  },
+  {
+    "id": "noti009",
+    "title": "Kiểm tra Lịch sử",
+    "content": "Lớp 6A1 kiểm tra Lịch sử chương 1-3 vào ngày 26/07.",
+    "teacherId": "teacher1",
+    "classId": "6A1",
+    "type": "exam",
+    "createdAt": "2025-07-09T16:00:00Z",
+    "scheduledDate": "2025-07-26T16:00:00Z"
+  },
+  {
+    "id": "noti010",
+    "title": "Kiểm tra Tiếng Anh",
+    "content": "Lớp 6A2 kiểm tra Tiếng Anh Unit 1-3 vào ngày 28/07.",
+    "teacherId": "teacher2",
+    "classId": "6A2",
+    "type": "exam",
+    "createdAt": "2025-07-10T17:00:00Z",
+    "scheduledDate": "2025-07-28T17:00:00Z"
+  },
+  {
+    "id": "noti011",
+    "title": "Nộp bài tập Tin học",
+    "content": "Lớp 6A3 nộp bài tập Tin học về Word trước ngày 30/07.",
+    "teacherId": "teacher3",
+    "classId": "6A3",
+    "type": "homework",
+    "createdAt": "2025-07-11T18:00:00Z",
+    "scheduledDate": "2025-07-30T18:00:00Z"
+  },
+  {
+    "id": "noti012",
+    "title": "Kiểm tra GDCD",
+    "content": "Lớp 6A4 kiểm tra GDCD chương 1 vào ngày 01/08.",
+    "teacherId": "teacher4",
+    "classId": "6A4",
+    "type": "exam",
+    "createdAt": "2025-07-12T19:00:00Z",
+    "scheduledDate": "2025-08-01T19:00:00Z"
+  },
+  {
+    "id": "noti013",
+    "title": "Tham quan bảo tàng",
+    "content": "Lớp 6A1 tham quan Bảo tàng Lịch sử vào ngày 03/08.",
+    "teacherId": "teacher1",
+    "classId": "6A1",
+    "type": "activity",
+    "createdAt": "2025-07-13T20:00:00Z",
+    "scheduledDate": "2025-08-03T20:00:00Z"
+  },
+  {
+    "id": "noti014",
+    "title": "Hoạt động thể thao",
+    "content": "Lớp 6A2 tham gia giải bóng đá mini vào ngày 05/08.",
+    "teacherId": "teacher2",
+    "classId": "6A2",
+    "type": "sport",
+    "createdAt": "2025-07-14T21:00:00Z",
+    "scheduledDate": "2025-08-05T21:00:00Z"
+  },
+  {
+    "id": "noti015",
+    "title": "Chương trình âm nhạc",
+    "content": "Lớp 6A3 tham gia chương trình âm nhạc dân tộc vào ngày 07/08.",
+    "teacherId": "teacher3",
+    "classId": "6A3",
+    "type": "activity",
+    "createdAt": "2025-07-15T22:00:00Z",
+    "scheduledDate": "2025-08-07T22:00:00Z"
+  },
+  {
+    "id": "noti016",
+    "title": "Hoạt động môi trường",
+    "content": "Lớp 6A4 tham gia chương trình bảo vệ môi trường vào ngày 09/08.",
+    "teacherId": "teacher4",
+    "classId": "6A4",
+    "type": "activity",
+    "createdAt": "2025-07-16T23:00:00Z",
+    "scheduledDate": "2025-08-09T23:00:00Z"
+  },
+  {
+    "id": "noti017",
+    "title": "Họp ban cán sự",
+    "content": "Ban cán sự lớp 6A1 họp vào ngày 11/08 tại phòng giáo viên.",
+    "teacherId": "teacher1",
+    "classId": "6A1",
+    "type": "meeting",
+    "createdAt": "2025-07-17T08:00:00Z",
+    "scheduledDate": "2025-08-11T08:00:00Z"
+  },
+  {
+    "id": "noti018",
+    "title": "Nhận sách giáo khoa",
+    "content": "Lớp 6A2 nhận sách giáo khoa mới vào ngày 13/08.",
+    "teacherId": "teacher2",
+    "classId": "6A2",
+    "type": "announcement",
+    "createdAt": "2025-07-18T09:00:00Z",
+    "scheduledDate": "2025-08-13T09:00:00Z"
+  },
+  {
+    "id": "noti019",
+    "title": "Dọn vệ sinh lớp",
+    "content": "Lớp 6A3 thực hiện dọn vệ sinh lớp học vào ngày 15/08.",
+    "teacherId": "teacher3",
+    "classId": "6A3",
+    "type": "activity",
+    "createdAt": "2025-07-19T10:00:00Z",
+    "scheduledDate": "2025-08-15T10:00:00Z"
+  },
+  {
+    "id": "noti020",
+    "title": "Nhận thẻ học sinh",
+    "content": "Lớp 6A4 nhận thẻ học sinh mới vào ngày 17/08 tại văn phòng.",
+    "teacherId": "teacher4",
+    "classId": "6A4",
+    "type": "announcement",
+    "createdAt": "2025-07-20T11:00:00Z",
+    "scheduledDate": "2025-08-17T11:00:00Z"
+  },
+  {
+    "id": "noti021",
+    "title": "Kiểm tra định kỳ Toán",
+    "content": "Lớp 6A1 kiểm tra định kỳ môn Toán vào ngày 19/08.",
+    "teacherId": "teacher1",
+    "classId": "6A1",
+    "type": "exam",
+    "createdAt": "2025-07-21T12:00:00Z",
+    "scheduledDate": "2025-08-19T12:00:00Z"
+  },
+  {
+    "id": "noti022",
+    "title": "Văn nghệ chào mừng năm học",
+    "content": "Lớp 6A2 chuẩn bị tiết mục văn nghệ cho lễ khai giảng.",
+    "teacherId": "teacher2",
+    "classId": "6A2",
+    "type": "activity",
+    "createdAt": "2025-07-22T13:00:00Z",
+    "scheduledDate": "2025-08-22T13:00:00Z"
+  },
+  {
+    "id": "noti023",
+    "title": "Chương trình STEM",
+    "content": "Lớp 6A3 tham gia chương trình STEM vào ngày 21/08.",
+    "teacherId": "teacher3",
+    "classId": "6A3",
+    "type": "activity",
+    "createdAt": "2025-07-23T14:00:00Z",
+    "scheduledDate": "2025-08-21T14:00:00Z"
+  },
+  {
+    "id": "noti024",
+    "title": "Hoạt động văn hóa dân gian",
+    "content": "Lớp 6A4 tham gia chương trình văn hóa dân gian vào ngày 23/08.",
+    "teacherId": "teacher4",
+    "classId": "6A4",
+    "type": "activity",
+    "createdAt": "2025-07-24T15:00:00Z",
+    "scheduledDate": "2025-08-23T15:00:00Z"
+  },
+  {
+    "id": "noti025",
+    "title": "Họp tổng kết học kỳ",
+    "content": "Lớp 6A1 họp tổng kết học kỳ 1 vào ngày 25/08.",
+    "teacherId": "teacher1",
+    "classId": "6A1",
+    "type": "meeting",
+    "createdAt": "2025-07-25T16:00:00Z",
+    "scheduledDate": "2025-08-25T16:00:00Z"
+  }
+]
