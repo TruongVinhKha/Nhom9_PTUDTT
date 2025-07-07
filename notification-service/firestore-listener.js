@@ -17,6 +17,7 @@ db.collection("comments").onSnapshot(snapshot => {
       const studentId = comment.studentId;
       const content = comment.content;
       const teacherName = comment.teacherName || "Giáo viên";
+      const notifiedUsers = Array.isArray(comment.notifiedUsers) ? comment.notifiedUsers : [];
 
       console.log("\n=== 📝 NHẬN XÉT MỚI ===");
       console.log("👨‍🎓 StudentId:", studentId);
@@ -39,9 +40,12 @@ db.collection("comments").onSnapshot(snapshot => {
 
         const tokens = [];
         const validParents = [];
+        const userIdsToNotify = [];
+        const parentDocsToNotify = [];
 
         parentsSnap.forEach(doc => {
           const data = doc.data();
+          if (notifiedUsers.includes(doc.id)) return;
           console.log("👨‍👩‍👧‍👦 Phụ huynh:", data.fullName);
           console.log("  - 📧 Email:", data.email);
           console.log("  - 🔗 LinkedStudentIds:", data.linkedStudentIds);
@@ -49,6 +53,8 @@ db.collection("comments").onSnapshot(snapshot => {
           if (data.deviceToken && data.deviceToken.trim() !== "") {
             tokens.push(data.deviceToken);
             validParents.push(data.fullName);
+            userIdsToNotify.push(doc.id);
+            parentDocsToNotify.push(doc);
             console.log("  - ✅ DeviceToken:", data.deviceToken.substring(0, 20) + "...");
           } else {
             console.log("  - ❌ Không có deviceToken");
@@ -62,7 +68,7 @@ db.collection("comments").onSnapshot(snapshot => {
 
         console.log("✅ Sẽ gửi notification cho", tokens.length, "phụ huynh:", validParents.join(", "));
 
-        // Gửi notification đến tất cả phụ huynh
+        // Gửi notification đến tất cả phụ huynh chưa nhận
         const response = await admin.messaging().sendEachForMulticast({
           tokens,
           notification: {
@@ -81,6 +87,14 @@ db.collection("comments").onSnapshot(snapshot => {
             commentId: change.doc.id,
           }
         });
+
+        // Cập nhật notifiedUsers cho những người đã gửi thành công
+        const successUserIds = userIdsToNotify.filter((_, idx) => response.responses[idx]?.success);
+        if (successUserIds.length > 0) {
+          await change.doc.ref.update({
+            notifiedUsers: admin.firestore.FieldValue.arrayUnion(...successUserIds)
+          });
+        }
 
         console.log("✅ Đã gửi notification thành công!");
         console.log("  - 📤 Gửi thành công:", response.successCount, "phụ huynh");
@@ -106,6 +120,8 @@ db.collection("notificationsForClass").onSnapshot(snapshot => {
       const notification = change.doc.data();
       const classIds = notification.classIds || (notification.classId ? [notification.classId] : []);
       if (classIds.length === 0) return;
+      const notifiedUsers = Array.isArray(notification.notifiedUsers) ? notification.notifiedUsers : [];
+      if (classIds.length === 0) return;
 
       try {
         // Tìm tất cả học sinh thuộc các lớp này
@@ -126,14 +142,17 @@ db.collection("notificationsForClass").onSnapshot(snapshot => {
 
         const tokens = [];
         const validParents = [];
+        const userIdsToNotify = [];
         parentsSnap.forEach(doc => {
           const data = doc.data();
+          if (notifiedUsers.includes(doc.id)) return;
           console.log("👨‍👩‍👧‍👦 Phụ huynh:", data.fullName);
           console.log("  - 📧 Email:", data.email);
           console.log("  - 🔗 LinkedStudentIds:", data.linkedStudentIds);
           if (data.deviceToken && data.deviceToken.trim() !== "") {
             tokens.push(data.deviceToken);
             validParents.push(data.fullName);
+            userIdsToNotify.push(doc.id);
             console.log("  - ✅ DeviceToken:", data.deviceToken.substring(0, 20) + "...");
           } else {
             console.log("  - ❌ Không có deviceToken");
@@ -168,6 +187,14 @@ db.collection("notificationsForClass").onSnapshot(snapshot => {
             notificationId: change.doc.id,
           }
         });
+
+        // Cập nhật notifiedUsers cho những người đã gửi thành công
+        const successUserIds = userIdsToNotify.filter((_, idx) => response.responses[idx]?.success);
+        if (successUserIds.length > 0) {
+          await change.doc.ref.update({
+            notifiedUsers: admin.firestore.FieldValue.arrayUnion(...successUserIds)
+          });
+        }
 
         // Tự động xoá deviceToken không hợp lệ
         response.responses.forEach((resp, idx) => {
@@ -214,6 +241,7 @@ db.collection("notifications").onSnapshot(snapshot => {
       const notification = change.doc.data();
       const classId = notification.classId;
       if (!classId) return;
+      const notifiedUsers = Array.isArray(notification.notifiedUsers) ? notification.notifiedUsers : [];
 
       try {
         // Tìm tất cả học sinh thuộc lớp này
@@ -234,14 +262,17 @@ db.collection("notifications").onSnapshot(snapshot => {
 
         const tokens = [];
         const validParents = [];
+        const userIdsToNotify = [];
         parentsSnap.forEach(doc => {
           const data = doc.data();
-          console.log("👨‍👩‍👧‍👦 Phụ huynh:", data.fullName);
+          if (notifiedUsers.includes(doc.id)) return;
+          console.log("��‍👩‍👧‍👦 Phụ huynh:", data.fullName);
           console.log("  - 📧 Email:", data.email);
           console.log("  - 🔗 LinkedStudentIds:", data.linkedStudentIds);
           if (data.deviceToken && data.deviceToken.trim() !== "") {
             tokens.push(data.deviceToken);
             validParents.push(data.fullName);
+            userIdsToNotify.push(doc.id);
             console.log("  - ✅ DeviceToken:", data.deviceToken.substring(0, 20) + "...");
           } else {
             console.log("  - ❌ Không có deviceToken");
@@ -276,6 +307,14 @@ db.collection("notifications").onSnapshot(snapshot => {
             notificationId: change.doc.id,
           }
         });
+
+        // Cập nhật notifiedUsers cho những người đã gửi thành công
+        const successUserIds = userIdsToNotify.filter((_, idx) => response.responses[idx]?.success);
+        if (successUserIds.length > 0) {
+          await change.doc.ref.update({
+            notifiedUsers: admin.firestore.FieldValue.arrayUnion(...successUserIds)
+          });
+        }
 
         // Tự động xoá deviceToken không hợp lệ
         response.responses.forEach((resp, idx) => {
