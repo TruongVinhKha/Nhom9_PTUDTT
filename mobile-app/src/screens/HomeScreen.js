@@ -568,7 +568,7 @@ export default function HomeScreen() {
     });
   };
   useEffect(() => {
-    if (user && initialized && !loginInProgress) {
+    if (user?.uid && initialized && !loginInProgress) {
       // Thêm delay nhỏ để đảm bảo quá trình đăng nhập hoàn tất
       const timer = setTimeout(() => {
         fetchData();

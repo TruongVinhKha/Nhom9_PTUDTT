@@ -1,7 +1,7 @@
 // RegisterScreen.js - Phiên bản tối ưu
 import firestore from '@react-native-firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { Alert, Animated, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Animated, ScrollView, StyleSheet, View, Linking } from 'react-native';
 import {
   Button,
   Card,
@@ -128,6 +128,14 @@ export default function RegisterScreen({ navigation }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenPrivacy = () => {
+    navigation.navigate('PrivacyPolicy');
+  };
+
+  const handleOpenTerms = () => {
+    navigation.navigate('TermsOfService');
   };
 
   if (showLoading) {
@@ -338,9 +346,9 @@ export default function RegisterScreen({ navigation }) {
                 <View style={styles.termsTextContainer}>
                   <Text style={styles.termsText}>
                     Tôi đồng ý với{' '}
-                    <Text style={styles.termsLink}>Điều khoản sử dụng</Text>
+                    <Text style={styles.termsLink} onPress={handleOpenTerms}>Điều khoản sử dụng</Text>
                     {' '}và{' '}
-                    <Text style={styles.termsLink}>Chính sách bảo mật</Text>
+                    <Text style={styles.termsLink} onPress={handleOpenPrivacy}>Chính sách bảo mật</Text>
                   </Text>
                 </View>
               </View>
