@@ -19,8 +19,7 @@ android/app/release.keystore
 android/app/google-services.json
 
 # Firebase service account
-firestore-listener/serviceAccountKey.json
-Demo/firebase/serviceAccountKey.json
+notification-service/serviceAccountKey.json
 
 # Environment files
 .env
